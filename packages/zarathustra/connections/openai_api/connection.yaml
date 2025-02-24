@@ -7,14 +7,14 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeib4z2xxgxmm6tq523bvmvg6gzbckhr5ntocnctb3ukdj3ozvit5fy
-  __init__.py: bafybeidcfx77zxyjplt6rescrjtpmd2f6gq7jkseg2hzybs4dqqczp7q64
-  connection.py: bafybeid2tmm2a23bjbmzrvmstbewx3ojzs3aizbwv6wzkc4a2jwwjgbzfq
-  tests/__init__.py: bafybeigkfelrd623eb47cpe3wk4yn5h5fchd26i33beaztk6zhaz2ahx7m
-  tests/test_connection.py: bafybeig3mjipesw6iap5yl6llodgenu7lrqnq7ohy6ju5o2vh3gkryhdba
+  __init__.py: bafybeiganoszwzracposguechnr4z2ky5y22azrry4cvu3dj34yqajbr5y
+  connection.py: bafybeiaf3ihz2xleyvzizyqxbcebjxz62qvasv26srxjslyoyy7p5cl7mm
+  tests/__init__.py: bafybeicbvsbnhql53ujlr24qetoin5qbsfhes7al6g5dyex7qlgjblejxi
+  tests/test_connection.py: bafybeifljvx4pp32n3omlxcmvglgncx5ui3pbmjb6ya3wkpw55bp7yefq4
 fingerprint_ignore_patterns: []
 connections: []
 protocols:
-- zarathustra/llm_chat_completion:1.0.0:bafybeifs35ewlg3afsstx2qtott5t76sd4od4cwphy2lj5jwsr5hu4vmxe
+- zarathustra/llm_chat_completion:1.0.0:bafybeiafu3jtnw26stsbzjjrqfe6jja4bslqk2rqzz3bjbzdll5jrjqnky
 class_name: Zarathustra/openaiApiConnection
 config:
   foo: bar
