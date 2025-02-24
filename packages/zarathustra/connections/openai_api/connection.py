@@ -48,9 +48,9 @@ import openai
 
 
 CONNECTION_ID = PublicId.from_str("zarathustra/openai_api:0.1.0")
-
-
 _default_logger = logging.getLogger("aea.packages.zarathustra.connections.openai_api")
+
+LLM_RESPONSE_TIMEOUT = 10
 
 
 def get_repo_root() -> Path:
@@ -74,7 +74,7 @@ class Model(StrEnum):
     META_LLAMA_3_3_70B_INSTRUCT = "Meta-Llama-3-3-70B-Instruct"
 
 
-def setup_llm_client() -> openai.OpenAI:
+def setup_llm_client() -> openai.AsyncOpenAI:
     """Load environment variables and instantiate the LLM client."""
     load_dotenv(get_repo_root() / ".env")
 
@@ -84,7 +84,7 @@ def setup_llm_client() -> openai.OpenAI:
             "Visit https://chatapi.akash.network/ to obtain an API key.",
         )
 
-    return openai.OpenAI(
+    return openai.AsyncOpenAI(
         api_key=api_key,
         base_url="https://chatapi.akash.network/api/v1",
     )
@@ -175,7 +175,7 @@ class BaseAsyncChannel:
             self.logger.warning(f"Could not create dialogue for message={message}")
             return
 
-        response_message = handler(message, dialogue)
+        response_message = await handler(message, dialogue)
         self.logger.info(f"returning message: {response_message}")
 
         response_envelope = Envelope(
@@ -248,8 +248,7 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             self._in_queue = asyncio.Queue()
             self.is_stopped = False
             try:
-                # raise NotImplementedError("OpenaiApiAsyncChannel.connect")
-                self._connection = setup_llm_client()  # TODO: e.g. self.engine.connect()
+                self._connection = setup_llm_client()
                 self.logger.info("Openai Api has connected.")
             except Exception as e:  # noqa
                 self.is_stopped = True
@@ -263,7 +262,6 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             return
 
         await self._cancel_tasks()
-        # raise NotImplementedError("OpenaiApiAsyncChannel.disconnect")
         ...  # TODO: e.g. self._connection.close()
         self.is_stopped = True
         self.logger.info("Openai Api has shutdown.")
@@ -278,20 +276,31 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             LlmChatCompletionMessage.Performative.DELETE: self.delete,
         }
 
-    def create(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
+    async def create(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
         """Handle LlmChatCompletionMessage with CREATE Perfomative """
 
         model = message.model
         messages = message.messages
         kwargs = message.kwargs
 
-        # openai.types.chat.ChatCompletion
         # TODO: Implement the necessary logic required for the response message
-        chat_completion = self._connection.chat.completions.create(
-            model=model,
-            messages=messages,
-            **kwargs,
-        )
+        try:
+            chat_completion = await asyncio.wait_for(
+                self._connection.chat.completions.create(
+                    model=model,
+                    messages=messages,
+                    **kwargs,
+                ),
+                timeout=LLM_RESPONSE_TIMEOUT,
+            )
+        except TimeoutError as e:
+            self.logger.exception(f"Model {model} did not respond timely")
+            response_message = dialogue.reply(
+                performative=LlmChatCompletionMessage.Performative.ERROR,
+                error_code=message.ErrorCode.OPENAI_ERROR,
+                error_msg=f"Model {model} did not respond timely",
+            )
+            return response_message
         
         data = chat_completion.to_json()
         model_class = chat_completion.__class__.__name__
@@ -304,15 +313,9 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             model_module=module_name,
         )
 
-        # response_message = dialogue.reply(
-        #     performative=LlmChatCompletionMessage.Performative.ERROR,
-        #     error_code=...,
-        #     error_msg=...,
-        # )
-
         return response_message
 
-    def retrieve(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
+    async def retrieve(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
         """Handle LlmChatCompletionMessage with RETRIEVE Perfomative """
 
         completion_id = message.completion_id
@@ -335,7 +338,7 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
 
         return response_message
 
-    def update(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
+    async def update(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
         """Handle LlmChatCompletionMessage with UPDATE Perfomative """
 
         completion_id = message.completion_id
@@ -358,7 +361,7 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
 
         return response_message
 
-    def list(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
+    async def list(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
         """Handle LlmChatCompletionMessage with LIST Perfomative """
 
         kwargs = message.kwargs
@@ -380,7 +383,7 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
 
         return response_message
 
-    def delete(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
+    async def delete(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
         """Handle LlmChatCompletionMessage with DELETE Perfomative """
 
         completion_id = message.completion_id

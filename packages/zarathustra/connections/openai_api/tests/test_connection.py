@@ -127,17 +127,21 @@ class TestOpenaiApiConnection():
 
         model = Model.META_LLAMA_3_3_70B_INSTRUCT
         messages = MESSAGES
+        number_of_responses = 2
 
         msg, dialogue = self._dialogues.create(
             counterparty=str(CONNECTION_PUBLIC_ID),
             performative=LlmChatCompletionMessage.Performative.CREATE,
             model=model,
             messages=messages,
-            kwargs={},
+            kwargs={"n": number_of_responses},
         )
 
         await self.openai_api_connection.send(envelope_it(msg))
         response_envelope = await self.openai_api_connection.receive()
+        if response_envelope.message.performative == LlmChatCompletionMessage.Performative.ERROR:
+            self.openai_api_connection.logger.exception(f"{response_envelope.message}")
         model_chat_completion = reconstitute(response_envelope.message)
-        breakpoint()
-
+        assert len(model_chat_completion.choices) == number_of_responses
+        for response in model_chat_completion.choices:
+            assert response.message.content
