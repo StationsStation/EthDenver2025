@@ -1,0 +1,27 @@
+name: openai_api
+author: zarathustra
+version: 0.1.0
+type: connection
+description: A connection for openAI LLM chat completion.
+license: Apache-2.0
+aea_version: '>=1.0.0, <2.0.0'
+fingerprint:
+  README.md: bafybeib4z2xxgxmm6tq523bvmvg6gzbckhr5ntocnctb3ukdj3ozvit5fy
+  __init__.py: bafybeiasnxfabkg7qm3sa3kud3fitbgqlu6t4emdomtb4ciqc654z7iylm
+  connection.py: bafybeife5dv5uwn5wamn6g7ew5oxmrg3ws537u5yfn256ler22z2jjfmxi
+  tests/__init__.py: bafybeibta3qz3qj6n4kq42cphi75nm5gparhsastdwlynofcveoucgwmyi
+  tests/test_connection.py: bafybeiabklvrkmrgxqhqb52ejjbsvgdmndu77jhvfgnkfpbbexktaie3ma
+fingerprint_ignore_patterns: []
+connections: []
+protocols:
+- zarathustra/llm_chat_completion:1.0.0:bafybeifs35ewlg3afsstx2qtott5t76sd4od4cwphy2lj5jwsr5hu4vmxe
+class_name: Zarathustra/openaiApiConnection
+config:
+  foo: bar
+excluded_protocols: []
+restricted_to_protocols: []
+dependencies:
+  openai:
+    version: ==1.64.0
+is_abstract: false
+cert_requests: []
