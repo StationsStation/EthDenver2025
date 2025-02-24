@@ -1,0 +1,27 @@
+alphabet_in:
+- DONE
+- ERROR
+- TIMEOUT
+- RETRY
+- NO_NEW_MESSAGES
+default_start_state: CheckRound
+final_states: []
+label: demoFsmAbciApp
+start_states:
+- CheckRound
+states:
+- ErrorRound
+- PrepareRound
+- PauseRound
+- CheckRound
+- ExecuteRound
+transition_func:
+  (CheckRound, DONE): PrepareRound
+  (CheckRound, NO_NEW_MESSAGES): PauseRound
+  (ErrorRound, RETRY): CheckRound
+  (ExecuteRound, DONE): PauseRound
+  (ExecuteRound, ERROR): ErrorRound
+  (PauseRound, DONE): CheckRound
+  (PauseRound, TIMEOUT): ErrorRound
+  (PrepareRound, DONE): ExecuteRound
+  (PrepareRound, TIMEOUT): ErrorRound
