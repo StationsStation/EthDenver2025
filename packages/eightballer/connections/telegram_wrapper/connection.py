@@ -18,7 +18,7 @@
 #
 # ------------------------------------------------------------------------------
 
-"""Telegram connection and channel."""
+"""Telegram Wrapper connection and channel."""
 
 from abc import abstractmethod
 import asyncio
@@ -39,14 +39,14 @@ from packages.eightballer.protocols.telegram.message import TelegramMessage
 # TODO: import any library dependencies for the connection
 
 
-CONNECTION_ID = PublicId.from_str("eightballer/telegram:0.1.0")
+CONNECTION_ID = PublicId.from_str("eightballer/telegram_wrapper:0.1.0")
 
 
-_default_logger = logging.getLogger("aea.packages.eightballer.connections.telegram")
+_default_logger = logging.getLogger("aea.packages.eightballer.connections.telegram_wrapper")
 
 
 class TelegramDialogues(BaseTelegramDialogues):
-    """The dialogues class keeps track of all telegram dialogues."""
+    """The dialogues class keeps track of all telegram_wrapper dialogues."""
 
     def __init__(self, self_address: Address, **kwargs) -> None:
         """
@@ -187,8 +187,8 @@ class BaseAsyncChannel:
                 pass  # nosec
 
 
-class TelegramAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-instance-attributes
-    """A channel handling incomming communication from the Telegram connection."""
+class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-instance-attributes
+    """A channel handling incomming communication from the Telegram Wrapper connection."""
 
     def __init__(
         self,
@@ -197,7 +197,7 @@ class TelegramAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-instan
         **kwargs  # TODO: pass the neccesary arguments for your channel explicitly
     ):
         """
-        Initialize the Telegram channel.
+        Initialize the Telegram Wrapper channel.
 
         :param agent_address: the address of the agent.
         :param connection_id: the id of the connection.
@@ -209,8 +209,8 @@ class TelegramAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-instan
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        self._dialogues = TelegramDialogues(str(TelegramConnection.connection_id))
-        self.logger.debug("Initialised the Telegram channel")
+        self._dialogues = TelegramDialogues(str(TelegramWrapperConnection.connection_id))
+        self.logger.debug("Initialised the Telegram Wrapper channel")
 
     async def connect(self, loop: AbstractEventLoop) -> None:
         """
@@ -224,13 +224,13 @@ class TelegramAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-instan
             self._in_queue = asyncio.Queue()
             self.is_stopped = False
             try:
-                raise NotImplementedError("TelegramAsyncChannel.connect")
+                raise NotImplementedError("TelegramWrapperAsyncChannel.connect")
                 self._connection = ...  # TODO: e.g. self.engine.connect()
-                self.logger.info("Telegram has connected.")
+                self.logger.info("Telegram Wrapper has connected.")
             except Exception as e:  # noqa
                 self.is_stopped = True
                 self._in_queue = None
-                raise ConnectionError(f"Failed to start Telegram: {e}")
+                raise ConnectionError(f"Failed to start Telegram Wrapper: {e}")
 
     async def disconnect(self) -> None:
         """Disconnect channel."""
@@ -239,10 +239,10 @@ class TelegramAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-instan
             return
 
         await self._cancel_tasks()
-        raise NotImplementedError("TelegramAsyncChannel.disconnect")
+        raise NotImplementedError("TelegramWrapperAsyncChannel.disconnect")
         ...  # TODO: e.g. self._connection.close()
         self.is_stopped = True
-        self.logger.info("Telegram has shutdown.")
+        self.logger.info("Telegram Wrapper has shutdown.")
 
     @property
     def performative_handlers(self) -> Dict[TelegramMessage.Performative, Callable[[TelegramMessage, TelegramDialogue], TelegramMessage]]:
@@ -303,14 +303,14 @@ class TelegramAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-instan
         return response_message
 
 
-class TelegramConnection(Connection):
-    """Proxy to the functionality of a Telegram connection."""
+class TelegramWrapperConnection(Connection):
+    """Proxy to the functionality of a Telegram Wrapper connection."""
 
     connection_id = CONNECTION_ID
 
     def __init__(self, **kwargs: Any) -> None:
         """
-        Initialize a Telegram connection.
+        Initialize a Telegram Wrapper connection.
 
         :param kwargs: keyword arguments
         """
@@ -320,14 +320,14 @@ class TelegramConnection(Connection):
         custom_kwargs = {key: config.pop(key) for key in keys}
         super().__init__(**kwargs)
 
-        self.channel = TelegramAsyncChannel(
+        self.channel = TelegramWrapperAsyncChannel(
             self.address,
             connection_id=self.connection_id,
             **custom_kwargs,
         )
 
     async def connect(self) -> None:
-        """Connect to a Telegram."""
+        """Connect to a Telegram Wrapper."""
 
         if self.is_connected:  # pragma: nocover
             return
@@ -337,7 +337,7 @@ class TelegramConnection(Connection):
             await self.channel.connect(self.loop)
 
     async def disconnect(self) -> None:
-        """Disconnect from a Telegram."""
+        """Disconnect from a Telegram Wrapper."""
 
         if self.is_disconnected:
             return  # pragma: nocover

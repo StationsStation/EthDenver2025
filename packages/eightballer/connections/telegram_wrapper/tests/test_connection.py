@@ -19,7 +19,7 @@
 # ------------------------------------------------------------------------------
 
 
-"""This module contains the tests of the Telegram connection module."""
+"""This module contains the tests of the Telegram Wrapper connection module."""
 # pylint: skip-file
 
 
@@ -37,12 +37,12 @@ from aea.protocols.dialogue.base import Dialogue as BaseDialogue
 from packages.eightballer.protocols.telegram.dialogues import BaseTelegramDialogues
 from packages.eightballer.protocols.telegram.dialogues import TelegramDialogue
 
-from packages.eightballer.connections.telegram.connection import (
-    TelegramConnection,
+from packages.eightballer.connections.telegram_wrapper.connection import (
+    TelegramWrapperConnection,
 )
 from packages.eightballer.protocols.telegram.message import TelegramMessage
 
-from packages.eightballer.connections.telegram.connection import CONNECTION_ID as CONNECTION_PUBLIC_ID
+from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as CONNECTION_PUBLIC_ID
 
 
 def envelope_it(message: TelegramMessage):
@@ -56,7 +56,7 @@ def envelope_it(message: TelegramMessage):
 
 
 class TelegramDialogues(BaseTelegramDialogues):
-    """The dialogues class keeps track of all telegram dialogues."""
+    """The dialogues class keeps track of all telegram_wrapper dialogues."""
 
     def __init__(self, self_address: Address, **kwargs) -> None:
         """
@@ -84,7 +84,7 @@ class TelegramDialogues(BaseTelegramDialogues):
         )
 
 
-class TestTelegramConnection():
+class TestTelegramWrapperConnection():
 
     def setup(self):
         """Initialise the test case."""
@@ -92,7 +92,7 @@ class TestTelegramConnection():
         self.identity = Identity("dummy_name", address="dummy_address", public_key="dummy_public_key")
         self.agent_address = self.identity.address
 
-        self.connection_id = TelegramConnection.connection_id
+        self.connection_id = TelegramWrapperConnection.connection_id
         self.protocol_id = TelegramMessage.protocol_id
         self.target_skill_id = "dummy_author/dummy_skill:0.1.0"
 
@@ -101,38 +101,38 @@ class TestTelegramConnection():
 
         self.configuration = ConnectionConfig(
             target_skill_id=self.target_skill_id,
-            connection_id=TelegramConnection.connection_id,
+            connection_id=TelegramWrapperConnection.connection_id,
             restricted_to_protocols={TelegramMessage.protocol_id},
             **kwargs,
         )
 
-        self.telegram_connection = TelegramConnection(
+        self.telegram_wrapper_connection = TelegramWrapperConnection(
             configuration=self.configuration,
             data_dir=MagicMock(),
             identity=self.identity,
         )
 
         self.loop = asyncio.get_event_loop()
-        self.loop.run_until_complete(self.telegram_connection.connect())
-        self.connection_address = str(TelegramConnection.connection_id)
+        self.loop.run_until_complete(self.telegram_wrapper_connection.connect())
+        self.connection_address = str(TelegramWrapperConnection.connection_id)
         self._dialogues = TelegramDialogues(self.target_skill_id)
 
     @pytest.mark.asyncio
-    async def test_telegram_connection_connect(self):
+    async def test_telegram_wrapper_connection_connect(self):
         """Test the connect."""
-        await self.telegram_connection.connect()
-        assert not self.telegram_connection.channel.is_stopped
+        await self.telegram_wrapper_connection.connect()
+        assert not self.telegram_wrapper_connection.channel.is_stopped
 
     @pytest.mark.asyncio
-    async def test_telegram_connection_disconnect(self):
+    async def test_telegram_wrapper_connection_disconnect(self):
         """Test the disconnect."""
-        await self.telegram_connection.disconnect()
-        assert self.telegram_connection.channel.is_stopped
+        await self.telegram_wrapper_connection.disconnect()
+        assert self.telegram_wrapper_connection.channel.is_stopped
 
     @pytest.mark.asyncio
     async def test_handles_inbound_query(self):
         """Test the connect."""
-        await self.telegram_connection.connect()
+        await self.telegram_wrapper_connection.connect()
 
         msg, dialogue = self._dialogues.create(
             counterparty=str(CONNECTION_PUBLIC_ID),
@@ -141,5 +141,5 @@ class TestTelegramConnection():
             # ...
         )
 
-        await self.telegram_connection.send(envelope_it(msg))
+        await self.telegram_wrapper_connection.send(envelope_it(msg))
 
