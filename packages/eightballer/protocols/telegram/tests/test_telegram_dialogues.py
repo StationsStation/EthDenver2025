@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
 #   Copyright 2025 eightballer
@@ -24,17 +23,17 @@ import os
 
 import yaml
 from aea.test_tools.test_protocol import BaseProtocolDialoguesTestCase
+
 from packages.eightballer.protocols.telegram.message import TelegramMessage
 from packages.eightballer.protocols.telegram.dialogues import (
     TelegramDialogue,
     BaseTelegramDialogues,
 )
-from packages.eightballer.protocols.telegram.custom_types import ErrorCode
 
 
 def load_data(custom_type):
     """Load test data."""
-    with open(f"{os.path.dirname(__file__)}/dummy_data.yaml", "r", encoding="utf-8") as f:
+    with open(f"{os.path.dirname(__file__)}/dummy_data.yaml", encoding="utf-8") as f:
         return yaml.safe_load(f)[custom_type]
 
 
@@ -51,10 +50,13 @@ class TestDialoguesTelegram(BaseProtocolDialoguesTestCase):
 
     def make_message_content(self) -> dict:
         """Make a dict with message contruction content for dialogues.create."""
-        return dict(
-            performative=TelegramMessage.Performative.SEND_MESSAGE,
-            chat_id=12,
-            text="some str",
-            parse_mode="some str",
-            reply_markup="some str",
-        )
+        return {
+            "performative": TelegramMessage.Performative.MESSAGE,
+            "chat_id": "some str",
+            "text": "some str",
+            "id": 12,
+            "parse_mode": "some str",
+            "reply_markup": "some str",
+            "from_user": "some str",
+            "timestamp": 12,
+        }

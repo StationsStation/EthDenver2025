@@ -30,6 +30,9 @@ from aea.protocols.base import Message  # type: ignore
 from packages.eightballer.protocols.telegram.custom_types import (
     ErrorCode as CustomErrorCode,
 )
+from packages.eightballer.protocols.telegram.custom_types import (
+    MessageStatus as CustomMessageStatus,
+)
 
 
 _default_logger = logging.getLogger(
@@ -47,30 +50,42 @@ class TelegramMessage(Message):
 
     ErrorCode = CustomErrorCode
 
+    MessageStatus = CustomMessageStatus
+
     class Performative(Message.Performative):
         """Performatives for the telegram protocol."""
 
+        CHANNELS = "channels"
         ERROR = "error"
+        GET_CHANNELS = "get_channels"
+        MESSAGE = "message"
         MESSAGE_SENT = "message_sent"
-        NEW_MESSAGE = "new_message"
-        RECEIVE_MESSAGE = "receive_message"
-        SEND_MESSAGE = "send_message"
+        SUBSCRIBE = "subscribe"
+        SUBSCRIPTION_RESULT = "subscription_result"
+        UNSUBSCRIBE = "unsubscribe"
+        UNSUBSCRIPTION_RESULT = "unsubscription_result"
 
         def __str__(self) -> str:
             """Get the string representation."""
             return str(self.value)
 
     _performatives = {
+        "channels",
         "error",
+        "get_channels",
+        "message",
         "message_sent",
-        "new_message",
-        "receive_message",
-        "send_message",
+        "subscribe",
+        "subscription_result",
+        "unsubscribe",
+        "unsubscription_result",
     }
     __slots__: Tuple[str, ...] = tuple()
 
     class _SlotsCls:
         __slots__ = (
+            "agent_id",
+            "channels",
             "chat_id",
             "dialogue_reference",
             "error_code",
@@ -79,6 +94,7 @@ class TelegramMessage(Message):
             "from_user",
             "id",
             "message_id",
+            "msg_status",
             "parse_mode",
             "performative",
             "reply_markup",
@@ -143,10 +159,22 @@ class TelegramMessage(Message):
         return cast(int, self.get("target"))
 
     @property
-    def chat_id(self) -> int:
+    def agent_id(self) -> str:
+        """Get the 'agent_id' content from the message."""
+        enforce(self.is_set("agent_id"), "'agent_id' content is not set.")
+        return cast(str, self.get("agent_id"))
+
+    @property
+    def channels(self) -> Tuple[str, ...]:
+        """Get the 'channels' content from the message."""
+        enforce(self.is_set("channels"), "'channels' content is not set.")
+        return cast(Tuple[str, ...], self.get("channels"))
+
+    @property
+    def chat_id(self) -> str:
         """Get the 'chat_id' content from the message."""
         enforce(self.is_set("chat_id"), "'chat_id' content is not set.")
-        return cast(int, self.get("chat_id"))
+        return cast(str, self.get("chat_id"))
 
     @property
     def error_code(self) -> CustomErrorCode:
@@ -167,16 +195,20 @@ class TelegramMessage(Message):
         return cast(str, self.get("error_msg"))
 
     @property
-    def from_user(self) -> str:
+    def from_user(self) -> Optional[str]:
         """Get the 'from_user' content from the message."""
-        enforce(self.is_set("from_user"), "'from_user' content is not set.")
-        return cast(str, self.get("from_user"))
+        return cast(Optional[str], self.get("from_user"))
 
     @property
-    def id(self) -> int:
+    def id(self) -> Optional[int]:
         """Get the 'id' content from the message."""
-        enforce(self.is_set("id"), "'id' content is not set.")
-        return cast(int, self.get("id"))
+        return cast(Optional[int], self.get("id"))
+
+    @property
+    def msg_status(self) -> CustomMessageStatus:
+        """Get the 'msg_status' content from the message."""
+        enforce(self.is_set("msg_status"), "'msg_status' content is not set.")
+        return cast(CustomMessageStatus, self.get("msg_status"))
 
     @property
     def parse_mode(self) -> Optional[str]:
@@ -201,10 +233,9 @@ class TelegramMessage(Message):
         return cast(str, self.get("text"))
 
     @property
-    def timestamp(self) -> int:
+    def timestamp(self) -> Optional[int]:
         """Get the 'timestamp' content from the message."""
-        enforce(self.is_set("timestamp"), "'timestamp' content is not set.")
-        return cast(int, self.get("timestamp"))
+        return cast(Optional[int], self.get("timestamp"))
 
     def _is_consistent(self) -> bool:
         """Check that the message follows the telegram protocol."""
@@ -252,11 +283,11 @@ class TelegramMessage(Message):
             # Check correct contents
             actual_nb_of_contents = len(self._body) - DEFAULT_BODY_SIZE
             expected_nb_of_contents = 0
-            if self.performative == TelegramMessage.Performative.SEND_MESSAGE:
+            if self.performative == TelegramMessage.Performative.MESSAGE:
                 expected_nb_of_contents = 2
                 enforce(
-                    type(self.chat_id) is int,
-                    "Invalid type for content 'chat_id'. Expected 'int'. Found '{}'.".format(
+                    isinstance(self.chat_id, str),
+                    "Invalid type for content 'chat_id'. Expected 'str'. Found '{}'.".format(
                         type(self.chat_id)
                     ),
                 )
@@ -266,6 +297,15 @@ class TelegramMessage(Message):
                         type(self.text)
                     ),
                 )
+                if self.is_set("id"):
+                    expected_nb_of_contents += 1
+                    id = cast(int, self.id)
+                    enforce(
+                        type(id) is int,
+                        "Invalid type for content 'id'. Expected 'int'. Found '{}'.".format(
+                            type(id)
+                        ),
+                    )
                 if self.is_set("parse_mode"):
                     expected_nb_of_contents += 1
                     parse_mode = cast(str, self.parse_mode)
@@ -284,64 +324,39 @@ class TelegramMessage(Message):
                             type(reply_markup)
                         ),
                     )
-            elif self.performative == TelegramMessage.Performative.RECEIVE_MESSAGE:
-                expected_nb_of_contents = 2
-                enforce(
-                    type(self.chat_id) is int,
-                    "Invalid type for content 'chat_id'. Expected 'int'. Found '{}'.".format(
-                        type(self.chat_id)
-                    ),
-                )
-                enforce(
-                    type(self.id) is int,
-                    "Invalid type for content 'id'. Expected 'int'. Found '{}'.".format(
-                        type(self.id)
-                    ),
-                )
+                if self.is_set("from_user"):
+                    expected_nb_of_contents += 1
+                    from_user = cast(str, self.from_user)
+                    enforce(
+                        isinstance(from_user, str),
+                        "Invalid type for content 'from_user'. Expected 'str'. Found '{}'.".format(
+                            type(from_user)
+                        ),
+                    )
+                if self.is_set("timestamp"):
+                    expected_nb_of_contents += 1
+                    timestamp = cast(int, self.timestamp)
+                    enforce(
+                        type(timestamp) is int,
+                        "Invalid type for content 'timestamp'. Expected 'int'. Found '{}'.".format(
+                            type(timestamp)
+                        ),
+                    )
             elif self.performative == TelegramMessage.Performative.MESSAGE_SENT:
-                expected_nb_of_contents = 2
+                expected_nb_of_contents = 1
+                if self.is_set("id"):
+                    expected_nb_of_contents += 1
+                    id = cast(int, self.id)
+                    enforce(
+                        type(id) is int,
+                        "Invalid type for content 'id'. Expected 'int'. Found '{}'.".format(
+                            type(id)
+                        ),
+                    )
                 enforce(
-                    type(self.id) is int,
-                    "Invalid type for content 'id'. Expected 'int'. Found '{}'.".format(
-                        type(self.id)
-                    ),
-                )
-                enforce(
-                    isinstance(self.status, str),
-                    "Invalid type for content 'status'. Expected 'str'. Found '{}'.".format(
-                        type(self.status)
-                    ),
-                )
-            elif self.performative == TelegramMessage.Performative.NEW_MESSAGE:
-                expected_nb_of_contents = 5
-                enforce(
-                    type(self.chat_id) is int,
-                    "Invalid type for content 'chat_id'. Expected 'int'. Found '{}'.".format(
-                        type(self.chat_id)
-                    ),
-                )
-                enforce(
-                    type(self.id) is int,
-                    "Invalid type for content 'id'. Expected 'int'. Found '{}'.".format(
-                        type(self.id)
-                    ),
-                )
-                enforce(
-                    isinstance(self.text, str),
-                    "Invalid type for content 'text'. Expected 'str'. Found '{}'.".format(
-                        type(self.text)
-                    ),
-                )
-                enforce(
-                    isinstance(self.from_user, str),
-                    "Invalid type for content 'from_user'. Expected 'str'. Found '{}'.".format(
-                        type(self.from_user)
-                    ),
-                )
-                enforce(
-                    type(self.timestamp) is int,
-                    "Invalid type for content 'timestamp'. Expected 'int'. Found '{}'.".format(
-                        type(self.timestamp)
+                    isinstance(self.msg_status, CustomMessageStatus),
+                    "Invalid type for content 'msg_status'. Expected 'MessageStatus'. Found '{}'.".format(
+                        type(self.msg_status)
                     ),
                 )
             elif self.performative == TelegramMessage.Performative.ERROR:
@@ -377,6 +392,72 @@ class TelegramMessage(Message):
                             type(value_of_error_data)
                         ),
                     )
+            elif self.performative == TelegramMessage.Performative.SUBSCRIBE:
+                expected_nb_of_contents = 1
+                enforce(
+                    isinstance(self.chat_id, str),
+                    "Invalid type for content 'chat_id'. Expected 'str'. Found '{}'.".format(
+                        type(self.chat_id)
+                    ),
+                )
+            elif self.performative == TelegramMessage.Performative.UNSUBSCRIBE:
+                expected_nb_of_contents = 1
+                enforce(
+                    isinstance(self.chat_id, str),
+                    "Invalid type for content 'chat_id'. Expected 'str'. Found '{}'.".format(
+                        type(self.chat_id)
+                    ),
+                )
+            elif self.performative == TelegramMessage.Performative.GET_CHANNELS:
+                expected_nb_of_contents = 1
+                enforce(
+                    isinstance(self.agent_id, str),
+                    "Invalid type for content 'agent_id'. Expected 'str'. Found '{}'.".format(
+                        type(self.agent_id)
+                    ),
+                )
+            elif (
+                self.performative == TelegramMessage.Performative.UNSUBSCRIPTION_RESULT
+            ):
+                expected_nb_of_contents = 2
+                enforce(
+                    isinstance(self.chat_id, str),
+                    "Invalid type for content 'chat_id'. Expected 'str'. Found '{}'.".format(
+                        type(self.chat_id)
+                    ),
+                )
+                enforce(
+                    isinstance(self.status, str),
+                    "Invalid type for content 'status'. Expected 'str'. Found '{}'.".format(
+                        type(self.status)
+                    ),
+                )
+            elif self.performative == TelegramMessage.Performative.SUBSCRIPTION_RESULT:
+                expected_nb_of_contents = 2
+                enforce(
+                    isinstance(self.chat_id, str),
+                    "Invalid type for content 'chat_id'. Expected 'str'. Found '{}'.".format(
+                        type(self.chat_id)
+                    ),
+                )
+                enforce(
+                    isinstance(self.status, str),
+                    "Invalid type for content 'status'. Expected 'str'. Found '{}'.".format(
+                        type(self.status)
+                    ),
+                )
+            elif self.performative == TelegramMessage.Performative.CHANNELS:
+                expected_nb_of_contents = 1
+                enforce(
+                    isinstance(self.channels, tuple),
+                    "Invalid type for content 'channels'. Expected 'tuple'. Found '{}'.".format(
+                        type(self.channels)
+                    ),
+                )
+                enforce(
+                    all(isinstance(element, str) for element in self.channels),
+                    "Invalid type for tuple elements in content 'channels'. Expected 'str'.",
+                )
 
             # Check correct content count
             enforce(

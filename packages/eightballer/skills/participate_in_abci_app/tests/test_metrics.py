@@ -9,8 +9,8 @@ from unittest.mock import patch
 from aea.test_tools.test_skill import BaseSkillTestCase
 from aea.protocols.dialogue.base import DialogueMessage
 
-from packages.eightballer.skills.participate_in_abci_app import PUBLIC_ID
 from packages.eightballer.protocols.http.message import HttpMessage
+from packages.eightballer.skills.participate_in_abci_app import PUBLIC_ID
 from packages.eightballer.skills.participate_in_abci_app.handlers import HttpHandler
 from packages.eightballer.skills.participate_in_abci_app.dialogues import HttpDialogues
 
