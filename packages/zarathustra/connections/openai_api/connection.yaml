@@ -6,7 +6,7 @@ description: A connection for openAI LLM chat completion.
 license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
-  README.md: bafybeib4z2xxgxmm6tq523bvmvg6gzbckhr5ntocnctb3ukdj3ozvit5fy
+  README.md: bafybeibfk3keikwgysjsyf54otq5w25xyep255njyjx4gzavl46znm5yya
   __init__.py: bafybeiganoszwzracposguechnr4z2ky5y22azrry4cvu3dj34yqajbr5y
   connection.py: bafybeicaux3hkgmvhp5pxwyqycdg6naoiytvo73v4jwrrcwhurpscqxx7u
   tests/__init__.py: bafybeicbvsbnhql53ujlr24qetoin5qbsfhes7al6g5dyex7qlgjblejxi
