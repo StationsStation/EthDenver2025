@@ -62,7 +62,7 @@ class LlmChatCompletionDialogues(BaseLlmChatCompletionDialogues):
 
         def role_from_first_message(  # pylint: disable=unused-argument
             message: Message,  # noqa: ARG001
-            receiver_address: Address   # noqa: ARG001
+            receiver_address: Address,  # noqa: ARG001
         ) -> BaseDialogue.Role:
             """Infer the role of the agent from an incoming/outgoing first message."""
             return LlmChatCompletionDialogue.Role.CONNECTION

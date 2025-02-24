@@ -126,6 +126,7 @@ class Kwargs(dict):
 
 class Role(StrEnum):
     """Role."""
+
     DEVELOPER = "developer"
     SYSTEM = "system"
     USER = "user"
@@ -136,6 +137,7 @@ class Role(StrEnum):
 
 class Message(BaseModel):
     """Message."""
+
     content: str
     role: Role
     name: str | None = Field(default=None)

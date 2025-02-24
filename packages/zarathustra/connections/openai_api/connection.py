@@ -63,6 +63,7 @@ def get_repo_root() -> Path:
 
 class Model(StrEnum):
     """Model."""
+
     DEEPSEEK_R1 = "DeepSeek-R1"
     DEEPSEEK_R1_DISTILL_LLAMA_70B = "DeepSeek-R1-Distill-Llama-70B"
     DEEPSEEK_R1_DISTILL_LLAMA_8B = "DeepSeek-R1-Distill-Llama-8B"

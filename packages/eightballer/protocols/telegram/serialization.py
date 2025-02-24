@@ -30,6 +30,7 @@ from aea.protocols.base import Serializer  # type: ignore
 from packages.eightballer.protocols.telegram import telegram_pb2  # type: ignore
 from packages.eightballer.protocols.telegram.custom_types import (  # type: ignore
     ErrorCode,
+    MessageStatus,
 )
 from packages.eightballer.protocols.telegram.message import (  # type: ignore
     TelegramMessage,
@@ -59,12 +60,16 @@ class TelegramSerializer(Serializer):
         dialogue_message_pb.target = msg.target
 
         performative_id = msg.performative
-        if performative_id == TelegramMessage.Performative.SEND_MESSAGE:
-            performative = telegram_pb2.TelegramMessage.Send_Message_Performative()  # type: ignore
+        if performative_id == TelegramMessage.Performative.MESSAGE:
+            performative = telegram_pb2.TelegramMessage.Message_Performative()  # type: ignore
             chat_id = msg.chat_id
             performative.chat_id = chat_id
             text = msg.text
             performative.text = text
+            if msg.is_set("id"):
+                performative.id_is_set = True
+                id = msg.id
+                performative.id = id
             if msg.is_set("parse_mode"):
                 performative.parse_mode_is_set = True
                 parse_mode = msg.parse_mode
@@ -73,34 +78,24 @@ class TelegramSerializer(Serializer):
                 performative.reply_markup_is_set = True
                 reply_markup = msg.reply_markup
                 performative.reply_markup = reply_markup
-            telegram_msg.send_message.CopyFrom(performative)
-        elif performative_id == TelegramMessage.Performative.RECEIVE_MESSAGE:
-            performative = telegram_pb2.TelegramMessage.Receive_Message_Performative()  # type: ignore
-            chat_id = msg.chat_id
-            performative.chat_id = chat_id
-            id = msg.id
-            performative.id = id
-            telegram_msg.receive_message.CopyFrom(performative)
+            if msg.is_set("from_user"):
+                performative.from_user_is_set = True
+                from_user = msg.from_user
+                performative.from_user = from_user
+            if msg.is_set("timestamp"):
+                performative.timestamp_is_set = True
+                timestamp = msg.timestamp
+                performative.timestamp = timestamp
+            telegram_msg.message.CopyFrom(performative)
         elif performative_id == TelegramMessage.Performative.MESSAGE_SENT:
             performative = telegram_pb2.TelegramMessage.Message_Sent_Performative()  # type: ignore
-            id = msg.id
-            performative.id = id
-            status = msg.status
-            performative.status = status
+            if msg.is_set("id"):
+                performative.id_is_set = True
+                id = msg.id
+                performative.id = id
+            msg_status = msg.msg_status
+            MessageStatus.encode(performative.msg_status, msg_status)
             telegram_msg.message_sent.CopyFrom(performative)
-        elif performative_id == TelegramMessage.Performative.NEW_MESSAGE:
-            performative = telegram_pb2.TelegramMessage.New_Message_Performative()  # type: ignore
-            chat_id = msg.chat_id
-            performative.chat_id = chat_id
-            id = msg.id
-            performative.id = id
-            text = msg.text
-            performative.text = text
-            from_user = msg.from_user
-            performative.from_user = from_user
-            timestamp = msg.timestamp
-            performative.timestamp = timestamp
-            telegram_msg.new_message.CopyFrom(performative)
         elif performative_id == TelegramMessage.Performative.ERROR:
             performative = telegram_pb2.TelegramMessage.Error_Performative()  # type: ignore
             error_code = msg.error_code
@@ -110,6 +105,40 @@ class TelegramSerializer(Serializer):
             error_data = msg.error_data
             performative.error_data.update(error_data)
             telegram_msg.error.CopyFrom(performative)
+        elif performative_id == TelegramMessage.Performative.SUBSCRIBE:
+            performative = telegram_pb2.TelegramMessage.Subscribe_Performative()  # type: ignore
+            chat_id = msg.chat_id
+            performative.chat_id = chat_id
+            telegram_msg.subscribe.CopyFrom(performative)
+        elif performative_id == TelegramMessage.Performative.UNSUBSCRIBE:
+            performative = telegram_pb2.TelegramMessage.Unsubscribe_Performative()  # type: ignore
+            chat_id = msg.chat_id
+            performative.chat_id = chat_id
+            telegram_msg.unsubscribe.CopyFrom(performative)
+        elif performative_id == TelegramMessage.Performative.GET_CHANNELS:
+            performative = telegram_pb2.TelegramMessage.Get_Channels_Performative()  # type: ignore
+            agent_id = msg.agent_id
+            performative.agent_id = agent_id
+            telegram_msg.get_channels.CopyFrom(performative)
+        elif performative_id == TelegramMessage.Performative.UNSUBSCRIPTION_RESULT:
+            performative = telegram_pb2.TelegramMessage.Unsubscription_Result_Performative()  # type: ignore
+            chat_id = msg.chat_id
+            performative.chat_id = chat_id
+            status = msg.status
+            performative.status = status
+            telegram_msg.unsubscription_result.CopyFrom(performative)
+        elif performative_id == TelegramMessage.Performative.SUBSCRIPTION_RESULT:
+            performative = telegram_pb2.TelegramMessage.Subscription_Result_Performative()  # type: ignore
+            chat_id = msg.chat_id
+            performative.chat_id = chat_id
+            status = msg.status
+            performative.status = status
+            telegram_msg.subscription_result.CopyFrom(performative)
+        elif performative_id == TelegramMessage.Performative.CHANNELS:
+            performative = telegram_pb2.TelegramMessage.Channels_Performative()  # type: ignore
+            channels = msg.channels
+            performative.channels.extend(channels)
+            telegram_msg.channels.CopyFrom(performative)
         else:
             raise ValueError("Performative not valid: {}".format(performative_id))
 
@@ -141,38 +170,33 @@ class TelegramSerializer(Serializer):
         performative = telegram_pb.WhichOneof("performative")
         performative_id = TelegramMessage.Performative(str(performative))
         performative_content = dict()  # type: Dict[str, Any]
-        if performative_id == TelegramMessage.Performative.SEND_MESSAGE:
-            chat_id = telegram_pb.send_message.chat_id
+        if performative_id == TelegramMessage.Performative.MESSAGE:
+            chat_id = telegram_pb.message.chat_id
             performative_content["chat_id"] = chat_id
-            text = telegram_pb.send_message.text
+            text = telegram_pb.message.text
             performative_content["text"] = text
-            if telegram_pb.send_message.parse_mode_is_set:
-                parse_mode = telegram_pb.send_message.parse_mode
+            if telegram_pb.message.id_is_set:
+                id = telegram_pb.message.id
+                performative_content["id"] = id
+            if telegram_pb.message.parse_mode_is_set:
+                parse_mode = telegram_pb.message.parse_mode
                 performative_content["parse_mode"] = parse_mode
-            if telegram_pb.send_message.reply_markup_is_set:
-                reply_markup = telegram_pb.send_message.reply_markup
+            if telegram_pb.message.reply_markup_is_set:
+                reply_markup = telegram_pb.message.reply_markup
                 performative_content["reply_markup"] = reply_markup
-        elif performative_id == TelegramMessage.Performative.RECEIVE_MESSAGE:
-            chat_id = telegram_pb.receive_message.chat_id
-            performative_content["chat_id"] = chat_id
-            id = telegram_pb.receive_message.id
-            performative_content["id"] = id
+            if telegram_pb.message.from_user_is_set:
+                from_user = telegram_pb.message.from_user
+                performative_content["from_user"] = from_user
+            if telegram_pb.message.timestamp_is_set:
+                timestamp = telegram_pb.message.timestamp
+                performative_content["timestamp"] = timestamp
         elif performative_id == TelegramMessage.Performative.MESSAGE_SENT:
-            id = telegram_pb.message_sent.id
-            performative_content["id"] = id
-            status = telegram_pb.message_sent.status
-            performative_content["status"] = status
-        elif performative_id == TelegramMessage.Performative.NEW_MESSAGE:
-            chat_id = telegram_pb.new_message.chat_id
-            performative_content["chat_id"] = chat_id
-            id = telegram_pb.new_message.id
-            performative_content["id"] = id
-            text = telegram_pb.new_message.text
-            performative_content["text"] = text
-            from_user = telegram_pb.new_message.from_user
-            performative_content["from_user"] = from_user
-            timestamp = telegram_pb.new_message.timestamp
-            performative_content["timestamp"] = timestamp
+            if telegram_pb.message_sent.id_is_set:
+                id = telegram_pb.message_sent.id
+                performative_content["id"] = id
+            pb2_msg_status = telegram_pb.message_sent.msg_status
+            msg_status = MessageStatus.decode(pb2_msg_status)
+            performative_content["msg_status"] = msg_status
         elif performative_id == TelegramMessage.Performative.ERROR:
             pb2_error_code = telegram_pb.error.error_code
             error_code = ErrorCode.decode(pb2_error_code)
@@ -182,6 +206,29 @@ class TelegramSerializer(Serializer):
             error_data = telegram_pb.error.error_data
             error_data_dict = dict(error_data)
             performative_content["error_data"] = error_data_dict
+        elif performative_id == TelegramMessage.Performative.SUBSCRIBE:
+            chat_id = telegram_pb.subscribe.chat_id
+            performative_content["chat_id"] = chat_id
+        elif performative_id == TelegramMessage.Performative.UNSUBSCRIBE:
+            chat_id = telegram_pb.unsubscribe.chat_id
+            performative_content["chat_id"] = chat_id
+        elif performative_id == TelegramMessage.Performative.GET_CHANNELS:
+            agent_id = telegram_pb.get_channels.agent_id
+            performative_content["agent_id"] = agent_id
+        elif performative_id == TelegramMessage.Performative.UNSUBSCRIPTION_RESULT:
+            chat_id = telegram_pb.unsubscription_result.chat_id
+            performative_content["chat_id"] = chat_id
+            status = telegram_pb.unsubscription_result.status
+            performative_content["status"] = status
+        elif performative_id == TelegramMessage.Performative.SUBSCRIPTION_RESULT:
+            chat_id = telegram_pb.subscription_result.chat_id
+            performative_content["chat_id"] = chat_id
+            status = telegram_pb.subscription_result.status
+            performative_content["status"] = status
+        elif performative_id == TelegramMessage.Performative.CHANNELS:
+            channels = telegram_pb.channels.channels
+            channels_tuple = tuple(channels)
+            performative_content["channels"] = channels_tuple
         else:
             raise ValueError("Performative not valid: {}.".format(performative_id))
 
