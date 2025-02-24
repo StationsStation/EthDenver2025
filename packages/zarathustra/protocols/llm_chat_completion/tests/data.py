@@ -18,7 +18,7 @@
 
 """Test data for custom types of the sql_alchemy protocol."""
 
-from packages.zarathustra.protocols.llm_chat_completion.custom_types import Kwargs, Messages, Message, Role
+from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
 
 
 KWARGS = Kwargs(

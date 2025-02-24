@@ -1,5 +1,3 @@
-
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
 #   Copyright 2025 zarathustra
@@ -22,33 +20,32 @@
 """This module contains the tests of the Openai Api connection module."""
 # pylint: skip-file
 
-
 import asyncio
-import logging
-import pytest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock
 
+import pytest
 from aea.common import Address
-from aea.configurations.base import ConnectionConfig
+from aea.mail.base import Message, Envelope
 from aea.identity.base import Identity
-from aea.mail.base import Envelope, Message
+from aea.configurations.base import ConnectionConfig
 from aea.protocols.dialogue.base import Dialogue as BaseDialogue
 
-from packages.zarathustra.protocols.llm_chat_completion.dialogues import LlmChatCompletionDialogues as BaseLlmChatCompletionDialogues
-from packages.zarathustra.protocols.llm_chat_completion.dialogues import LlmChatCompletionDialogue
-
 from packages.zarathustra.connections.openai_api.connection import (
+    CONNECTION_ID as CONNECTION_PUBLIC_ID,
+    Model,
     OpenaiApiConnection,
+    reconstitute,
 )
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
+from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
+    LlmChatCompletionDialogue,
+    LlmChatCompletionDialogues as BaseLlmChatCompletionDialogues,
+)
 from packages.zarathustra.protocols.llm_chat_completion.tests.data import MESSAGES
-
-from packages.zarathustra.connections.openai_api.connection import CONNECTION_ID as CONNECTION_PUBLIC_ID
-from packages.zarathustra.connections.openai_api.connection import Model, reconstitute
 
 
 def envelope_it(message: LlmChatCompletionMessage):
-    """Envelope the message"""
+    """Envelope the message."""
 
     return Envelope(
         to=message.to,
@@ -60,11 +57,12 @@ def envelope_it(message: LlmChatCompletionMessage):
 class LlmChatCompletionDialogues(BaseLlmChatCompletionDialogues):
     """The dialogues class keeps track of all openai_api dialogues."""
 
-    def __init__(self, self_address: Address, **kwargs) -> None:
+    def __init__(self, self_address: Address, **kwargs) -> None:  # noqa: ARG002
         """Initialize dialogues."""
 
         def role_from_first_message(  # pylint: disable=unused-argument
-            message: Message, receiver_address: Address
+            message: Message,  # noqa: ARG001
+            receiver_address: Address   # noqa: ARG001
         ) -> BaseDialogue.Role:
             """Infer the role of the agent from an incoming/outgoing first message."""
             return LlmChatCompletionDialogue.Role.CONNECTION
@@ -76,7 +74,8 @@ class LlmChatCompletionDialogues(BaseLlmChatCompletionDialogues):
         )
 
 
-class TestOpenaiApiConnection():
+class TestOpenaiApiConnection:
+    """TestOpenaiApiConnection."""
 
     def setup(self):
         """Initialise the test case."""
@@ -129,7 +128,7 @@ class TestOpenaiApiConnection():
         messages = MESSAGES
         number_of_responses = 2
 
-        msg, dialogue = self._dialogues.create(
+        msg, _dialogue = self._dialogues.create(
             counterparty=str(CONNECTION_PUBLIC_ID),
             performative=LlmChatCompletionMessage.Performative.CREATE,
             model=model,

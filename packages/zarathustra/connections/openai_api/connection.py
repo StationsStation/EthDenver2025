@@ -1,5 +1,3 @@
-
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
 #   Copyright 2025 zarathustra
@@ -20,31 +18,34 @@
 
 """Openai API connection and channel."""
 
+# ruff: noqa: TD002, TD003, FIX002, ARG002
+
 import os
+import asyncio
+import logging
 import importlib
+import subprocess
 from abc import abstractmethod
 from enum import StrEnum
+from typing import Any, cast
 from pathlib import Path
-import subprocess
-import asyncio
 from asyncio.events import AbstractEventLoop
-import logging
-from typing import Any, Dict, Callable, Optional, Set, cast
-
-from pydantic import BaseModel
-from dotenv import load_dotenv
-
-from aea.common import Address
-from aea.configurations.base import PublicId
-from aea.connections.base import Connection, ConnectionStates
-from aea.mail.base import Envelope, Message
-from aea.protocols.dialogue.base import Dialogue
-
-from packages.zarathustra.protocols.llm_chat_completion.dialogues import LlmChatCompletionDialogue
-from packages.zarathustra.protocols.llm_chat_completion.dialogues import LlmChatCompletionDialogues as BaseLlmChatCompletionDialogues
-from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
+from collections.abc import Callable
 
 import openai
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from aea.common import Address
+from aea.mail.base import Message, Envelope
+from aea.connections.base import Connection, ConnectionStates
+from aea.configurations.base import PublicId
+from aea.protocols.dialogue.base import Dialogue
+
+from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
+from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
+    LlmChatCompletionDialogue,
+    LlmChatCompletionDialogues as BaseLlmChatCompletionDialogues,
+)
 
 
 CONNECTION_ID = PublicId.from_str("zarathustra/openai_api:0.1.0")
@@ -54,12 +55,14 @@ LLM_RESPONSE_TIMEOUT = 10
 
 
 def get_repo_root() -> Path:
+    """Get repo root."""
     command = ["git", "rev-parse", "--show-toplevel"]
-    repo_root = subprocess.check_output(command, stderr=subprocess.STDOUT).strip()  # noqa: S603
+    repo_root = subprocess.check_output(command, stderr=subprocess.STDOUT).strip()
     return Path(repo_root.decode("utf-8"))
 
 
 class Model(StrEnum):
+    """Model."""
     DEEPSEEK_R1 = "DeepSeek-R1"
     DEEPSEEK_R1_DISTILL_LLAMA_70B = "DeepSeek-R1-Distill-Llama-70B"
     DEEPSEEK_R1_DISTILL_LLAMA_8B = "DeepSeek-R1-Distill-Llama-8B"
@@ -79,9 +82,12 @@ def setup_llm_client() -> openai.AsyncOpenAI:
     load_dotenv(get_repo_root() / ".env")
 
     if (api_key := os.environ.get("AKASH_API_KEY")) is None:
-        raise OSError(
+        msg = (
             "Ensure 'AKASH_API_KEY' is set in the repository's root .env file. "
-            "Visit https://chatapi.akash.network/ to obtain an API key.",
+            "Visit https://chatapi.akash.network/ to obtain an API key."
+        )
+        raise OSError(
+            msg,
         )
 
     return openai.AsyncOpenAI(
@@ -91,6 +97,7 @@ def setup_llm_client() -> openai.AsyncOpenAI:
 
 
 def reconstitute(message: LlmChatCompletionMessage) -> BaseModel:
+    """Reconstitute pydantic model."""
     module = importlib.import_module(message.model_module)
     cls = getattr(module, message.model_class)
     return cls.model_validate_json(message.data)
@@ -105,7 +112,7 @@ class LlmChatCompletionDialogues(BaseLlmChatCompletionDialogues):
         def role_from_first_message(  # pylint: disable=unused-argument
             message: Message, receiver_address: Address
         ) -> Dialogue.Role:
-            """Infer the role of the agent from an incoming/outgoing first message"""
+            """Infer the role of the agent from an incoming/outgoing first message."""
             assert message, receiver_address
             return LlmChatCompletionDialogue.Role.SKILL
 
@@ -125,8 +132,7 @@ class BaseAsyncChannel:
         connection_id: PublicId,
         message_type: Message,
     ):
-        """
-        Initialize the BaseAsyncChannel channel."""
+        """Initialize the BaseAsyncChannel channel."""
 
         self.agent_address = agent_address
         self.connection_id = connection_id
@@ -134,14 +140,14 @@ class BaseAsyncChannel:
 
         self.is_stopped = True
         self._connection = None
-        self._tasks: Set[asyncio.Task] = set()
-        self._in_queue: Optional[asyncio.Queue] = None
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
+        self._tasks: set[asyncio.Task] = set()
+        self._in_queue: asyncio.Queue | None = None
+        self._loop: asyncio.AbstractEventLoop | None = None
         self.logger = _default_logger
 
     @property
     @abstractmethod
-    def performative_handlers(self) -> Dict[Message.Performative, Callable[[Message, Dialogue], Message]]:
+    def performative_handlers(self) -> dict[Message.Performative, Callable[[Message, Dialogue], Message]]:
         """Performative to message handler mapping."""
 
     @abstractmethod
@@ -156,10 +162,12 @@ class BaseAsyncChannel:
         """Send an envelope with a protocol message."""
 
         if not (self._loop and self._connection):
-            raise ConnectionError("{self.__class__.__name__} not connected, call connect first!")
+            msg = "{self.__class__.__name__} not connected, call connect first!"
+            raise ConnectionError(msg)
 
         if not isinstance(envelope.message, self.message_type):
-            raise TypeError(f"Message not of type {self.message_type}")
+            msg = f"Message not of type {self.message_type}"
+            raise TypeError(msg)
 
         message = envelope.message
 
@@ -187,14 +195,13 @@ class BaseAsyncChannel:
 
         await self._in_queue.put(response_envelope)
 
-    async def get_message(self) -> Optional[Envelope]:
+    async def get_message(self) -> Envelope | None:
         """Check the in-queue for envelopes."""
 
         if self.is_stopped:
             return None
         try:
-            envelope = self._in_queue.get_nowait()
-            return envelope
+            return self._in_queue.get_nowait()
         except asyncio.QueueEmpty:
             return None
 
@@ -209,7 +216,7 @@ class BaseAsyncChannel:
         for task in list(self._tasks):
             try:
                 await task
-            except KeyboardInterrupt:  # noqa
+            except KeyboardInterrupt:
                 raise
             except BaseException:  # noqa
                 pass  # nosec
@@ -222,14 +229,9 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
         self,
         agent_address: Address,
         connection_id: PublicId,
-        **kwargs  # TODO: pass the neccesary arguments for your channel explicitly
+        **kwargs,  # TODO: pass the neccesary arguments for your channel explicitly
     ):
-        """
-        Initialize the Openai Api channel.
-
-        :param agent_address: the address of the agent.
-        :param connection_id: the id of the connection.
-        """
+        """Initialize the Openai Api channel."""
 
         super().__init__(agent_address, connection_id, message_type=LlmChatCompletionMessage)
 
@@ -250,10 +252,11 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             try:
                 self._connection = setup_llm_client()
                 self.logger.info("Openai Api has connected.")
-            except Exception as e:  # noqa
+            except Exception as e:
                 self.is_stopped = True
                 self._in_queue = None
-                raise ConnectionError(f"Failed to start Openai Api: {e}")
+                msg = f"Failed to start Openai Api: {e}"
+                raise ConnectionError(msg) from e
 
     async def disconnect(self) -> None:
         """Disconnect channel."""
@@ -262,12 +265,18 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             return
 
         await self._cancel_tasks()
-        ...  # TODO: e.g. self._connection.close()
+        # TODO: e.g. self._connection.close()
         self.is_stopped = True
         self.logger.info("Openai Api has shutdown.")
 
     @property
-    def performative_handlers(self) -> Dict[LlmChatCompletionMessage.Performative, Callable[[LlmChatCompletionMessage, LlmChatCompletionDialogue], LlmChatCompletionMessage]]:
+    def performative_handlers(
+        self,
+    ) -> dict[
+        LlmChatCompletionMessage.Performative,
+        Callable[[LlmChatCompletionMessage, LlmChatCompletionDialogue], LlmChatCompletionMessage],
+    ]:
+        """Return a mapping for performative to handler."""
         return {
             LlmChatCompletionMessage.Performative.CREATE: self.create,
             LlmChatCompletionMessage.Performative.RETRIEVE: self.retrieve,
@@ -276,8 +285,10 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             LlmChatCompletionMessage.Performative.DELETE: self.delete,
         }
 
-    async def create(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
-        """Handle LlmChatCompletionMessage with CREATE Perfomative """
+    async def create(
+        self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue
+    ) -> LlmChatCompletionMessage:
+        """Handle LlmChatCompletionMessage with CREATE Perfomative."""
 
         model = message.model
         messages = message.messages
@@ -293,118 +304,104 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
                 ),
                 timeout=LLM_RESPONSE_TIMEOUT,
             )
-        except TimeoutError as e:
+        except TimeoutError:
             self.logger.exception(f"Model {model} did not respond timely")
-            response_message = dialogue.reply(
+            return dialogue.reply(
                 performative=LlmChatCompletionMessage.Performative.ERROR,
                 error_code=message.ErrorCode.OPENAI_ERROR,
                 error_msg=f"Model {model} did not respond timely",
             )
-            return response_message
-        
+
         data = chat_completion.to_json()
         model_class = chat_completion.__class__.__name__
         module_name = chat_completion.__module__
-    
-        response_message = dialogue.reply(
+
+        return dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.RESPONSE,
             data=data,
             model_class=model_class,
             model_module=module_name,
         )
 
-        return response_message
-
-    async def retrieve(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
-        """Handle LlmChatCompletionMessage with RETRIEVE Perfomative """
-
-        completion_id = message.completion_id
-        kwargs = message.kwargs
+    async def retrieve(
+        self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue
+    ) -> LlmChatCompletionMessage:
+        """Handle LlmChatCompletionMessage with RETRIEVE Perfomative."""
 
         # TODO: Implement the necessary logic required for the response message
-    
-        response_message = dialogue.reply(
+
+        dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.RESPONSE,
             data=...,
             model_class=...,
             model_module=...,
         )
 
-        response_message = dialogue.reply(
+        return dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.ERROR,
             error_code=...,
             error_msg=...,
         )
 
-        return response_message
-
-    async def update(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
-        """Handle LlmChatCompletionMessage with UPDATE Perfomative """
-
-        completion_id = message.completion_id
-        kwargs = message.kwargs
+    async def update(
+        self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue
+    ) -> LlmChatCompletionMessage:
+        """Handle LlmChatCompletionMessage with UPDATE Perfomative."""
 
         # TODO: Implement the necessary logic required for the response message
-    
-        response_message = dialogue.reply(
+
+        dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.RESPONSE,
             data=...,
             model_class=...,
             model_module=...,
         )
 
-        response_message = dialogue.reply(
+        return dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.ERROR,
             error_code=...,
             error_msg=...,
         )
 
-        return response_message
-
-    async def list(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
-        """Handle LlmChatCompletionMessage with LIST Perfomative """
-
-        kwargs = message.kwargs
+    async def list(
+        self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue
+    ) -> LlmChatCompletionMessage:
+        """Handle LlmChatCompletionMessage with LIST Perfomative."""
 
         # TODO: Implement the necessary logic required for the response message
-    
-        response_message = dialogue.reply(
+
+        dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.RESPONSE,
             data=...,
             model_class=...,
             model_module=...,
         )
 
-        response_message = dialogue.reply(
+        return dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.ERROR,
             error_code=...,
             error_msg=...,
         )
 
-        return response_message
-
-    async def delete(self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue) -> LlmChatCompletionMessage:
-        """Handle LlmChatCompletionMessage with DELETE Perfomative """
-
-        completion_id = message.completion_id
-        kwargs = message.kwargs
+    async def delete(
+        self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue
+    ) -> LlmChatCompletionMessage:
+        """Handle LlmChatCompletionMessage with DELETE Perfomative."""
 
         # TODO: Implement the necessary logic required for the response message
-    
-        response_message = dialogue.reply(
+
+        dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.RESPONSE,
             data=...,
             model_class=...,
             model_module=...,
         )
 
-        response_message = dialogue.reply(
+        return dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.ERROR,
             error_code=...,
             error_msg=...,
         )
-
-        return response_message
 
 
 class OpenaiApiConnection(Connection):
@@ -413,11 +410,7 @@ class OpenaiApiConnection(Connection):
     connection_id = CONNECTION_ID
 
     def __init__(self, **kwargs: Any) -> None:
-        """
-        Initialize a Openai Api connection.
-
-        :param kwargs: keyword arguments
-        """
+        """Initialize a Openai Api connection."""
 
         keys = []  # TODO: pop your custom kwargs
         config = kwargs["configuration"].config
@@ -450,30 +443,17 @@ class OpenaiApiConnection(Connection):
         self.state = ConnectionStates.disconnected
 
     async def send(self, envelope: Envelope) -> None:
-        """
-        Send an envelope.
-
-        :param envelope: the envelope to send.
-        """
+        """Send an envelope."""
 
         self._ensure_connected()
         return await self.channel.send(envelope)
 
-    async def receive(self, *args: Any, **kwargs: Any) -> Optional[Envelope]:
-        """
-        Receive an envelope. Blocking.
-
-        :param args: arguments to receive
-        :param kwargs: keyword arguments to receive
-        :return: the envelope received, if present.  # noqa: DAR202
-        """
+    async def receive(self, *args: Any, **kwargs: Any) -> Envelope | None:
+        """Receive an envelope. Blocking."""
 
         self._ensure_connected()
         try:
-
-            result = await self.channel.get_message()
-            return result
+            return await self.channel.get_message()
         except Exception as e:  # noqa
             self.logger.info(f"Exception on receive {e}")
             return None
-

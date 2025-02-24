@@ -16,4 +16,4 @@
 #
 # ------------------------------------------------------------------------------
 
-"""This module contains the implementation of the openai_api connection."""
+"""This module contains the tests for the llm_chat_completion protocol."""

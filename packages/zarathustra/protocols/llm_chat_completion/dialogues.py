@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
 #   Copyright 2025 zarathustra
@@ -17,19 +16,19 @@
 #
 # ------------------------------------------------------------------------------
 
-"""
-This module contains the classes required for llm_chat_completion dialogue management.
+"""This module contains the classes required for llm_chat_completion dialogue management.
 
 - LlmChatCompletionDialogue: The dialogue class maintains state of a dialogue and manages it.
 - LlmChatCompletionDialogues: The dialogues class keeps track of all dialogues.
 """
 
 from abc import ABC
-from typing import Callable, Dict, FrozenSet, Type, cast
+from typing import cast
+from collections.abc import Callable
 
 from aea.common import Address
 from aea.protocols.base import Message
-from aea.protocols.dialogue.base import Dialogue, DialogueLabel, Dialogues
+from aea.protocols.dialogue.base import Dialogue, Dialogues, DialogueLabel
 
 from packages.zarathustra.protocols.llm_chat_completion.message import (
     LlmChatCompletionMessage,
@@ -38,20 +37,31 @@ from packages.zarathustra.protocols.llm_chat_completion.message import (
 
 class LlmChatCompletionDialogue(Dialogue):
     """The llm_chat_completion dialogue class maintains state of a dialogue and manages it."""
-    INITIAL_PERFORMATIVES: FrozenSet[Message.Performative] = frozenset({LlmChatCompletionMessage.Performative.CREATE, LlmChatCompletionMessage.Performative.RETRIEVE, LlmChatCompletionMessage.Performative.UPDATE, LlmChatCompletionMessage.Performative.LIST, LlmChatCompletionMessage.Performative.DELETE})
-    TERMINAL_PERFORMATIVES: FrozenSet[Message.Performative] = frozenset({LlmChatCompletionMessage.Performative.RESPONSE, LlmChatCompletionMessage.Performative.ERROR})
-    VALID_REPLIES: Dict[Message.Performative, FrozenSet[Message.Performative]] = {
+
+    INITIAL_PERFORMATIVES: frozenset[Message.Performative] = frozenset(
+        {
+            LlmChatCompletionMessage.Performative.CREATE,
+            LlmChatCompletionMessage.Performative.RETRIEVE,
+            LlmChatCompletionMessage.Performative.UPDATE,
+            LlmChatCompletionMessage.Performative.LIST,
+            LlmChatCompletionMessage.Performative.DELETE,
+        }
+    )
+    TERMINAL_PERFORMATIVES: frozenset[Message.Performative] = frozenset(
+        {LlmChatCompletionMessage.Performative.RESPONSE, LlmChatCompletionMessage.Performative.ERROR}
+    )
+    VALID_REPLIES: dict[Message.Performative, frozenset[Message.Performative]] = {
         LlmChatCompletionMessage.Performative.CREATE: frozenset(
             {LlmChatCompletionMessage.Performative.RESPONSE, LlmChatCompletionMessage.Performative.ERROR}
         ),
         LlmChatCompletionMessage.Performative.DELETE: frozenset(
             {LlmChatCompletionMessage.Performative.RESPONSE, LlmChatCompletionMessage.Performative.ERROR}
         ),
-        LlmChatCompletionMessage.Performative.ERROR: frozenset(        ),
+        LlmChatCompletionMessage.Performative.ERROR: frozenset(),
         LlmChatCompletionMessage.Performative.LIST: frozenset(
             {LlmChatCompletionMessage.Performative.RESPONSE, LlmChatCompletionMessage.Performative.ERROR}
         ),
-        LlmChatCompletionMessage.Performative.RESPONSE: frozenset(        ),
+        LlmChatCompletionMessage.Performative.RESPONSE: frozenset(),
         LlmChatCompletionMessage.Performative.RETRIEVE: frozenset(
             {LlmChatCompletionMessage.Performative.RESPONSE, LlmChatCompletionMessage.Performative.ERROR}
         ),
@@ -59,6 +69,7 @@ class LlmChatCompletionDialogue(Dialogue):
             {LlmChatCompletionMessage.Performative.RESPONSE, LlmChatCompletionMessage.Performative.ERROR}
         ),
     }
+
     class Role(Dialogue.Role):
         """This class defines the agent's role in a llm_chat_completion dialogue."""
 
@@ -76,28 +87,22 @@ class LlmChatCompletionDialogue(Dialogue):
         dialogue_label: DialogueLabel,
         self_address: Address,
         role: Dialogue.Role,
-        message_class: Type[LlmChatCompletionMessage] = LlmChatCompletionMessage,
+        message_class: type[LlmChatCompletionMessage] = LlmChatCompletionMessage,
     ) -> None:
-        """
-        Initialize a dialogue.
-
-        :param dialogue_label: the identifier of the dialogue
-        :param self_address: the address of the entity for whom this dialogue is maintained
-        :param role: the role of the agent this dialogue is maintained for
-        :param message_class: the message class used
-        """
+        """Initialize a dialogue."""
         Dialogue.__init__(
-        self,
-        dialogue_label=dialogue_label,
-        message_class=message_class,
-        self_address=self_address,
-        role=role,
+            self,
+            dialogue_label=dialogue_label,
+            message_class=message_class,
+            self_address=self_address,
+            role=role,
         )
+
+
 class LlmChatCompletionDialogues(Dialogues, ABC):
     """This class keeps track of all llm_chat_completion dialogues."""
 
-    END_STATES = frozenset(
-    {LlmChatCompletionDialogue.EndState.RESPONSE, LlmChatCompletionDialogue.EndState.ERROR}    )
+    END_STATES = frozenset({LlmChatCompletionDialogue.EndState.RESPONSE, LlmChatCompletionDialogue.EndState.ERROR})
 
     _keep_terminal_state_dialogues = True
 
@@ -105,21 +110,14 @@ class LlmChatCompletionDialogues(Dialogues, ABC):
         self,
         self_address: Address,
         role_from_first_message: Callable[[Message, Address], Dialogue.Role],
-        dialogue_class: Type[LlmChatCompletionDialogue] = LlmChatCompletionDialogue,
+        dialogue_class: type[LlmChatCompletionDialogue] = LlmChatCompletionDialogue,
     ) -> None:
-        """
-        Initialize dialogues.
-
-        :param self_address: the address of the entity for whom dialogues are maintained
-        :param dialogue_class: the dialogue class used
-        :param role_from_first_message: the callable determining role from first message
-        """
+        """Initialize dialogues."""
         Dialogues.__init__(
             self,
             self_address=self_address,
-            end_states=cast(FrozenSet[Dialogue.EndState], self.END_STATES),
+            end_states=cast(frozenset[Dialogue.EndState], self.END_STATES),
             message_class=LlmChatCompletionMessage,
             dialogue_class=dialogue_class,
             role_from_first_message=role_from_first_message,
         )
-

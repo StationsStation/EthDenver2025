@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
 #   Copyright 2025 zarathustra
@@ -17,8 +16,7 @@
 #
 # ------------------------------------------------------------------------------
 
-"""
-This module contains the support resources for the llm_chat_completion protocol.
+"""This module contains the support resources for the llm_chat_completion protocol.
 
 It was created with protocol buffer compiler version `libprotoc 29.2` and aea protocol generator version `1.0.0`.
 """
