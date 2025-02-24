@@ -4,7 +4,9 @@ version: 0.1.0
 license: Apache-2.0
 description: ''
 aea_version: '>=1.55.0, <2.0.0'
-fingerprint: {}
+fingerprint:
+  tests/__init__.py: bafybeibk76alseqt3ufreyev7rnz5zuk6dcftt7c2ob54gmhpt6xrhkg2y
+  tests/test_agent.py: bafybeibtw4ffszcr2szmkg3nx7hvzmmk2lni7ekzmi5eydejesuf7jtx6e
 fingerprint_ignore_patterns: []
 connections:
 - eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
