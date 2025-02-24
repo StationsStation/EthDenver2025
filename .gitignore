@@ -24,7 +24,5 @@ packages/eightballer/connections/http_server
 packages/eightballer/connections/prometheus
 packages/eightballer/skills/prometheus
 
-packages/eightballer/protocols/telegram
-packages/eightballer/connections/telegram_wrapper
-packages/eightballer/skills/participate_in_abci_app
+
 packages/eightballer/skills/metrics
