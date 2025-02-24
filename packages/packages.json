@@ -1,12 +1,12 @@
 {
     "dev": {
-        "protocol/eightballer/telegram/0.1.0": "bafybeihpfgdiom2xpaogexcpajj6ivhp3o6z5rhpzpbtz2w5uaewlt3zca",
-        "connection/eightballer/telegram/0.1.0": "bafybeifhq37bwapalpl366fwuyjjbsprd6jpyktx2ct675mhdbrpejycia",
-        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeiap2thzurh3ncxvyhm3ly7pqoei2dj4mbj5qstmbapbng67dccofm",
-        "skill/eightballer/participate_in_abci_app/0.1.0": "bafybeidr3q6fjkoduutawbtbq7bb4nt3yicnfl2ljxwsionkc3ehprc66m",
-        "skill/eightballer/demo_fsm_abci_app/0.1.0": "bafybeigse5n67kzjrizexhqcw2l3ts7n5wx7x7nmynw3tritd6v4bcvyqq",
-        "agent/eightballer/asylum_agent/0.1.0": "bafybeihezew3cadzxqhxro7hmqai7aim2omnwy6qsnlgxaqmsmksgzhz2y",
-        "service/eightballer/asylum_agent/0.1.0": "bafybeih5wc5qstpblif63m2naelvglrgr63ch3m2sm5ng3yfqqkrgwqgsi"
+        "protocol/eightballer/telegram/0.1.0": "bafybeieumglsywzwccr3zflld227l5jcqboanedujnjxdu5bf4ouzc2sbm",
+        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeiblenz7ua7on6c5orvotvtam54ya5scmjbarhgvzvdabmpmolhmvm",
+        "skill/eightballer/participate_in_abci_app/0.1.0": "bafybeiff6gmudvyjzanen7x62plummdesuyfvjiv4qhmni2nn4sqo3zl2i",
+        "skill/eightballer/demo_fsm_abci_app/0.1.0": "bafybeickf737owdpq3hof4u6ps6wd52ziaglqlyxriycddlmmto7ui6irm",
+        "agent/eightballer/asylum_agent/0.1.0": "bafybeigm5d6cj23cxorz5j2pmqmfovglhabrc6lswozfdkeqrekgphe7hm",
+        "agent/eightballer/telegram_bot/0.1.0": "bafybeibqw65tbc4dwwplfb7cvax3iut7w7lchlxjtvhoos2ajjgsrpircy",
+        "service/eightballer/asylum_agent/0.1.0": "bafybeigdxn3o4ailg3cvebwujia5rv743izmtzbud5szbz22edhrz34v4y"
     },
     "third_party": {
         "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",
@@ -16,7 +16,7 @@
         "connection/eightballer/http_client/0.1.0": "bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u",
         "connection/eightballer/http_server/0.1.0": "bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq",
         "connection/eightballer/prometheus/0.1.1": "bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi",
-        "skill/eightballer/prometheus/0.1.0": "bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu",
-        "skill/eightballer/participate_in_abci_app/0.1.0": "bafybeidr3q6fjkoduutawbtbq7bb4nt3yicnfl2ljxwsionkc3ehprc66m"
+        "skill/eightballer/metrics/0.1.0": "bafybeiams7g4pynaklci2zatx2ick62smkkcli4p3zuimrtv334plbhi7e",
+        "skill/eightballer/prometheus/0.1.0": "bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu"
     }
 }
