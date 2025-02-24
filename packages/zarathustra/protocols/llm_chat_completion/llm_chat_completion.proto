@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package aea.zarathustra.llm_chat_completion.v1_0_0;
+
+message LlmChatCompletionMessage{
+
+  // Custom Types
+  message ErrorCode{
+    enum ErrorCodeEnum {
+      ERROR_CODE_ENUM_UNSUPPORTED_PROTOCOL = 0;
+      ERROR_CODE_ENUM_OPENAI_ERROR = 1;
+      ERROR_CODE_ENUM_OTHER_EXCEPTION = 2;
+    }
+    ErrorCodeEnum error_code = 1;
+  }
+
+  message Kwargs{
+    message Primitive {
+      oneof value {
+        bool bool_value = 1;
+        int64 int_value = 2;
+        string float_value = 3;
+        string str_value = 4;
+        bytes bytes_value = 5;
+      }
+    }
+    message Sequence {
+      repeated Primitive values = 1;
+    }
+    message KeyValuePair {
+      string key = 1;
+      oneof value {
+        Primitive primitive = 2;
+        Sequence sequence = 3;
+      }
+    }
+    message Mapping {
+      repeated KeyValuePair items = 1;
+    }
+    message NestedMapping {
+      string key = 1;
+      oneof value {
+        Primitive primitive = 2;
+        Sequence sequence = 3;
+        Mapping mapping = 4;
+      }
+    }
+    repeated NestedMapping items = 1;
+  }
+
+  message Messages{
+    message KeyValuePair {
+      string key = 1;
+      string value = 2;
+    }
+    message Message {
+      repeated KeyValuePair items = 1;
+    }
+    repeated Message messages = 1;
+  }
+
+
+  // Performatives and contents
+  message Create_Performative{
+    string model = 1;
+    Messages messages = 2;
+    Kwargs kwargs = 3;
+  }
+
+  message Retrieve_Performative{
+    string completion_id = 1;
+    Kwargs kwargs = 2;
+  }
+
+  message Update_Performative{
+    string completion_id = 1;
+    Kwargs kwargs = 2;
+  }
+
+  message List_Performative{
+    Kwargs kwargs = 1;
+  }
+
+  message Delete_Performative{
+    string completion_id = 1;
+    Kwargs kwargs = 2;
+  }
+
+  message Response_Performative{
+    string data = 1;
+    string model_class = 2;
+    string model_module = 3;
+  }
+
+  message Error_Performative{
+    ErrorCode error_code = 1;
+    string error_msg = 2;
+  }
+
+
+  oneof performative{
+    Create_Performative create = 5;
+    Delete_Performative delete = 6;
+    Error_Performative error = 7;
+    List_Performative list = 8;
+    Response_Performative response = 9;
+    Retrieve_Performative retrieve = 10;
+    Update_Performative update = 11;
+  }
+}
