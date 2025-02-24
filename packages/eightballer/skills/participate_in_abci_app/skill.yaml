@@ -1,0 +1,43 @@
+name: participate_in_abci_app
+author: eightballer
+version: 0.1.0
+type: skill
+description: The http echo skill prints out the content of received http messages
+  and responds with success.
+license: Apache-2.0
+aea_version: '>=1.0.0, <2.0.0'
+fingerprint:
+  README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
+  __init__.py: bafybeigk3jljo2rewdhybx5gw3qfzgw7jcqjyb7xpvqxyl5e66pqanyzam
+  behaviours.py: bafybeiav7ifjh6y6f2rk54xmv3cgca66rbv5xywnotxgst3tzyg6cedney
+  dialogues.py: bafybeiggsfafkurldxnvjhqw3l424acxmpgr4x6qs36ociozuobikpqejy
+  handlers.py: bafybeibqex5gfwevjqrollwntdfb424fjcq47ha2adx675jfivajxs7kye
+  tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
+  tests/test_metrics.py: bafybeibep5m4myf5m4he65usf6fxk3kax6nztl3dfhvro3cgqlleuuc4je
+  tests/test_metrics_dialogues.py: bafybeihwikefyqskx2uc4lnkpe3ewigpr7v2rbgqnglisu3wkb6q4sxt4m
+fingerprint_ignore_patterns: []
+connections: []
+contracts: []
+protocols:
+- eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
+- eightballer/http:0.1.0:bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme
+skills: []
+behaviours:
+  main:
+    args: {}
+    class_name: ParticipateinabciappFsmBehaviour
+handlers:
+  metrics_handler:
+    args:
+      enable_cors: false
+    class_name: HttpHandler
+models:
+  default_dialogues:
+    args: {}
+    class_name: DefaultDialogues
+  http_dialogues:
+    args: {}
+    class_name: HttpDialogues
+dependencies: {}
+is_abstract: false
+customs: []

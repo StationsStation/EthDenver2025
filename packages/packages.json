@@ -1,4 +1,19 @@
 {
-    "dev": {},
-    "third_party": {}
+    "dev": {
+        "protocol/eightballer/telegram/0.1.0": "bafybeihpfgdiom2xpaogexcpajj6ivhp3o6z5rhpzpbtz2w5uaewlt3zca",
+        "connection/eightballer/telegram/0.1.0": "bafybeihvadnucql574x6x4ves6psymritmhub74vhqxn7ifb4bwgvhybjy",
+        "skill/eightballer/participate_in_abci_app/0.1.0": "bafybeidr3q6fjkoduutawbtbq7bb4nt3yicnfl2ljxwsionkc3ehprc66m",
+        "agent/eightballer/asylum_agent/0.1.0": "bafybeia53db4e4f5y67zxigr7zqggftoqdp2r5jsphmkewns2oflaqz6pa",
+        "service/eightballer/asylum_agent/0.1.0": "bafybeiceeprzt55minshu5v67iy5ydeylng2qwbs5d4avjbsn57nbjm63e"
+    },
+    "third_party": {
+        "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",
+        "protocol/eightballer/http/0.1.0": "bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme",
+        "protocol/eightballer/prometheus/1.0.0": "bafybeidxo32tu43ru3xlk3kd5b6xlwf6vaytxvvhtjbh7ag52kexos4ke4",
+        "protocol/open_aea/signing/1.0.0": "bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm",
+        "connection/eightballer/http_client/0.1.0": "bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u",
+        "connection/eightballer/http_server/0.1.0": "bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq",
+        "connection/eightballer/prometheus/0.1.1": "bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi",
+        "skill/eightballer/prometheus/0.1.0": "bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu"
+    }
 }
