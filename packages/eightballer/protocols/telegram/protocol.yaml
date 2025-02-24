@@ -1,0 +1,27 @@
+name: telegram
+author: eightballer
+version: 0.1.0
+protocol_specification_id: eightballer/telegram:0.1.0
+type: protocol
+description: A protocol for sending and receiving messages using the python-tele-rgram
+  library.
+license: Apache-2.0
+aea_version: '>=1.0.0, <2.0.0'
+fingerprint:
+  README.md: bafybeihxpqsv7bebpxukcq5bg3putojr4t3uknlq64745oxgvrjjthjuua
+  __init__.py: bafybeicw4q7wee2s3bqjyep3mdb7eeowge7tlb5izyapajovgqgmxrtjvm
+  custom_types.py: bafybeifz65nl37cngpd2zyazjwg5c27jtibq7e2m4id4tvt64xnq7epbmu
+  dialogues.py: bafybeifqzsrl2zqqq5gc7o3eg3d25zxyz6rvdlkufozush37ua7fhr6foa
+  message.py: bafybeieixzbe45vwnt5qoiav3zmjw6ngc7dsvobcre3zqxjbn77yk224ly
+  protocol_spec.yaml: bafybeigx5gf5upmxj6amjs2zawvgoftj6loctjtnojth5k5isvb4vv4ovq
+  serialization.py: bafybeiaqrwvs5o52mi45ibs56lehvx2wipt6wsaep2s4eqq6kp5yf6ni5m
+  telegram.proto: bafybeieqooaq56ek7iz7p5zqi4rt4gjx7veueafua4vnlsp7hqxrgrzazu
+  telegram_pb2.py: bafybeibdmd6utmjcwzypsql6j755ydx73bq3deuzrxokmnucsdjfwwmdge
+  tests/__init__.py: bafybeidxko5tptl7qiybl3eihpafqfmo6txkhw4v37kc26w77olprxhlqm
+  tests/dummy_data.yaml: bafybeih6fc3n2tryigv6qszptvbgyk6rfloeovllaqy4xwba6slwmcmgsu
+  tests/test_telegram_dialogues.py: bafybeihn3py6muywgum7m3sbsfofr253kd3vx34ypgjhhayfyzis4r7qda
+  tests/test_telegram_messages.py: bafybeibi6hjbliicmhw7ldfvn3j5fojol4iwygqkms55hfxvf3iqvfscee
+fingerprint_ignore_patterns: []
+dependencies:
+  protobuf: {}
+  pydantic: {}

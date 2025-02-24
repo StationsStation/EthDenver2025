@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package aea.eightballer.telegram.v0_1_0;
+
+message TelegramMessage{
+
+  // Custom Types
+  message ErrorCode{
+    enum ErrorCodeEnum {
+      ERROR_CODE_ENUM_UNKNOWN_CHAT_ID = 0;
+      ERROR_CODE_ENUM_API_ERROR = 1;
+      ERROR_CODE_ENUM_INVALID_MESSAGE_FORMAT = 2;
+    }
+    ErrorCodeEnum error_code = 1;
+  }
+
+
+  // Performatives and contents
+  message Send_Message_Performative{
+    int32 chat_id = 1;
+    string text = 2;
+    string parse_mode = 3;
+    bool parse_mode_is_set = 4;
+    string reply_markup = 5;
+    bool reply_markup_is_set = 6;
+  }
+
+  message Receive_Message_Performative{
+    int32 chat_id = 1;
+    int32 id = 2;
+  }
+
+  message Message_Sent_Performative{
+    int32 id = 1;
+    string status = 2;
+  }
+
+  message New_Message_Performative{
+    int32 chat_id = 1;
+    int32 id = 2;
+    string text = 3;
+    string from_user = 4;
+    int32 timestamp = 5;
+  }
+
+  message Error_Performative{
+    ErrorCode error_code = 1;
+    string error_msg = 2;
+    map<string, bytes> error_data = 3;
+  }
+
+
+  oneof performative{
+    Error_Performative error = 5;
+    Message_Sent_Performative message_sent = 6;
+    New_Message_Performative new_message = 7;
+    Receive_Message_Performative receive_message = 8;
+    Send_Message_Performative send_message = 9;
+  }
+}
