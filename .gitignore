@@ -14,3 +14,12 @@ keys.json
 
 agent/
 service/
+
+packages/eightballer/protocols/default
+packages/eightballer/protocols/http
+packages/eightballer/protocols/prometheus
+packages/open_aea/protocols/signing
+packages/eightballer/connections/http_client
+packages/eightballer/connections/http_server
+packages/eightballer/connections/prometheus
+packages/eightballer/skills/prometheus
