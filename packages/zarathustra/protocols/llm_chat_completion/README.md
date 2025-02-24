@@ -2,12 +2,17 @@
 
 ## Description
 
-...
+The `llm_chat_completion` protocol defines a structured way to interact with an LLM chat completion API within the Open-AEA framework. It supports creating, retrieving, updating, listing, and deleting chat completions while allowing structured messages and optional keyword arguments.  
+
+### Key Fields  
+
+- **`model`**: A string identifier for the backend model (e.g., `"gpt-4-turbo"`).  
+- **`messages`**: A structured list of conversation messages.  
+- **`kwargs`**: A flexible mapping for additional API parameters.  
 
 ## Specification
 
 ```yaml
----
 ---
 name: llm_chat_completion
 author: zarathustra
@@ -19,7 +24,7 @@ protocol_specification_id: zarathustra/llm_chat_completion:1.0.0
 speech_acts:
   create:
     model: pt:str
-    messages: cf:Messages
+    messages: ct:Messages
     kwargs: ct:Kwargs
   retrieve:
     completion_id: pt:str

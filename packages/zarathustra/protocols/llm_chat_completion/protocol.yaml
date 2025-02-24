@@ -7,7 +7,7 @@ description: A protocol for openAI LLM chat completion.
 license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
-  README.md: bafybeibv54qp5k7wbnfigcqbvodfglzly6ommqcijzhskkqr3rjx6mb5me
+  README.md: bafybeieiigkrlovpmophgp5nuri2sh3kzjaohw276hxbjxnln2k2zfpn6e
   __init__.py: bafybeigyq5lhuqha5jop7tkrzdnjlghwz5pljypgvrxvfrzi32blkcopua
   custom_types.py: bafybeigaq4vy6rrctfkux7d3cijqceq7b4lvbr4wynyghzmwkk36okse2i
   dialogues.py: bafybeibaauauuw4ymeo2uvy5bow5nykhttwcoi7yykyjravrso2p6h23by
