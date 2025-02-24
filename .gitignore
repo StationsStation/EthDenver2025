@@ -1,0 +1,16 @@
+**/__pycache__/**
+.nix-venv
+.env
+.hypothesis/
+.coverage
+.pytest_cache
+.vscode
+.history
+.idea
+.mypy_cache
+
+*private_key*
+keys.json
+
+agent/
+service/
