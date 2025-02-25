@@ -6,7 +6,7 @@ aea_version: '>=1.0.0, <2.0.0'
 license: apache-2.0
 fingerprint: {}
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeidqcomsbmbytyw24exe6nvgv2ojfcmvtk54moxbtlw5mbrhvqjxce
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeidmjzdkkfsqdhrz7ptcotix5zvwyistdiyjoy5xivuesb2gdfgqmu
 number_of_agents: 1
 deployment:
   agent:

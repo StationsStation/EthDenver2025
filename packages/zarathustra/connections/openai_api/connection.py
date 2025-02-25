@@ -20,7 +20,6 @@
 
 # ruff: noqa: TD002, TD003, FIX002, ARG002
 
-import os
 import asyncio
 import logging
 import importlib
@@ -33,7 +32,6 @@ from asyncio.events import AbstractEventLoop
 from collections.abc import Callable
 
 import openai
-from dotenv import load_dotenv
 from pydantic import BaseModel
 from aea.common import Address
 from aea.mail.base import Message, Envelope
@@ -62,7 +60,7 @@ def get_repo_root() -> Path:
 
 
 class Model(StrEnum):
-    """Model."""
+    """Model. See https://chatapi.akash.network/."""
 
     DEEPSEEK_R1 = "DeepSeek-R1"
     DEEPSEEK_R1_DISTILL_LLAMA_70B = "DeepSeek-R1-Distill-Llama-70B"
@@ -76,25 +74,6 @@ class Model(StrEnum):
     META_LLAMA_3_2_3B_INSTRUCT = "Meta-Llama-3-2-3B-Instruct"
     NVIDIA_LLAMA_3_1_NEMOTRON_70B_INSTRUCT_HF = "nvidia-Llama-3-1-Nemotron-70B-Instruct-HF"
     META_LLAMA_3_3_70B_INSTRUCT = "Meta-Llama-3-3-70B-Instruct"
-
-
-def setup_llm_client() -> openai.AsyncOpenAI:
-    """Load environment variables and instantiate the LLM client."""
-    load_dotenv(get_repo_root() / ".env")
-
-    if (api_key := os.environ.get("AKASH_API_KEY")) is None:
-        msg = (
-            "Ensure 'AKASH_API_KEY' is set in the repository's root .env file. "
-            "Visit https://chatapi.akash.network/ to obtain an API key."
-        )
-        raise OSError(
-            msg,
-        )
-
-    return openai.AsyncOpenAI(
-        api_key=api_key,
-        base_url="https://chatapi.akash.network/api/v1",
-    )
 
 
 def reconstitute(message: LlmChatCompletionMessage) -> BaseModel:
@@ -230,15 +209,16 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
         self,
         agent_address: Address,
         connection_id: PublicId,
-        **kwargs,  # TODO: pass the neccesary arguments for your channel explicitly
+        api_key: str,
+        base_url: str,
     ):
         """Initialize the Openai Api channel."""
 
         super().__init__(agent_address, connection_id, message_type=LlmChatCompletionMessage)
 
         # TODO: assign attributes from custom connection configuration explicitly
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        self.api_key = api_key
+        self.base_url = base_url
 
         self._dialogues = LlmChatCompletionDialogues(str(OpenaiApiConnection.connection_id))
         self.logger.debug("Initialised the Openai Api channel")
@@ -251,7 +231,10 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             self._in_queue = asyncio.Queue()
             self.is_stopped = False
             try:
-                self._connection = setup_llm_client()
+                self._connection = openai.AsyncOpenAI(
+                    api_key=self.api_key,
+                    base_url=self.base_url,
+                )
                 self.logger.info("Openai Api has connected.")
             except Exception as e:
                 self.is_stopped = True
@@ -266,7 +249,6 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
             return
 
         await self._cancel_tasks()
-        # TODO: e.g. self._connection.close()
         self.is_stopped = True
         self.logger.info("Openai Api has shutdown.")
 
@@ -295,7 +277,6 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
         messages = message.messages
         kwargs = message.kwargs
 
-        # TODO: Implement the necessary logic required for the response message
         try:
             chat_completion = await asyncio.wait_for(
                 self._connection.chat.completions.create(
@@ -413,9 +394,13 @@ class OpenaiApiConnection(Connection):
     def __init__(self, **kwargs: Any) -> None:
         """Initialize a Openai Api connection."""
 
-        keys = []  # TODO: pop your custom kwargs
+        keys = ["api_key", "base_url"]
         config = kwargs["configuration"].config
-        custom_kwargs = {key: config.pop(key) for key in keys}
+        try:
+            custom_kwargs = {key: config.pop(key) for key in keys}
+        except KeyError as e:
+            msg = f"Provide connection overrides for: {keys}"
+            raise ConnectionError(msg) from e
         super().__init__(**kwargs)
 
         self.channel = OpenaiApiAsyncChannel(
