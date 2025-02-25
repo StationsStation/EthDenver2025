@@ -4,6 +4,9 @@
         "protocol/zarathustra/llm_chat_completion/1.0.0": "bafybeiae7sdfovhjt32zqmdz7fshejtnihty4lfptn3z2xmrmg4j66fwlq",
         "connection/eightballer/telegram_wrapper/0.1.0": "bafybeihwngxvaefwrkx6sa2bwuu3nklytxpsapmlpbz5gpewz7mu3irt2e",
         "connection/zarathustra/openai_api/0.1.0": "bafybeib5jv7daefngkv5sq4n7tf2psxladxyabkfkgqvfqghsaivltmwqe",
+        "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeidzsgnxpi7pyzdtckkjourrbp4arg4idekajpvpbdn5o7kkddipz4",
+        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeibqeff7sp5q4p634tpynrurstem76tirupmcbqdxpsk3unhanb6ye",
+        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeifjdbhsspdqxqoxafsjdmfbj5b5vjkpz55x2ukkufrrkvj3lxwrbq"
         "agent/eightballer/telegram_bot/0.1.0": "bafybeiba3ixvspnt5suurrcor6fwswm7wzllowpp4pu5jahoeklx3b5ske"
     },
     "third_party": {

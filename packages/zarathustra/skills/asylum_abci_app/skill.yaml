@@ -1,0 +1,43 @@
+name: asylum_abci_app
+author: zarathustra
+version: 0.1.0
+type: skill
+description: The asylum ABCI app skill.
+license: Apache-2.0
+aea_version: '>=1.0.0, <2.0.0'
+fingerprint:
+  README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
+  __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
+  behaviours.py: bafybeif5qmqdmzanb5zjkgq4rn6fh2x2rjzjpqcsvfx72xg7os4wmxrutu
+  dialogues.py: bafybeiggsfafkurldxnvjhqw3l424acxmpgr4x6qs36ociozuobikpqejy
+  fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
+  handlers.py: bafybeiec4ivmwpa3s3j7fn5tr6nofckdnadz5gkzeotjhqgbscuwp7e3hi
+  tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
+  tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
+  tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
+fingerprint_ignore_patterns: []
+connections: []
+contracts: []
+protocols:
+- eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
+- eightballer/http:0.1.0:bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme
+skills: []
+behaviours:
+  main:
+    args: {}
+    class_name: AsylumAbciAppFsmBehaviour
+handlers:
+  metrics_handler:
+    args:
+      enable_cors: false
+    class_name: HttpHandler
+models:
+  default_dialogues:
+    args: {}
+    class_name: DefaultDialogues
+  http_dialogues:
+    args: {}
+    class_name: HttpDialogues
+dependencies: {}
+is_abstract: false
+customs: []
