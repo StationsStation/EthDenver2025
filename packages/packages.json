@@ -1,8 +1,8 @@
 {
     "dev": {
         "protocol/eightballer/chatroom/0.1.0": "bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy",
-        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeibat7avnmhrabpy6jmklfflhqrq2croghpjffjks4q7sxfgq5y2j4",
-        "agent/eightballer/telegram_bot/0.1.0": "bafybeihliu6quk45xcljf6yv7p53nyw7xmxxzvgvkcmrr5hxwkcfye3vfy"
+        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeibztq67d4666eoke5i4mwgctrmxcazexihrx2dhxvdfjn52vsjwg4",
+        "agent/eightballer/telegram_bot/0.1.0": "bafybeia7ngfo2oztbktlyuu4q3bvwckh4bo4mobqny2iyybjecdcpw6gqm"
     },
     "third_party": {
         "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",
