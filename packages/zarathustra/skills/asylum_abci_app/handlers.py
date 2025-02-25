@@ -51,7 +51,9 @@ class TelegramHandler(Handler):
     def handle(self, message: Message) -> None:
         """Implement the reaction to an envelope."""
         telegram_msg = cast(TelegramMessage, message)
-
+        if telegram_msg.performative == TelegramMessage.Performative.MESSAGE_SENT:
+            self.context.logger.debug(f"received telegram message={telegram_msg}")
+            return
         # recover dialogue
         telegram_dialogues = cast(TelegramDialogues, self.context.telegram_dialogues)
         telegram_dialogue = cast(TelegramDialogue, telegram_dialogues.update(telegram_msg))

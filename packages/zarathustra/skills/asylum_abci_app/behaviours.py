@@ -30,8 +30,10 @@ from textwrap import dedent
 from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
+from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
 from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy
 from packages.zarathustra.connections.openai_api.connection import CONNECTION_ID
+from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
 
 
 TIMEZONE_UTC = UTC
@@ -84,7 +86,7 @@ class BaseState(State, ABC):
         self.context.logger.info(f"In state: {self._state}")
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
-        sleep(0.2)
+        sleep(1)
 
     def is_done(self) -> bool:
         """Is done flag."""
@@ -110,11 +112,8 @@ class ProcessLLMResponseRound(BaseState):
 
     def act(self) -> None:
         """Act."""
-        self._is_done = True
-        self._event = AsylumAbciAppEvents.WORK
         self.context.logger.info(f"In state: {self._state}")
-        while self.strategy.llm_responses:
-            action = self.strategy.llm_responses.pop()
+        for action in self.strategy.llm_responses:
             self.context.logger.info(f"Action: {action}")
             if action[0] == LLMActions.REPLY:
                 self._event = AsylumAbciAppEvents.REPLY
@@ -122,6 +121,7 @@ class ProcessLLMResponseRound(BaseState):
             elif action[0] == LLMActions.WORKFLOW:
                 self._event = AsylumAbciAppEvents.WORK
                 self._is_done = True
+        sleep(1)
 
 
 class CheckTelegramQueueRound(BaseState):
@@ -167,6 +167,9 @@ class RequestLLMResponseRound(BaseState):
             if text_data.startswith("/work"):
                 # we dummy an llm response for the work tol here.
                 self.strategy.llm_responses.append((LLMActions.WORKFLOW, "create_new_repo.yaml"))
+            else:
+                # we dummy an llm response for the reply tol here.
+                self.strategy.llm_responses.append((LLMActions.REPLY, "I am a bot! replying to your message."))
 
         # we need to request the llm here.
         self._is_done = True
@@ -176,9 +179,34 @@ class RequestLLMResponseRound(BaseState):
 class SendTelegramMessageRound(BaseState):
     """This class implements the behaviour of the state SendTelegramMessageRound."""
 
+    counterparty = str(TELEGRAM_CONNECTION_ID)
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.SEND_TELEGRAM_MESSAGE_ROUND
+
+    def act(self):
+        """Act."""
+        self.context.logger.info(f"In state: {self._state}")
+        while self.strategy.llm_responses:
+            msg = self.strategy.llm_responses.pop()
+            self.context.logger.info(f"Sending message: {msg[1]}")
+            self.create_and_send(
+                performative=TelegramMessage.Performative.MESSAGE,
+                chat_id="-4765622287",
+                text=msg[1],
+            )
+        self._is_done = True
+        self._event = AsylumAbciAppEvents.DONE
+
+    def create_and_send(self, send=True, **kwargs) -> None:
+        """Create and send a message."""
+        message, _dialogue = self.context.telegram_dialogues.create(
+            counterparty=self.counterparty,
+            **kwargs,
+        )
+        if send:
+            self.context.outbox.put_message(message)
 
 
 class ScrapeGithubRound(BaseState):
@@ -229,6 +257,7 @@ class ExecuteProposedWorkflowRound(BaseState):
             Workflow is success: {workflow.is_success}
             """)
             self.strategy.llm_responses.append((LLMActions.REPLY, result_str))
+            self.context.logger.info(f"There are {len(self.strategy.llm_responses)} responses.")
 
         except Exception as e:
             self.context.logger.exception(f"Error: {e}")
