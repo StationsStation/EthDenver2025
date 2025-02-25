@@ -12,7 +12,7 @@ connections:
 - eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
 - eightballer/http_server:0.1.0:bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq
 - eightballer/prometheus:0.1.1:bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi
-- eightballer/telegram_wrapper:0.1.0:bafybeihwngxvaefwrkx6sa2bwuu3nklytxpsapmlpbz5gpewz7mu3irt2e
+- eightballer/telegram_wrapper:0.1.0:bafybeic7qlx3m2neo2tdu37ue2asgnx6l5n6ko6lwcvicpl2ncit7bog2i
 contracts: []
 protocols:
 - eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
