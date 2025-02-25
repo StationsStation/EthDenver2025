@@ -1,6 +1,6 @@
 # ------------------------------------------------------------------------------
 #
-#   Copyright 2025 eightballer
+#   Copyright 2025 zarathustra
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,4 +15,5 @@
 #   limitations under the License.
 #
 # ------------------------------------------------------------------------------
-"""Tests for the protocol."""
+
+"""This module contains the implementation of the openai_api connection."""

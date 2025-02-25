@@ -1,5 +1,3 @@
-
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
 #   Copyright 2025 eightballer
@@ -22,31 +20,26 @@
 """This module contains the tests of the Telegram Wrapper connection module."""
 # pylint: skip-file
 
-
 import asyncio
-import logging
-import pytest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock
 
+import pytest
 from aea.common import Address
-from aea.configurations.base import ConnectionConfig
+from aea.mail.base import Message, Envelope
 from aea.identity.base import Identity
-from aea.mail.base import Envelope, Message
+from aea.configurations.base import ConnectionConfig
 from aea.protocols.dialogue.base import Dialogue as BaseDialogue
 
-from packages.eightballer.protocols.telegram.dialogues import BaseTelegramDialogues
-from packages.eightballer.protocols.telegram.dialogues import TelegramDialogue
-
+from packages.eightballer.protocols.telegram.message import TelegramMessage
+from packages.eightballer.protocols.telegram.dialogues import TelegramDialogue, BaseTelegramDialogues
 from packages.eightballer.connections.telegram_wrapper.connection import (
+    CONNECTION_ID as CONNECTION_PUBLIC_ID,
     TelegramWrapperConnection,
 )
-from packages.eightballer.protocols.telegram.message import TelegramMessage
-
-from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as CONNECTION_PUBLIC_ID
 
 
 def envelope_it(message: TelegramMessage):
-    """Envelope the message"""
+    """Envelope the message."""
 
     return Envelope(
         to=message.to,
@@ -59,23 +52,15 @@ class TelegramDialogues(BaseTelegramDialogues):
     """The dialogues class keeps track of all telegram_wrapper dialogues."""
 
     def __init__(self, self_address: Address, **kwargs) -> None:
-        """
-        Initialize dialogues.
-
-        :param self_address: self address
-        :param kwargs: keyword arguments
-        """
+        """Initialize dialogues."""
+        del kwargs
 
         def role_from_first_message(  # pylint: disable=unused-argument
             message: Message, receiver_address: Address
         ) -> BaseDialogue.Role:
-            """Infer the role of the agent from an incoming/outgoing first message
-
-            :param message: an incoming/outgoing first message
-            :param receiver_address: the address of the receiving agent
-            :return: The role of the agent
-            """
-            return TelegramDialogue.Role.AGENT  # TODO: check
+            """Infer the role of the agent from an incoming/outgoing first message."""
+            del receiver_address, message
+            return TelegramDialogue.Role.AGENT
 
         BaseTelegramDialogues.__init__(
             self,
@@ -84,7 +69,8 @@ class TelegramDialogues(BaseTelegramDialogues):
         )
 
 
-class TestTelegramWrapperConnection():
+class TestTelegramWrapperConnection:
+    """Simple test of the telegram_wrapper connection."""
 
     def setup(self):
         """Initialise the test case."""
@@ -96,7 +82,6 @@ class TestTelegramWrapperConnection():
         self.protocol_id = TelegramMessage.protocol_id
         self.target_skill_id = "dummy_author/dummy_skill:0.1.0"
 
-        # TODO: define custom kwargs for connection
         kwargs = {}
 
         self.configuration = ConnectionConfig(
@@ -134,12 +119,11 @@ class TestTelegramWrapperConnection():
         """Test the connect."""
         await self.telegram_wrapper_connection.connect()
 
-        msg, dialogue = self._dialogues.create(
+        msg, _dialogue = self._dialogues.create(
             counterparty=str(CONNECTION_PUBLIC_ID),
-            # TODO: set correct performative and message fields
             performative=TelegramMessage.Performative.SEND_MESSAGE,
-            # ...
+            chat_id="123",
+            text="Hello World",
         )
 
         await self.telegram_wrapper_connection.send(envelope_it(msg))
-

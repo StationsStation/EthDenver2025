@@ -1,4 +1,4 @@
-agent_name: asylum_agent
+agent_name: telegram_bot
 author: eightballer
 version: 0.1.0
 license: Apache-2.0
@@ -6,7 +6,7 @@ description: ''
 aea_version: '>=1.55.0, <2.0.0'
 fingerprint:
   tests/__init__.py: bafybeibk76alseqt3ufreyev7rnz5zuk6dcftt7c2ob54gmhpt6xrhkg2y
-  tests/test_agent.py: bafybeicthczr2kso6ua4kfuux3mtsjxlrv4qcdyxvsohj5yt33jqm6x3em
+  tests/test_agent.py: bafybeiftjq2nnfnjhensuqbshp7wxfcsubdqjdihhhcwzqsc4irhrag7mi
 fingerprint_ignore_patterns: []
 connections:
 - eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
@@ -21,7 +21,7 @@ protocols:
 - eightballer/telegram:0.1.0:bafybeieumglsywzwccr3zflld227l5jcqboanedujnjxdu5bf4ouzc2sbm
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
-- eightballer/participate_in_abci_app:0.1.0:bafybeiff6gmudvyjzanen7x62plummdesuyfvjiv4qhmni2nn4sqo3zl2i
+- eightballer/metrics:0.1.0:bafybeiams7g4pynaklci2zatx2ick62smkkcli4p3zuimrtv334plbhi7e
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
 customs: []
 default_ledger: ethereum
@@ -58,9 +58,15 @@ dependencies:
   rich: {}
 default_connection: null
 ---
-public_id: eightballer/http_server:0.1.0:bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq
+public_id: eightballer/http_server:0.1.0:bafybeicp3ubkonolxjgnwgqmaz624qduwzzz74fbjizu77lyvnpo77uv7u
 type: connection
 config:
   host: 0.0.0.0
   port: 8888
-  target_skill_id: eightballer/participate_in_abci_app:0.1.0
+  target_skill_id: eightballer/metrics:0.1.0
+---
+public_id: eightballer/telegram_wrapper:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
+type: connection
+config:
+  target_skill_id: eightballer/metrics:0.1.0
+  token: ${TELEGRAM_TOKEN:str:123}

@@ -8,13 +8,13 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
-  __init__.py: bafybeigk3jljo2rewdhybx5gw3qfzgw7jcqjyb7xpvqxyl5e66pqanyzam
-  behaviours.py: bafybeiav7ifjh6y6f2rk54xmv3cgca66rbv5xywnotxgst3tzyg6cedney
+  __init__.py: bafybeibf762wmodxnyigiwnuq4xvdhhu47yjopkbrwqhklwsz6d67jwba4
+  behaviours.py: bafybeierqd6po6o4xs5veth3vit55gms3ifisckugrylukdp53cathn5su
   dialogues.py: bafybeiggsfafkurldxnvjhqw3l424acxmpgr4x6qs36ociozuobikpqejy
   handlers.py: bafybeibqex5gfwevjqrollwntdfb424fjcq47ha2adx675jfivajxs7kye
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
-  tests/test_metrics.py: bafybeibep5m4myf5m4he65usf6fxk3kax6nztl3dfhvro3cgqlleuuc4je
-  tests/test_metrics_dialogues.py: bafybeihwikefyqskx2uc4lnkpe3ewigpr7v2rbgqnglisu3wkb6q4sxt4m
+  tests/test_metrics.py: bafybeibmh72do2teunhtdb5lx7i65ddhdkns7xkmcjprbmhkiy6zlokvmi
+  tests/test_metrics_dialogues.py: bafybeidd4c4nzrx334acwffnguhnyh7z5cn6r64syajgo3oxvxc536dtbm
 fingerprint_ignore_patterns: []
 connections: []
 contracts: []

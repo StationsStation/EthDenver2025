@@ -8,16 +8,17 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeieiigkrlovpmophgp5nuri2sh3kzjaohw276hxbjxnln2k2zfpn6e
-  __init__.py: bafybeigyq5lhuqha5jop7tkrzdnjlghwz5pljypgvrxvfrzi32blkcopua
-  custom_types.py: bafybeigaq4vy6rrctfkux7d3cijqceq7b4lvbr4wynyghzmwkk36okse2i
-  dialogues.py: bafybeibaauauuw4ymeo2uvy5bow5nykhttwcoi7yykyjravrso2p6h23by
+  __init__.py: bafybeiagi7n3bcunzqft3xsp5s6q65zmza3d5rnlzmb6rgkk4fsvjwwyve
+  custom_types.py: bafybeid6wyezy5jcrbkylhybc5fryg6fombyx5re547336klcy2asw4tzq
+  dialogues.py: bafybeid5vonf6hmdf4sebwymxz65fi47snf7wtkccywokuj657wggwwyfm
   llm_chat_completion.proto: bafybeic7pr5l2bktyfvqthgarylv6zim5pfy6yvsi2ztxvt2v5zpm3xmoe
   llm_chat_completion_pb2.py: bafybeifjwaqfimcchcxrilj5lqjdbe6cytoq63twaolytkhr75qj3a4u34
   message.py: bafybeia65fvgwqgdr3wtqdemwdg24nx2te4xpoqodmwwtqfvp5jmiwde2y
   serialization.py: bafybeig3ymehmmdw7mkz4irmj3pvoj6f6xg23iejwqgmzh5tbr6sigee7y
-  tests/data.py: bafybeihe2lql7r2xnuxoesdsrzev65ucvchaykmfvywhx4kpnq5bxxrbie
-  tests/test_llm_chat_completion_dialogues.py: bafybeibqwiluwovn2l7q544sax22sypmt2ymgdszbv4pna4dpvdcswczqu
-  tests/test_llm_chat_completion_messages.py: bafybeihsh2ftzuawapdx7w5re7ofg3h2kacqj5u6zowln6zduvrtjmv35y
+  tests/__init__.py: bafybeihtdfjkmwxuutylog5guoeoe6un7zk7ezrfx6oqgkqxcm4mc6ajya
+  tests/data.py: bafybeieycs2mmr4mfcybc4axeqkhsizcpphyolgchei3jiitxwhflv2nyy
+  tests/test_llm_chat_completion_dialogues.py: bafybeieim27u3hnuiouioxetlqocrmyqrjjmbjkpybw7b3dgkpeg45hx2a
+  tests/test_llm_chat_completion_messages.py: bafybeigjz6hwf7mjfzxfth7txmr7mkirtzjvdkt5iawqlcuxzmqwvupvpa
 fingerprint_ignore_patterns: []
 dependencies:
   protobuf: {}

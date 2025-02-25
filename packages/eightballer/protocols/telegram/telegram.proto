@@ -14,33 +14,35 @@ message TelegramMessage{
     ErrorCodeEnum error_code = 1;
   }
 
-
-  // Performatives and contents
-  message Send_Message_Performative{
-    int32 chat_id = 1;
-    string text = 2;
-    string parse_mode = 3;
-    bool parse_mode_is_set = 4;
-    string reply_markup = 5;
-    bool reply_markup_is_set = 6;
+  message MessageStatus{
+    enum MessageStatusEnum {
+      MESSAGE_STATUS_ENUM_SENT = 0;
+      MESSAGE_STATUS_ENUM_FAILED = 1;
+    }
+    MessageStatusEnum status = 1;
   }
 
-  message Receive_Message_Performative{
-    int32 chat_id = 1;
-    int32 id = 2;
+
+  // Performatives and contents
+  message Message_Performative{
+    string chat_id = 1;
+    string text = 2;
+    int32 id = 3;
+    bool id_is_set = 4;
+    string parse_mode = 5;
+    bool parse_mode_is_set = 6;
+    string reply_markup = 7;
+    bool reply_markup_is_set = 8;
+    string from_user = 9;
+    bool from_user_is_set = 10;
+    int32 timestamp = 11;
+    bool timestamp_is_set = 12;
   }
 
   message Message_Sent_Performative{
     int32 id = 1;
-    string status = 2;
-  }
-
-  message New_Message_Performative{
-    int32 chat_id = 1;
-    int32 id = 2;
-    string text = 3;
-    string from_user = 4;
-    int32 timestamp = 5;
+    bool id_is_set = 2;
+    MessageStatus msg_status = 3;
   }
 
   message Error_Performative{
@@ -49,12 +51,42 @@ message TelegramMessage{
     map<string, bytes> error_data = 3;
   }
 
+  message Subscribe_Performative{
+    string chat_id = 1;
+  }
+
+  message Unsubscribe_Performative{
+    string chat_id = 1;
+  }
+
+  message Get_Channels_Performative{
+    string agent_id = 1;
+  }
+
+  message Unsubscription_Result_Performative{
+    string chat_id = 1;
+    string status = 2;
+  }
+
+  message Subscription_Result_Performative{
+    string chat_id = 1;
+    string status = 2;
+  }
+
+  message Channels_Performative{
+    repeated string channels = 1;
+  }
+
 
   oneof performative{
-    Error_Performative error = 5;
-    Message_Sent_Performative message_sent = 6;
-    New_Message_Performative new_message = 7;
-    Receive_Message_Performative receive_message = 8;
-    Send_Message_Performative send_message = 9;
+    Channels_Performative channels = 5;
+    Error_Performative error = 6;
+    Get_Channels_Performative get_channels = 7;
+    Message_Performative message = 8;
+    Message_Sent_Performative message_sent = 9;
+    Subscribe_Performative subscribe = 10;
+    Subscription_Result_Performative subscription_result = 11;
+    Unsubscribe_Performative unsubscribe = 12;
+    Unsubscription_Result_Performative unsubscription_result = 13;
   }
 }

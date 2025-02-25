@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
 #   Copyright 2025 zarathustra
@@ -22,7 +21,8 @@
 
 from enum import Enum, StrEnum
 from collections.abc import Sequence
-from pydantic import BaseModel, Field
+
+from pydantic import Field, BaseModel
 
 
 Primitive = bool | int | float | str | bytes
@@ -98,7 +98,7 @@ class Kwargs(dict):
                 _value_encode(item.primitive, value)
             elif isinstance(value, Sequence):
                 for v in value:
-                    _value_encode(item.sequence.values.add(), v)
+                    _value_encode(item.sequence.values.add(), v)  # noqa: PD011
             elif isinstance(value, dict):
                 Kwargs.encode(item.mapping, value)
             else:
@@ -125,6 +125,8 @@ class Kwargs(dict):
 
 
 class Role(StrEnum):
+    """Role."""
+
     DEVELOPER = "developer"
     SYSTEM = "system"
     USER = "user"
@@ -134,18 +136,11 @@ class Role(StrEnum):
 
 
 class Message(BaseModel):
+    """Message."""
+
     content: str
     role: Role
     name: str | None = Field(default=None)
-
-    # ChatCompletionToolMessageParam
-    # tool_call_id: str
-
-    # ChatCompletionAssistantMessageParam
-    # audio: Audio | None
-    # function_call: FunctionCall | None
-    # refusal: str | None
-    # tool_calls: Iterable[ChatCompletionMessageToolCallParam]
 
 
 class Messages(list):

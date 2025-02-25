@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
 #   Copyright 2025 zarathustra
@@ -22,16 +21,12 @@
 # pylint: disable=too-many-statements,too-many-locals,no-member,too-few-public-methods,redefined-builtin
 from aea.test_tools.test_protocol import BaseProtocolDialoguesTestCase
 
-from packages.zarathustra.protocols.llm_chat_completion.custom_types import (
-    Kwargs,
-    Messages,
+from packages.zarathustra.protocols.llm_chat_completion.message import (
+    LlmChatCompletionMessage,
 )
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
     LlmChatCompletionDialogues,
-)
-from packages.zarathustra.protocols.llm_chat_completion.message import (
-    LlmChatCompletionMessage,
 )
 from packages.zarathustra.protocols.llm_chat_completion.tests.data import KWARGS, MESSAGES
 
@@ -39,7 +34,6 @@ from packages.zarathustra.protocols.llm_chat_completion.tests.data import KWARGS
 class TestDialoguesLlmChatCompletion(BaseProtocolDialoguesTestCase):
     """Test for the 'llm_chat_completion' protocol dialogues."""
 
-    
     MESSAGE_CLASS = LlmChatCompletionMessage
 
     DIALOGUE_CLASS = LlmChatCompletionDialogue
@@ -50,9 +44,9 @@ class TestDialoguesLlmChatCompletion(BaseProtocolDialoguesTestCase):
 
     def make_message_content(self) -> dict:
         """Make a dict with message contruction content for dialogues.create."""
-        return dict(
-            performative=LlmChatCompletionMessage.Performative.CREATE,
-            model = "some model",
-            messages = MESSAGES,
-            kwargs = KWARGS,
-        )
+        return {
+            "performative": LlmChatCompletionMessage.Performative.CREATE,
+            "model": "some model",
+            "messages": MESSAGES,
+            "kwargs": KWARGS,
+        }

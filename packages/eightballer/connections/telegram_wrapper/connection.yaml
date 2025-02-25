@@ -8,18 +8,19 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiet57jvteheyitahkktg7xxrpr44kat4ritwqdump332risu4zy7u
-  __init__.py: bafybeidfyfxkma6mry23e5may37k57jbi2pjsjed7c7geab2yfimydimby
-  connection.py: bafybeibqw4oy27xv3eisddeh44yrnw7ev6mc7li2ktbwixtxnntefyntnq
+  __init__.py: bafybeiabhwb3qqbgactr5xst5rz7uwt3k6yqh2o3ntxwld4rl73ropcvvy
+  connection.py: bafybeiesmo4noc2byr7louflvh4kp4sxu2sglvvzszopd5lusgvmu6gvrm
   readme.md: bafybeihg5yfzgqvg5ngy7r2o5tfeqnelx2ffxw4po5hmheqjfhumpmxpoq
-  tests/__init__.py: bafybeicdk3uzj2ugzpqi2huab3zdc6jyl6yrgg2llvkdpmpbsq7mkbr4ba
-  tests/test_connection.py: bafybeihcxxrobepmvjjvhk6ggsoad5qezvojvylgowidrpufg233au5l4e
+  tests/__init__.py: bafybeigd32zy6tyth7q7yw435sh5ulitsxn6cfqktrh7y42zk5ozgw4eva
+  tests/test_connection.py: bafybeiblyvwqkcwnf4fjnbwoccphykawc2fijpzzzvp2lrqjoishomkoja
 fingerprint_ignore_patterns: []
 connections: []
 protocols:
-- eightballer/telegram:0.1.0:bafybeihpfgdiom2xpaogexcpajj6ivhp3o6z5rhpzpbtz2w5uaewlt3zca
-class_name: Eightballer/telegramWrapper:0.1.0Connection
+- eightballer/telegram:0.1.0:bafybeieumglsywzwccr3zflld227l5jcqboanedujnjxdu5bf4ouzc2sbm
+class_name: TelegramWrapperConnection
 config:
-  foo: bar
+  target_skill_id: eightballer/asylum_abci_app:0.1.0
+  token: '123'
 excluded_protocols: []
 restricted_to_protocols: []
 dependencies: {}

@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #
-#   Copyright 2023 
+#   Copyright 2023
 #   Copyright 2023 valory-xyz
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,29 +21,35 @@
 
 import os
 from abc import ABC
-from typing import Optional, Any
-from aea.skills.behaviours import FSMBehaviour, State
 from enum import Enum
+from typing import Any
+
+from aea.skills.behaviours import State, FSMBehaviour
 
 
 class DemofsmabciappEvents(Enum):
-    
-    DONE = 'DONE'
-    ERROR = 'ERROR'
-    TIMEOUT = 'TIMEOUT'
-    RETRY = 'RETRY'
-    NO_NEW_MESSAGES = 'NO_NEW_MESSAGES'
+    """Events for the Demofsmabciapp FSM."""
+
+    DONE = "DONE"
+    ERROR = "ERROR"
+    TIMEOUT = "TIMEOUT"
+    RETRY = "RETRY"
+    NO_NEW_MESSAGES = "NO_NEW_MESSAGES"
+
 
 class DemofsmabciappStates(Enum):
-    
-    ERRORROUND = 'errorround'
-    PREPAREROUND = 'prepareround'
-    PAUSEROUND = 'pauseround'
-    CHECKROUND = 'checkround'
-    EXECUTEROUND = 'executeround'
+    """States for the Demofsmabciapp FSM."""
+
+    ERRORROUND = "errorround"
+    PREPAREROUND = "prepareround"
+    PAUSEROUND = "pauseround"
+    CHECKROUND = "checkround"
+    EXECUTEROUND = "executeround"
+
 
 class BaseState(State, ABC):
     """Base class for states."""
+
     _state: DemofsmabciappStates = None
 
     def __init__(self, **kwargs: Any) -> None:
@@ -53,60 +58,68 @@ class BaseState(State, ABC):
         self._is_done = False  # Initially, the state is not done
 
     def act(self) -> None:
-        print(f"Performing action for state {self._state}")
+        """Implement the act."""
         self._is_done = True
         self._event = DemofsmabciappEvents.DONE
 
     def is_done(self) -> bool:
+        """Return True if the state is done, False otherwise."""
         return self._is_done
 
     @property
-    def event(self) -> Optional[str]:
+    def event(self) -> str | None:
+        """Get the event."""
         return self._event
 
 
 # Define states
 
+
 class ErrorRound(BaseState):
     """This class implements the behaviour of the state ErrorRound."""
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = DemofsmabciappStates.ERRORROUND
 
+
 class PrepareRound(BaseState):
     """This class implements the behaviour of the state PrepareRound."""
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        breakpoint()
         self._state = DemofsmabciappStates.PREPAREROUND
 
     def act(self) -> None:
-        print(f"Performing action for state {self._state}")
-
-        for repo in self.repos:
-            print(f"Repo: {repo}")
+        """Implement the act."""
+        for _repo in self.repos:
+            pass
         self._is_done = True
         self._event = DemofsmabciappEvents.DONE
+
+
 class PauseRound(BaseState):
     """This class implements the behaviour of the state PauseRound."""
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = DemofsmabciappStates.PAUSEROUND
 
+
 class CheckRound(BaseState):
     """This class implements the behaviour of the state CheckRound."""
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = DemofsmabciappStates.CHECKROUND
 
+
 class ExecuteRound(BaseState):
     """This class implements the behaviour of the state ExecuteRound."""
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = DemofsmabciappStates.EXECUTEROUND
-
-
-
 
 
 class DemofsmabciappFsmBehaviour(FSMBehaviour):
@@ -115,65 +128,61 @@ class DemofsmabciappFsmBehaviour(FSMBehaviour):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.register_state(DemofsmabciappStates.CHECKROUND.value, CheckRound(**kwargs), True)
-        
-        
-        
-        self.register_state(DemofsmabciappStates.ERRORROUND.value, ErrorRound(**kwargs)) 
-        self.register_state(DemofsmabciappStates.PREPAREROUND.value, PrepareRound(**kwargs)) 
-        self.register_state(DemofsmabciappStates.PAUSEROUND.value, PauseRound(**kwargs)) 
-        self.register_state(DemofsmabciappStates.EXECUTEROUND.value, ExecuteRound(**kwargs)) 
-        
-        self.register_transition(
-            source=DemofsmabciappStates.CHECKROUND.value, 
-            event=DemofsmabciappEvents.DONE,
-            destination=DemofsmabciappStates.PREPAREROUND.value
-        )
-        self.register_transition(
-            source=DemofsmabciappStates.CHECKROUND.value, 
-            event=DemofsmabciappEvents.NO_NEW_MESSAGES,
-            destination=DemofsmabciappStates.PAUSEROUND.value
-        )
-        self.register_transition(
-            source=DemofsmabciappStates.ERRORROUND.value, 
-            event=DemofsmabciappEvents.RETRY,
-            destination=DemofsmabciappStates.CHECKROUND.value
-        )
-        self.register_transition(
-            source=DemofsmabciappStates.EXECUTEROUND.value, 
-            event=DemofsmabciappEvents.DONE,
-            destination=DemofsmabciappStates.PAUSEROUND.value
-        )
-        self.register_transition(
-            source=DemofsmabciappStates.EXECUTEROUND.value, 
-            event=DemofsmabciappEvents.ERROR,
-            destination=DemofsmabciappStates.ERRORROUND.value
-        )
-        self.register_transition(
-            source=DemofsmabciappStates.PAUSEROUND.value, 
-            event=DemofsmabciappEvents.DONE,
-            destination=DemofsmabciappStates.CHECKROUND.value
-        )
-        self.register_transition(
-            source=DemofsmabciappStates.PAUSEROUND.value, 
-            event=DemofsmabciappEvents.TIMEOUT,
-            destination=DemofsmabciappStates.ERRORROUND.value
-        )
-        self.register_transition(
-            source=DemofsmabciappStates.PREPAREROUND.value, 
-            event=DemofsmabciappEvents.DONE,
-            destination=DemofsmabciappStates.EXECUTEROUND.value
-        )
-        self.register_transition(
-            source=DemofsmabciappStates.PREPAREROUND.value, 
-            event=DemofsmabciappEvents.TIMEOUT,
-            destination=DemofsmabciappStates.ERRORROUND.value
-        )
 
+        self.register_state(DemofsmabciappStates.ERRORROUND.value, ErrorRound(**kwargs))
+        self.register_state(DemofsmabciappStates.PREPAREROUND.value, PrepareRound(**kwargs))
+        self.register_state(DemofsmabciappStates.PAUSEROUND.value, PauseRound(**kwargs))
+        self.register_state(DemofsmabciappStates.EXECUTEROUND.value, ExecuteRound(**kwargs))
+
+        self.register_transition(
+            source=DemofsmabciappStates.CHECKROUND.value,
+            event=DemofsmabciappEvents.DONE,
+            destination=DemofsmabciappStates.PREPAREROUND.value,
+        )
+        self.register_transition(
+            source=DemofsmabciappStates.CHECKROUND.value,
+            event=DemofsmabciappEvents.NO_NEW_MESSAGES,
+            destination=DemofsmabciappStates.PAUSEROUND.value,
+        )
+        self.register_transition(
+            source=DemofsmabciappStates.ERRORROUND.value,
+            event=DemofsmabciappEvents.RETRY,
+            destination=DemofsmabciappStates.CHECKROUND.value,
+        )
+        self.register_transition(
+            source=DemofsmabciappStates.EXECUTEROUND.value,
+            event=DemofsmabciappEvents.DONE,
+            destination=DemofsmabciappStates.PAUSEROUND.value,
+        )
+        self.register_transition(
+            source=DemofsmabciappStates.EXECUTEROUND.value,
+            event=DemofsmabciappEvents.ERROR,
+            destination=DemofsmabciappStates.ERRORROUND.value,
+        )
+        self.register_transition(
+            source=DemofsmabciappStates.PAUSEROUND.value,
+            event=DemofsmabciappEvents.DONE,
+            destination=DemofsmabciappStates.CHECKROUND.value,
+        )
+        self.register_transition(
+            source=DemofsmabciappStates.PAUSEROUND.value,
+            event=DemofsmabciappEvents.TIMEOUT,
+            destination=DemofsmabciappStates.ERRORROUND.value,
+        )
+        self.register_transition(
+            source=DemofsmabciappStates.PREPAREROUND.value,
+            event=DemofsmabciappEvents.DONE,
+            destination=DemofsmabciappStates.EXECUTEROUND.value,
+        )
+        self.register_transition(
+            source=DemofsmabciappStates.PREPAREROUND.value,
+            event=DemofsmabciappEvents.TIMEOUT,
+            destination=DemofsmabciappStates.ERRORROUND.value,
+        )
 
     def setup(self) -> None:
         """Implement the setup."""
         self.context.logger.info("Setting up Demofsmabciapp FSM behaviour.")
-
 
     def teardown(self) -> None:
         """Implement the teardown."""
@@ -188,5 +197,4 @@ class DemofsmabciappFsmBehaviour(FSMBehaviour):
 
     def terminate(self) -> None:
         """Implement the termination."""
-        print("Terminating the agent.")
         os._exit(0)
