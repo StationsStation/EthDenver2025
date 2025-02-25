@@ -9,10 +9,10 @@ from unittest.mock import patch
 from aea.test_tools.test_skill import BaseSkillTestCase
 from aea.protocols.dialogue.base import DialogueMessage
 
-from packages.zarathustra.skills.asymlum_abci_app import PUBLIC_ID
 from packages.eightballer.protocols.http.message import HttpMessage
-from packages.zarathustra.skills.asymlum_abci_app.handlers import HttpHandler
-from packages.zarathustra.skills.asymlum_abci_app.dialogues import HttpDialogues
+from packages.zarathustra.skills.asylum_abci_app import PUBLIC_ID
+from packages.zarathustra.skills.asylum_abci_app.handlers import HttpHandler
+from packages.zarathustra.skills.asylum_abci_app.dialogues import HttpDialogues
 
 
 ROOT_DIR = Path(__file__).parent.parent.parent.parent.parent.parent

@@ -6,7 +6,7 @@ aea_version: '>=1.0.0, <2.0.0'
 license: apache-2.0
 fingerprint: {}
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeiacpsyk2kltrg2gfqwrxfavoaaljmbjuzl2aovwwvonyqisjkwqca
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeibqeff7sp5q4p634tpynrurstem76tirupmcbqdxpsk3unhanb6ye
 number_of_agents: 1
 deployment:
   agent:
@@ -18,4 +18,4 @@ type: connection
 config:
   host: 0.0.0.0
   port: 8888
-  target_skill_id: zarathustra/asymlum_abci_app:0.1.0
+  target_skill_id: zarathustra/asylum_abci_app:0.1.0

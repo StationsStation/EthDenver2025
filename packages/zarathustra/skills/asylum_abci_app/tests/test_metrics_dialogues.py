@@ -23,14 +23,14 @@ from pathlib import Path
 
 from aea.test_tools.test_skill import COUNTERPARTY_AGENT_ADDRESS, BaseSkillTestCase
 
-from packages.zarathustra.skills.asymlum_abci_app import PUBLIC_ID
 from packages.eightballer.protocols.http.message import HttpMessage
-from packages.zarathustra.skills.asymlum_abci_app.dialogues import (
+from packages.zarathustra.skills.asylum_abci_app import PUBLIC_ID
+from packages.eightballer.protocols.default.message import DefaultMessage
+from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     HttpDialogues,
     DefaultDialogue,
     DefaultDialogues,
 )
-from packages.eightballer.protocols.default.message import DefaultMessage
 
 
 ROOT_DIR = Path(__file__).parent.parent.parent.parent.parent.parent

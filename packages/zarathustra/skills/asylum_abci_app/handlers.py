@@ -27,7 +27,7 @@ from aea.protocols.base import Message
 
 from packages.eightballer.protocols.default import DefaultMessage
 from packages.eightballer.protocols.http.message import HttpMessage
-from packages.zarathustra.skills.asymlum_abci_app.dialogues import (
+from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     HttpDialogue,
     HttpDialogues,
     DefaultDialogues,
