@@ -3,6 +3,13 @@
         "protocol/eightballer/chatroom/0.1.0": "bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy",
         "connection/eightballer/telegram_wrapper/0.1.0": "bafybeibztq67d4666eoke5i4mwgctrmxcazexihrx2dhxvdfjn52vsjwg4",
         "agent/eightballer/telegram_bot/0.1.0": "bafybeia7ngfo2oztbktlyuu4q3bvwckh4bo4mobqny2iyybjecdcpw6gqm"
+        "protocol/zarathustra/llm_chat_completion/1.0.0": "bafybeiae7sdfovhjt32zqmdz7fshejtnihty4lfptn3z2xmrmg4j66fwlq",
+        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeiblenz7ua7on6c5orvotvtam54ya5scmjbarhgvzvdabmpmolhmvm",
+        "connection/zarathustra/openai_api/0.1.0": "bafybeib5jv7daefngkv5sq4n7tf2psxladxyabkfkgqvfqghsaivltmwqe",
+        "skill/eightballer/participate_in_abci_app/0.1.0": "bafybeiff6gmudvyjzanen7x62plummdesuyfvjiv4qhmni2nn4sqo3zl2i",
+        "skill/eightballer/demo_fsm_abci_app/0.1.0": "bafybeickf737owdpq3hof4u6ps6wd52ziaglqlyxriycddlmmto7ui6irm",
+        "agent/eightballer/asylum_agent/0.1.0": "bafybeigm5d6cj23cxorz5j2pmqmfovglhabrc6lswozfdkeqrekgphe7hm",
+        "service/eightballer/asylum_agent/0.1.0": "bafybeigdxn3o4ailg3cvebwujia5rv743izmtzbud5szbz22edhrz34v4y"
     },
     "third_party": {
         "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",
