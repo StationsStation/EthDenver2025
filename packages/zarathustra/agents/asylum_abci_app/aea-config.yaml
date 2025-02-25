@@ -1,0 +1,64 @@
+agent_name: asylum_abci_app
+author: zarathustra
+version: 0.1.0
+license: Apache-2.0
+description: ''
+aea_version: '>=1.55.0, <2.0.0'
+fingerprint:
+  tests/__init__.py: bafybeibk76alseqt3ufreyev7rnz5zuk6dcftt7c2ob54gmhpt6xrhkg2y
+  tests/test_agent.py: bafybeieks766jpg3wo6u2trq632luc574xekiutydjlwct3e2zs7nfoldq
+fingerprint_ignore_patterns: []
+connections:
+- eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
+- eightballer/http_server:0.1.0:bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq
+- eightballer/prometheus:0.1.1:bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi
+contracts: []
+protocols:
+- eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
+- eightballer/http:0.1.0:bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme
+- eightballer/prometheus:1.0.0:bafybeidxo32tu43ru3xlk3kd5b6xlwf6vaytxvvhtjbh7ag52kexos4ke4
+- open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
+skills:
+- eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
+- zarathustra/asymlum_abci_app:0.1.0:bafybeigqtza3dbggrsvqvts53ulio7v3prshj4yvsawaurcmg2pnbu2dwi
+customs: []
+default_ledger: ethereum
+required_ledgers:
+- ethereum
+default_routing: {}
+connection_private_key_paths: {}
+private_key_paths: {}
+logging_config:
+  disable_existing_loggers: true
+  formatters:
+    standard:
+      format: '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+  handlers:
+    console:
+      class: rich.logging.RichHandler
+      level: INFO
+    logfile:
+      class: logging.FileHandler
+      filename: log.txt
+      formatter: standard
+      level: INFO
+  loggers:
+    aea:
+      handlers:
+      - console
+      - logfile
+      level: INFO
+      propagate: false
+  version: 1
+dependencies:
+  open-aea-ledger-cosmos: {}
+  open-aea-ledger-ethereum: {}
+  rich: {}
+default_connection: null
+---
+public_id: eightballer/http_server:0.1.0:bafybeicp3ubkonolxjgnwgqmaz624qduwzzz74fbjizu77lyvnpo77uv7u
+type: connection
+config:
+  host: 0.0.0.0
+  port: 8888
+  target_skill_id: zarathustra/asymlum_abci_app:0.1.0
