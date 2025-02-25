@@ -25,6 +25,8 @@ from typing import Any
 
 from aea.skills.behaviours import State, FSMBehaviour
 
+from packages.zarathustra.connections.openai_api.connection import CONNECTION_ID
+
 
 class AsylumAbciAppEvents(Enum):
     """AsylumAbciAppEvents."""
@@ -111,6 +113,13 @@ class RequestLLMResponseRound(BaseState):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND
+
+    def act(self) -> None:
+        """Act."""
+        self.context.logger.info(f"In state: {self._state}")
+        self.context.logger.info(f"Sending to: {CONNECTION_ID}")
+        self._is_done = True
+        self._event = AsylumAbciAppEvents.DONE
 
 
 class SendTelegramMessageRound(BaseState):
