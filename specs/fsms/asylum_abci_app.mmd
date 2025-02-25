@@ -1,0 +1,16 @@
+graph TD
+  CheckLocalStorageRound -->|DONE| CheckTelegramQueueRound
+  CheckLocalStorageRound -->|UPDATE_NEEDED| ScrapeGithubRound
+  ScrapeGithubRound -->|DONE| RequestLLMResponseRound
+  RequestLLMResponseRound -->|DONE| ProcessLLMResponseRound
+  RequestLLMResponseRound -->|ERROR| WaitBeforeRetryRound
+
+  CheckTelegramQueueRound -->|NEW_MESSAGES| RequestLLMResponseRound
+  CheckTelegramQueueRound  -->|TIMEOUT| RequestLLMResponseRound
+
+  ProcessLLMResponseRound -->|REPLY| SendTelegramMessageRound
+  ProcessLLMResponseRound -->|WORK| ExecuteProposedWorkflowRound
+  
+  SendTelegramMessageRound -->|DONE| CheckLocalStorageRound
+  ExecuteProposedWorkflowRound -->|DONE| CheckLocalStorageRound
+  WaitBeforeRetryRound -->|DONE| CheckLocalStorageRound
