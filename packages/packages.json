@@ -4,12 +4,12 @@
         "connection/eightballer/telegram_wrapper/0.1.0": "bafybeiblenz7ua7on6c5orvotvtam54ya5scmjbarhgvzvdabmpmolhmvm",
         "skill/eightballer/participate_in_abci_app/0.1.0": "bafybeiff6gmudvyjzanen7x62plummdesuyfvjiv4qhmni2nn4sqo3zl2i",
         "skill/eightballer/demo_fsm_abci_app/0.1.0": "bafybeickf737owdpq3hof4u6ps6wd52ziaglqlyxriycddlmmto7ui6irm",
-        "skill/henrikkv/demo_fsm_abci_app/0.1.0": "bafybeidbkfrxdiinoewbidvihextudu6rj3aiyxfuchj6nztlyv55narhe",
+        "skill/henrikkv/demo_fsm_abci_app/0.1.0": "bafybeicvcdw6oa6wwmcrbo5erhqjp4dt6qof3wzfaisbjooiqevc7c75bi",
         "agent/eightballer/asylum_agent/0.1.0": "bafybeigm5d6cj23cxorz5j2pmqmfovglhabrc6lswozfdkeqrekgphe7hm",
         "agent/eightballer/telegram_bot/0.1.0": "bafybeibqw65tbc4dwwplfb7cvax3iut7w7lchlxjtvhoos2ajjgsrpircy",
-        "agent/henrikkv/git_scraper/0.1.0": "bafybeicjnedjrbp34fp2z2tjmwqaza5sp2wp3tod5kleasvuoer5inyahi",
+        "agent/henrikkv/git_scraper/0.1.0": "bafybeiawypwxp4xgfzwpvwfnbf6b3xydhvinthgiyfitww373htciwueoa",
         "service/eightballer/asylum_agent/0.1.0": "bafybeigdxn3o4ailg3cvebwujia5rv743izmtzbud5szbz22edhrz34v4y",
-        "service/henrikkv/git_scraper/0.1.0": "bafybeib7da7hnqseqn2jhliywvnyszwmm4a4wb4ho47yteyprqqp25si7e"
+        "service/henrikkv/git_scraper/0.1.0": "bafybeie3nu4glkbq5qkfmi75diyzrhrau6dfnuxw5jcanupi3ezvncsbv4"
     },
     "third_party": {
         "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",
