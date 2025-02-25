@@ -23,7 +23,7 @@ protocols:
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- zarathustra/asylum_abci_app:0.1.0:bafybeigzlya43baasbajok4wpve4jz7wg7cys4nvlobbxfni2vw7wiagqq
+- zarathustra/asylum_abci_app:0.1.0:bafybeibc2oft4brkq2zepqs7xkhbskan7e2qwnt4c2u3xmxng54he5mp54
 customs: []
 default_ledger: ethereum
 required_ledgers:

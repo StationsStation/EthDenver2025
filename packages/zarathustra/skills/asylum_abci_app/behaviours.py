@@ -24,7 +24,7 @@ from enum import Enum
 from time import sleep
 from typing import Any, cast
 from pathlib import Path
-from datetime import datetime
+from datetime import UTC, datetime
 from textwrap import dedent
 
 from aea.skills.behaviours import State, FSMBehaviour
@@ -32,6 +32,9 @@ from auto_dev.workflow_manager import Workflow, WorkflowManager
 
 from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy
 from packages.zarathustra.connections.openai_api.connection import CONNECTION_ID
+
+
+TIMEZONE_UTC = UTC
 
 
 class AsylumAbciAppEvents(Enum):
@@ -134,8 +137,8 @@ class CheckTelegramQueueRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         if self.processing_since is None:
-            self.processing_since = datetime.now().timestamp()
-        if datetime.now().timestamp() - self.processing_since > self.timeout:
+            self.processing_since = datetime.now(tz=TIMEZONE_UTC).timestamp()
+        if datetime.now(tz=TIMEZONE_UTC).timestamp() - self.processing_since > self.timeout:
             self._event = AsylumAbciAppEvents.TIMEOUT
             self._is_done = True
             self.processing_since = None
@@ -225,12 +228,10 @@ class ExecuteProposedWorkflowRound(BaseState):
             Workflow status: {workflow.is_done}
             Workflow is success: {workflow.is_success}
             """)
-            print(result_str)
             self.strategy.llm_responses.append((LLMActions.REPLY, result_str))
 
         except Exception as e:
-            breakpoint()
-            self.context.logger.error(f"Error: {e}")
+            self.context.logger.exception(f"Error: {e}")
         finally:
             self._is_done = True
             self._event = AsylumAbciAppEvents.DONE
