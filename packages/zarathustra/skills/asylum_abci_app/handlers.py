@@ -33,6 +33,7 @@ from packages.eightballer.protocols.chatroom.dialogues import (
     ChatroomDialogue as TelegramDialogue,
     ChatroomDialogues as TelegramDialogues,
 )
+from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy
 from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     HttpDialogue,
     HttpDialogues,
@@ -56,10 +57,15 @@ class TelegramHandler(Handler):
         telegram_dialogue = cast(TelegramDialogue, telegram_dialogues.update(telegram_msg))
 
         if not telegram_dialogue:
-            self.context.logger.info(f"received invalid telegram message={telegram_msg}, unidentified dialogue.")
+            self.context.logger.debug(f"received invalid telegram message={telegram_msg}, unidentified dialogue.")
 
         self.context.logger.info(f"received telegram message={telegram_msg.from_user}, content={telegram_msg.text}")
-        self.pending_messages.append(telegram_msg)
+        self.strategy.pending_messages.append(telegram_msg)
+
+    @property
+    def strategy(self):
+        """Get the strategy."""
+        return cast(AsylumStrategy, self.context.asylum_strategy)
 
     def setup(self):
         """Implement the setup."""
