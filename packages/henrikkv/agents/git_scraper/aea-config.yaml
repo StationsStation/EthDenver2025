@@ -6,7 +6,7 @@ description: ''
 aea_version: '>=1.55.0, <2.0.0'
 fingerprint:
   tests/__init__.py: bafybeibk76alseqt3ufreyev7rnz5zuk6dcftt7c2ob54gmhpt6xrhkg2y
-  tests/test_agent.py: bafybeicpwxdfgtgsxw7fn2wz7caf7f7yfmrw47ak5iepx7fr5e33fnfhzq
+  tests/test_agent.py: bafybeig6tn2g7oheuznvubtaan3n5gxekf72ohr7ky62q2a6v62qod46ty
 fingerprint_ignore_patterns: []
 connections:
 - eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
@@ -20,7 +20,7 @@ protocols:
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- henrikkv/demo_fsm_abci_app:0.1.0:bafybeidbkfrxdiinoewbidvihextudu6rj3aiyxfuchj6nztlyv55narhe
+- henrikkv/demo_fsm_abci_app:0.1.0:bafybeige4uekncyd36zfhjqq5fd6meyoegy4o73sxz23zooq72opzwqthm
 customs: []
 default_ledger: ethereum
 required_ledgers:

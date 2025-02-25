@@ -24,6 +24,7 @@ open-aea-test-autonomy = "==0.19.4"
 open-autonomy = "==0.19.4"
 autonomy-dev = {extras = ["all"], version = ">=0.2.64,<=0.2.138"}
 python-telegram-bot = "<=21"
+rich = "^13.9.4"
 
 [tool.poetry.group.dev.dependencies]
 

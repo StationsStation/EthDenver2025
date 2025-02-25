@@ -6,7 +6,7 @@ aea_version: '>=1.0.0, <2.0.0'
 license: apache-2.0
 fingerprint: {}
 fingerprint_ignore_patterns: []
-agent: henrikkv/git_scraper:0.1.0:bafybeicjnedjrbp34fp2z2tjmwqaza5sp2wp3tod5kleasvuoer5inyahi
+agent: henrikkv/git_scraper:0.1.0:bafybeicyvaafk3wxeql6brhr5inotw74aegclp4z7wlzntic4cyihyr3se
 number_of_agents: 1
 deployment:
   agent:
