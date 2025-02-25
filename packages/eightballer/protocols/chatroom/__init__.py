@@ -16,13 +16,13 @@
 #
 # ------------------------------------------------------------------------------
 
-"""This module contains the support resources for the telegram protocol.
+"""This module contains the support resources for the chatroom protocol.
 
 It was created with protocol buffer compiler version `libprotoc 27.2` and aea protocol generator version `1.0.0`.
 """
 
-from packages.eightballer.protocols.telegram.message import TelegramMessage
-from packages.eightballer.protocols.telegram.serialization import TelegramSerializer
+from packages.eightballer.protocols.chatroom.message import ChatroomMessage
+from packages.eightballer.protocols.chatroom.serialization import ChatroomSerializer
 
 
-TelegramMessage.serializer = TelegramSerializer
+ChatroomMessage.serializer = ChatroomSerializer

@@ -1,10 +1,19 @@
-name: telegram
+# Chatroom Protocol
+
+## Description
+
+...
+
+## Specification
+
+```yaml
+name: chatroom
 author: eightballer
 version: 0.1.0
-description: A protocol for sending and receiving messages using the python-tele-rgram library.
+description: A protocol for sending and receiving messages to and from a chatroom.
 license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
-protocol_specification_id: eightballer/telegram:0.1.0
+protocol_specification_id: eightballer/chatroom:0.1.0
 speech_acts:
   message:
     chat_id: pt:str
@@ -16,7 +25,6 @@ speech_acts:
     timestamp: pt:optional[pt:int]
   message_sent:
     id: pt:optional[pt:int]
-    msg_status: ct:MessageStatus
   error:
     error_code: ct:ErrorCode
     error_msg: pt:str
@@ -43,12 +51,6 @@ ct:ErrorCode: |
       INVALID_MESSAGE_FORMAT = 2;
     }
   ErrorCodeEnum error_code = 1;
-ct:MessageStatus: |
-  enum MessageStatusEnum {
-      SENT = 0;
-      FAILED = 1;
-    }
-  MessageStatusEnum status = 1;
 ---
 initiation: [message, subscribe, unsubscribe, get_channels]
 reply:
@@ -65,3 +67,5 @@ termination: [unsubscription_result, subscription_result, message_sent, error, c
 roles: { agent }
 end_states: [unsubscription_result, subscription_result, message_sent, error, channels]
 keep_terminal_state_dialogues: false
+
+```

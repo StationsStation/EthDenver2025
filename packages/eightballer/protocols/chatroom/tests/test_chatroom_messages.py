@@ -16,7 +16,7 @@
 #
 #                                                                             --
 
-"""Test messages module for telegram protocol."""
+"""Test messages module for chatroom protocol."""
 
 # pylint: disable=too-many-statements,too-many-locals,no-member,too-few-public-methods,redefined-builtin
 import os
@@ -24,11 +24,8 @@ import os
 import yaml
 from aea.test_tools.test_protocol import BaseProtocolMessagesTestCase
 
-from packages.eightballer.protocols.telegram.message import TelegramMessage
-from packages.eightballer.protocols.telegram.custom_types import (
-    ErrorCode,
-    MessageStatus,
-)
+from packages.eightballer.protocols.chatroom.message import ChatroomMessage
+from packages.eightballer.protocols.chatroom.custom_types import ErrorCode
 
 
 def load_data(custom_type):
@@ -37,16 +34,16 @@ def load_data(custom_type):
         return yaml.safe_load(f)[custom_type]
 
 
-class TestMessageTelegram(BaseProtocolMessagesTestCase):
-    """Test for the 'telegram' protocol message."""
+class TestMessageChatroom(BaseProtocolMessagesTestCase):
+    """Test for the 'chatroom' protocol message."""
 
-    MESSAGE_CLASS = TelegramMessage
+    MESSAGE_CLASS = ChatroomMessage
 
-    def build_messages(self) -> list[TelegramMessage]:  # type: ignore[override]
+    def build_messages(self) -> list[ChatroomMessage]:  # type: ignore[override]
         """Build the messages to be used for testing."""
         return [
-            TelegramMessage(
-                performative=TelegramMessage.Performative.MESSAGE,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.MESSAGE,
                 chat_id="some str",
                 text="some str",
                 id=12,
@@ -55,41 +52,40 @@ class TestMessageTelegram(BaseProtocolMessagesTestCase):
                 from_user="some str",
                 timestamp=12,
             ),
-            TelegramMessage(
-                performative=TelegramMessage.Performative.MESSAGE_SENT,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.MESSAGE_SENT,
                 id=12,
-                msg_status=MessageStatus(0),  # check it please!
             ),
-            TelegramMessage(
-                performative=TelegramMessage.Performative.ERROR,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.ERROR,
                 error_code=ErrorCode(0),  # check it please!
                 error_msg="some str",
                 error_data={"some str": b"some_bytes"},
             ),
-            TelegramMessage(
-                performative=TelegramMessage.Performative.SUBSCRIBE,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.SUBSCRIBE,
                 chat_id="some str",
             ),
-            TelegramMessage(
-                performative=TelegramMessage.Performative.UNSUBSCRIBE,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.UNSUBSCRIBE,
                 chat_id="some str",
             ),
-            TelegramMessage(
-                performative=TelegramMessage.Performative.GET_CHANNELS,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.GET_CHANNELS,
                 agent_id="some str",
             ),
-            TelegramMessage(
-                performative=TelegramMessage.Performative.UNSUBSCRIPTION_RESULT,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.UNSUBSCRIPTION_RESULT,
                 chat_id="some str",
                 status="some str",
             ),
-            TelegramMessage(
-                performative=TelegramMessage.Performative.SUBSCRIPTION_RESULT,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.SUBSCRIPTION_RESULT,
                 chat_id="some str",
                 status="some str",
             ),
-            TelegramMessage(
-                performative=TelegramMessage.Performative.CHANNELS,
+            ChatroomMessage(
+                performative=ChatroomMessage.Performative.CHANNELS,
                 channels=("some str",),
             ),
         ]

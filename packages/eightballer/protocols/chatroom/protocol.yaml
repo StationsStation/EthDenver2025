@@ -1,0 +1,26 @@
+name: chatroom
+author: eightballer
+version: 0.1.0
+protocol_specification_id: eightballer/chatroom:0.1.0
+type: protocol
+description: A protocol for sending and receiving messages to and from a chatroom.
+license: Apache-2.0
+aea_version: '>=1.0.0, <2.0.0'
+fingerprint:
+  README.md: bafybeifuvfknsajllanovu3vuac63jevxjcgg6xwcwkpzhhjfret666foa
+  __init__.py: bafybeibdwgbma6xwl6kag3wnfyaiullutgoeourdkkmzukyxguypimpp7a
+  chatroom.proto: bafybeibzpsoj4nvkntvcmcovuxdmroagkwvw3uyp7g2zsrjrcewdiiqy5m
+  chatroom_pb2.py: bafybeihaiy3h7onlrufv4nwoiqxubsq4vuodbss3fc62rhj7llhmbarxxi
+  custom_types.py: bafybeihwjnq6or2axeck4vx5tztzfmlpxua6udvboq5ow3brqco77lls3q
+  dialogues.py: bafybeieq4n34qg22wzy2n3b25fjk5blwgeq52outqfo5v3lwxdnhjprsuu
+  message.py: bafybeigyrwevm2bmegvmszobev5kmz2k3haep3kdl5d2mnipzej4oqc6i4
+  protocol_spec.yaml: bafybeihatojdjhfnbzczvunpai4ss65umekotrhzsjqje46sc3ilvzoigi
+  serialization.py: bafybeiheqenk7yk7x46qbw7rxmawje4xclm65g7fsl4nfn6rku3z445p6u
+  tests/__init__.py: bafybeici3ejsu5uzovuodlc2h5alessjouni7e7mihvwkqemjnqa5kwsky
+  tests/dummy_data.yaml: bafybeih6fc3n2tryigv6qszptvbgyk6rfloeovllaqy4xwba6slwmcmgsu
+  tests/test_chatroom_dialogues.py: bafybeicmaercsk266k7bheknb3pf6z5arh6437rnsq7cjbtuebdkcqlafi
+  tests/test_chatroom_messages.py: bafybeicl37rp5bfethxpt2t2mkvwsqtvgpcvc4ijztptegouo3iypvoi24
+fingerprint_ignore_patterns: []
+dependencies:
+  protobuf: {}
+  pydantic: {}

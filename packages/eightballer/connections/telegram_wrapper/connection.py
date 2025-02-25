@@ -49,8 +49,11 @@ from telegram.ext._application import (
 )
 from aea.protocols.dialogue.base import Dialogue
 
-from packages.eightballer.protocols.telegram.message import TelegramMessage
-from packages.eightballer.protocols.telegram.dialogues import TelegramDialogue, BaseTelegramDialogues
+from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
+from packages.eightballer.protocols.chatroom.dialogues import (
+    ChatroomDialogue as TelegramDialogue,
+    BaseChatroomDialogues as BaseTelegramDialogues,
+)
 
 
 CONNECTION_ID = PublicId.from_str("eightballer/telegram_wrapper:0.1.0")

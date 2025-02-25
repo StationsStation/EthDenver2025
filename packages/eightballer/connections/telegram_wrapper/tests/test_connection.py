@@ -30,8 +30,11 @@ from aea.identity.base import Identity
 from aea.configurations.base import ConnectionConfig
 from aea.protocols.dialogue.base import Dialogue as BaseDialogue
 
-from packages.eightballer.protocols.telegram.message import TelegramMessage
-from packages.eightballer.protocols.telegram.dialogues import TelegramDialogue, BaseTelegramDialogues
+from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
+from packages.eightballer.protocols.chatroom.dialogues import (
+    ChatroomDialogue as TelegramDialogue,
+    BaseChatroomDialogues as BaseTelegramDialogues,
+)
 from packages.eightballer.connections.telegram_wrapper.connection import (
     CONNECTION_ID as CONNECTION_PUBLIC_ID,
     TelegramWrapperConnection,
