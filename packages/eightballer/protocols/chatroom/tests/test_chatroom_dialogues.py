@@ -16,7 +16,7 @@
 #
 # ------------------------------------------------------------------------------
 
-"""Test dialogues module for telegram protocol."""
+"""Test dialogues module for chatroom protocol."""
 
 # pylint: disable=too-many-statements,too-many-locals,no-member,too-few-public-methods,redefined-builtin
 import os
@@ -24,10 +24,10 @@ import os
 import yaml
 from aea.test_tools.test_protocol import BaseProtocolDialoguesTestCase
 
-from packages.eightballer.protocols.telegram.message import TelegramMessage
-from packages.eightballer.protocols.telegram.dialogues import (
-    TelegramDialogue,
-    BaseTelegramDialogues,
+from packages.eightballer.protocols.chatroom.message import ChatroomMessage
+from packages.eightballer.protocols.chatroom.dialogues import (
+    ChatroomDialogue,
+    BaseChatroomDialogues,
 )
 
 
@@ -37,21 +37,21 @@ def load_data(custom_type):
         return yaml.safe_load(f)[custom_type]
 
 
-class TestDialoguesTelegram(BaseProtocolDialoguesTestCase):
-    """Test for the 'telegram' protocol dialogues."""
+class TestDialoguesChatroom(BaseProtocolDialoguesTestCase):
+    """Test for the 'chatroom' protocol dialogues."""
 
-    MESSAGE_CLASS = TelegramMessage
+    MESSAGE_CLASS = ChatroomMessage
 
-    DIALOGUE_CLASS = TelegramDialogue
+    DIALOGUE_CLASS = ChatroomDialogue
 
-    DIALOGUES_CLASS = BaseTelegramDialogues
+    DIALOGUES_CLASS = BaseChatroomDialogues
 
-    ROLE_FOR_THE_FIRST_MESSAGE = TelegramDialogue.Role.AGENT  # CHECK
+    ROLE_FOR_THE_FIRST_MESSAGE = ChatroomDialogue.Role.AGENT  # CHECK
 
     def make_message_content(self) -> dict:
         """Make a dict with message contruction content for dialogues.create."""
         return {
-            "performative": TelegramMessage.Performative.MESSAGE,
+            "performative": ChatroomMessage.Performative.MESSAGE,
             "chat_id": "some str",
             "text": "some str",
             "id": 12,
