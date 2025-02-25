@@ -27,7 +27,7 @@ from typing import Any, cast
 from asyncio.events import AbstractEventLoop
 from collections.abc import Callable
 
-from telegram import Update
+from telegram import Bot, Update
 from aea.common import Address
 from telegram.ext import (
     ContextTypes,
@@ -55,6 +55,7 @@ from packages.eightballer.protocols.chatroom.dialogues import (
     ChatroomDialogue as TelegramDialogue,
     BaseChatroomDialogues as BaseTelegramDialogues,
 )
+from packages.eightballer.protocols.chatroom.custom_types import ErrorCode
 
 
 CONNECTION_ID = PublicId.from_str("eightballer/telegram_wrapper:0.1.0")
@@ -330,7 +331,7 @@ class BaseAsyncChannel:
             self.logger.warning(f"Could not create dialogue for message={message}")
             return
 
-        response_message = handler(message, dialogue)
+        response_message = await handler(message, dialogue)
         self.logger.info(f"returning message: {response_message}")
 
         response_envelope = Envelope(
@@ -400,7 +401,10 @@ class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many
                 application_builder._application_class = Application  # noqa
 
                 app = application_builder.build()
+
+                bot = Bot(token=self.token)
                 self._connection = app
+                self._bot = bot
 
                 await self._connection.connect(loop)
 
@@ -483,26 +487,25 @@ class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many
     ) -> dict[TelegramMessage.Performative, Callable[[TelegramMessage, TelegramDialogue], TelegramMessage]]:
         """Map performative to handlers."""
         return {
-            TelegramMessage.Performative.SEND_MESSAGE: self.send_message,
-            TelegramMessage.Performative.RECEIVE_MESSAGE: self.receive_message,
+            TelegramMessage.Performative.MESSAGE: self.send_message,
         }
 
-    def send_message(self, message: TelegramMessage, dialogue: TelegramDialogue) -> TelegramMessage:
+    async def send_message(self, message: TelegramMessage, dialogue: TelegramDialogue) -> TelegramMessage:
         """Handle TelegramMessage with SEND_MESSAGE Perfomative."""
-        del message
-
-        dialogue.reply(
-            performative=TelegramMessage.Performative.MESSAGE_SENT,
-            id=...,
-            status=...,
-        )
-
-        return dialogue.reply(
-            performative=TelegramMessage.Performative.ERROR,
-            error_code=...,
-            error_msg=...,
-            error_data=...,
-        )
+        try:
+            response = await self._bot.send_message(chat_id=message.chat_id, text=message.text)
+            return dialogue.reply(
+                performative=TelegramMessage.Performative.MESSAGE_SENT,
+                id=response.message_id,
+            )
+        except Exception as e:
+            self.logger.exception(f"Error sending message: {e}")
+            return dialogue.reply(
+                performative=TelegramMessage.Performative.ERROR,
+                error_code=ErrorCode.API_ERROR,
+                error_msg=str(e),
+                error_data={},
+            )
 
     def receive_message(self, message: TelegramMessage, dialogue: TelegramDialogue) -> TelegramMessage:
         """Handle TelegramMessage with RECEIVE_MESSAGE Perfomative."""
