@@ -27,12 +27,19 @@ from typing import cast
 from collections.abc import Callable
 
 from aea.common import Address
+from aea.skills.base import Model
 from aea.protocols.base import Message
 from aea.protocols.dialogue.base import Dialogue, Dialogues, DialogueLabel
 
 from packages.zarathustra.protocols.llm_chat_completion.message import (
     LlmChatCompletionMessage,
 )
+
+
+def _role_from_first_message(message: Message, sender: Address) -> Dialogue.Role:
+    """Infer the role of the agent from an incoming/outgoing first message."""
+    del sender, message
+    return LlmChatCompletionDialogue.Role.CONNECTION
 
 
 class LlmChatCompletionDialogue(Dialogue):
@@ -99,7 +106,7 @@ class LlmChatCompletionDialogue(Dialogue):
         )
 
 
-class LlmChatCompletionDialogues(Dialogues, ABC):
+class BaseLlmChatCompletionDialogues(Dialogues, ABC):
     """This class keeps track of all llm_chat_completion dialogues."""
 
     END_STATES = frozenset({LlmChatCompletionDialogue.EndState.RESPONSE, LlmChatCompletionDialogue.EndState.ERROR})
@@ -120,4 +127,15 @@ class LlmChatCompletionDialogues(Dialogues, ABC):
             message_class=LlmChatCompletionMessage,
             dialogue_class=dialogue_class,
             role_from_first_message=role_from_first_message,
+        )
+
+
+class LlmChatCompletionDialogues(BaseLlmChatCompletionDialogues):
+    """This class defines the dialogues used in LLM Chat completion."""
+
+    def __init__(self, **kwargs):
+        """Initialize dialogues."""
+        Model.__init__(self, keep_terminal_state_dialogues=True, **kwargs)
+        BaseLlmChatCompletionDialogues.__init__(
+            self, self_address=str(self.context.skill_id), role_from_first_message=_role_from_first_message
         )

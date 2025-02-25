@@ -26,7 +26,7 @@ from packages.zarathustra.protocols.llm_chat_completion.message import (
 )
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
-    LlmChatCompletionDialogues,
+    BaseLlmChatCompletionDialogues,
 )
 from packages.zarathustra.protocols.llm_chat_completion.tests.data import KWARGS, MESSAGES
 
@@ -38,7 +38,7 @@ class TestDialoguesLlmChatCompletion(BaseProtocolDialoguesTestCase):
 
     DIALOGUE_CLASS = LlmChatCompletionDialogue
 
-    DIALOGUES_CLASS = LlmChatCompletionDialogues
+    DIALOGUES_CLASS = BaseLlmChatCompletionDialogues
 
     ROLE_FOR_THE_FIRST_MESSAGE = LlmChatCompletionDialogue.Role.CONNECTION
 
