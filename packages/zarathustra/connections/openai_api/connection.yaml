@@ -8,17 +8,17 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeibfk3keikwgysjsyf54otq5w25xyep255njyjx4gzavl46znm5yya
   __init__.py: bafybeiganoszwzracposguechnr4z2ky5y22azrry4cvu3dj34yqajbr5y
-  connection.py: bafybeiexrl4ezhi2jjwhmptrvnwxh7v7bfyiq46ygancrc5mcpz7b5vhsm
+  connection.py: bafybeia64x7l4anrlf5rgddeat54vhzp5h6wb7ccnenyvwxfqwbblswvwa
   tests/__init__.py: bafybeicbvsbnhql53ujlr24qetoin5qbsfhes7al6g5dyex7qlgjblejxi
-  tests/test_connection.py: bafybeifpxwynjwmnn7zhyibd6jgmwgfwfcf6brdofmi3qlo4nphw4pm7vq
+  tests/test_connection.py: bafybeibeckmfdcre2lyr3zcvwk77unsjitpsdqctihmvql4bqf6hruoyea
 fingerprint_ignore_patterns: []
 connections: []
 protocols:
-- zarathustra/llm_chat_completion:1.0.0:bafybeiae7sdfovhjt32zqmdz7fshejtnihty4lfptn3z2xmrmg4j66fwlq
+- zarathustra/llm_chat_completion:1.0.0:bafybeic45jnu5pyvam5kgykisfgupyug4jcqxvsumra6ogfh7t3czsksue
 class_name: OpenaiApiConnection
 config:
-  api_key: null
-  base_url: null
+  api_key: ${str:sk-TK0YiafaI1lX61UyT1Ij5g}
+  base_url: ${str:https://chatapi.akash.network/api/v1}
 excluded_protocols: []
 restricted_to_protocols: []
 dependencies:

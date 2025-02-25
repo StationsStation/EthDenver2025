@@ -5,15 +5,15 @@ license: Apache-2.0
 description: ''
 aea_version: '>=1.55.0, <2.0.0'
 fingerprint:
-  tests/__init__.py: bafybeibk76alseqt3ufreyev7rnz5zuk6dcftt7c2ob54gmhpt6xrhkg2y
-  tests/test_agent.py: bafybeicw5fan7aahhpthlbuuxzcmzbmog6dr6admmotjv34z4ijhdv6sne
+  tests/__init__.py: bafybeidvyqwngmyx6fxs7f5lxkah5iis5elvnywjewxp4dp2afxfzjkr7m
+  tests/test_agent.py: bafybeib5bc55nvmuemamyb6ikkq6j4dl6yqq7bwtrtkgig2za3glxyekaq
 fingerprint_ignore_patterns: []
 connections:
 - eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
 - eightballer/http_server:0.1.0:bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq
 - eightballer/prometheus:0.1.1:bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi
 - eightballer/telegram_wrapper:0.1.0:bafybeiamd2pwu75xlxl6lo6xq24eoddoapuukdja5sm5mbh7b3h3tepgvy
-- zarathustra/openai_api:0.1.0:bafybeicc5jficpwqebgm3eeub4kohvka7si4zllmdl45c7p2n5tyv7fr3i
+- zarathustra/openai_api:0.1.0:bafybeighjnqwq2bjiwuapjxqkaot2rx6aibxlr7sdmqypyhfjllicoktfy
 contracts: []
 protocols:
 - eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
@@ -23,7 +23,7 @@ protocols:
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- zarathustra/asylum_abci_app:0.1.0:bafybeigvmk4t5ftv2yg5hi5ed7jcpxdofzfzmtvpmnjbbrp2jvsmsjwjum
+- zarathustra/asylum_abci_app:0.1.0:bafybeihjctj43v2c547l62v2rprn5mmxuggf5vmgkpshy7jr5mc7slkfse
 customs: []
 default_ledger: ethereum
 required_ledgers:

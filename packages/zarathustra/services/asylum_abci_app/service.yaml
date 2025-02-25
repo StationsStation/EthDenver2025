@@ -4,9 +4,12 @@ version: 0.1.0
 description: A new service, scaffolded by the Adev cli from zarathustra/asylum_abci_app:0.1.0
 aea_version: '>=1.0.0, <2.0.0'
 license: apache-2.0
-fingerprint: {}
+fingerprint:
+  .env.example: bafybeigmgmwown66u7j5pqancojrc5ry2pwzmnlvqnwg2rfcjfi6irgplu
+  tests/__init__.py: bafybeicnqy6locbf7iaso22skucjclhw4ykitninog3gljhp5ngywd567y
+  tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeihplh6u7bah7vj663dyguyrzck5bddn6ppfv6qrdukzootp5o56qa
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeigudhhwythu4ahwnrtlnock434k5ikbhvq3g3dhltukkepoqxi73a
 number_of_agents: 1
 deployment:
   agent:

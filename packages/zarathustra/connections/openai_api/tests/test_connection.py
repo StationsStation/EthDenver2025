@@ -20,14 +20,17 @@
 """This module contains the tests of the Openai Api connection module."""
 # pylint: skip-file
 
+import re
 import asyncio
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
 from aea.common import Address
 from aea.mail.base import Message, Envelope
 from aea.identity.base import Identity
-from aea.configurations.base import ConnectionConfig
+from aea.configurations.base import ComponentType, ConnectionConfig
+from aea.configurations.loader import load_component_configuration
 from aea.protocols.dialogue.base import Dialogue as BaseDialogue
 
 from packages.zarathustra.connections.openai_api.connection import (
@@ -39,9 +42,10 @@ from packages.zarathustra.connections.openai_api.connection import (
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
-    LlmChatCompletionDialogues as BaseLlmChatCompletionDialogues,
+    BaseLlmChatCompletionDialogues,
 )
 from packages.zarathustra.protocols.llm_chat_completion.tests.data import MESSAGES
+from packages.zarathustra.protocols.llm_chat_completion.custom_types import Kwargs
 
 
 def envelope_it(message: LlmChatCompletionMessage):
@@ -86,14 +90,16 @@ class TestOpenaiApiConnection:
         self.connection_id = OpenaiApiConnection.connection_id
         self.protocol_id = LlmChatCompletionMessage.protocol_id
         self.target_skill_id = "dummy_author/dummy_skill:0.1.0"
-
-        kwargs = {}
+        directory = Path(__file__).parent.parent
+        config = load_component_configuration(ComponentType.CONNECTION, directory)
+        pattern = r"\$\{[^:]+:([^}]+)\}"
+        extracted_values = {key: re.search(pattern, value).group(1) for key, value in config.config.items()}
 
         self.configuration = ConnectionConfig(
             target_skill_id=self.target_skill_id,
             connection_id=OpenaiApiConnection.connection_id,
             restricted_to_protocols={LlmChatCompletionMessage.protocol_id},
-            **kwargs,
+            **extracted_values,
         )
 
         self.openai_api_connection = OpenaiApiConnection(
@@ -133,13 +139,15 @@ class TestOpenaiApiConnection:
             performative=LlmChatCompletionMessage.Performative.CREATE,
             model=model,
             messages=messages,
-            kwargs={"n": number_of_responses},
+            kwargs=Kwargs({"n": number_of_responses}),
         )
 
         await self.openai_api_connection.send(envelope_it(msg))
         response_envelope = await self.openai_api_connection.receive()
         if response_envelope.message.performative == LlmChatCompletionMessage.Performative.ERROR:
             self.openai_api_connection.logger.exception(f"{response_envelope.message}")
+            assert response_envelope.message.error_code == LlmChatCompletionMessage.ErrorCode.OPENAI_ERROR
+            return
         model_chat_completion = reconstitute(response_envelope.message)
         assert len(model_chat_completion.choices) == number_of_responses
         for response in model_chat_completion.choices:

@@ -42,7 +42,7 @@ from aea.protocols.dialogue.base import Dialogue
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
-    LlmChatCompletionDialogues as BaseLlmChatCompletionDialogues,
+    BaseLlmChatCompletionDialogues,
 )
 
 
