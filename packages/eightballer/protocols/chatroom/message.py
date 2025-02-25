@@ -17,7 +17,7 @@
 #
 # ------------------------------------------------------------------------------
 
-"""This module contains telegram's message definition."""
+"""This module contains chatroom's message definition."""
 
 # pylint: disable=too-many-statements,too-many-locals,no-member,too-few-public-methods,too-many-branches,not-an-iterable,unidiomatic-typecheck,unsubscriptable-object
 import logging
@@ -27,33 +27,28 @@ from aea.configurations.base import PublicId
 from aea.exceptions import AEAEnforceError, enforce
 from aea.protocols.base import Message  # type: ignore
 
-from packages.eightballer.protocols.telegram.custom_types import (
+from packages.eightballer.protocols.chatroom.custom_types import (
     ErrorCode as CustomErrorCode,
-)
-from packages.eightballer.protocols.telegram.custom_types import (
-    MessageStatus as CustomMessageStatus,
 )
 
 
 _default_logger = logging.getLogger(
-    "aea.packages.eightballer.protocols.telegram.message"
+    "aea.packages.eightballer.protocols.chatroom.message"
 )
 
 DEFAULT_BODY_SIZE = 4
 
 
-class TelegramMessage(Message):
-    """A protocol for sending and receiving messages using the python-tele-rgram library."""
+class ChatroomMessage(Message):
+    """A protocol for sending and receiving messages to and from a chatroom."""
 
-    protocol_id = PublicId.from_str("eightballer/telegram:0.1.0")
-    protocol_specification_id = PublicId.from_str("eightballer/telegram:0.1.0")
+    protocol_id = PublicId.from_str("eightballer/chatroom:0.1.0")
+    protocol_specification_id = PublicId.from_str("eightballer/chatroom:0.1.0")
 
     ErrorCode = CustomErrorCode
 
-    MessageStatus = CustomMessageStatus
-
     class Performative(Message.Performative):
-        """Performatives for the telegram protocol."""
+        """Performatives for the chatroom protocol."""
 
         CHANNELS = "channels"
         ERROR = "error"
@@ -94,7 +89,6 @@ class TelegramMessage(Message):
             "from_user",
             "id",
             "message_id",
-            "msg_status",
             "parse_mode",
             "performative",
             "reply_markup",
@@ -113,7 +107,7 @@ class TelegramMessage(Message):
         **kwargs: Any,
     ):
         """
-        Initialise an instance of TelegramMessage.
+        Initialise an instance of ChatroomMessage.
 
         :param message_id: the message id.
         :param dialogue_reference: the dialogue reference.
@@ -125,7 +119,7 @@ class TelegramMessage(Message):
             dialogue_reference=dialogue_reference,
             message_id=message_id,
             target=target,
-            performative=TelegramMessage.Performative(performative),
+            performative=ChatroomMessage.Performative(performative),
             **kwargs,
         )
 
@@ -150,7 +144,7 @@ class TelegramMessage(Message):
     def performative(self) -> Performative:  # type: ignore # noqa: F821
         """Get the performative of the message."""
         enforce(self.is_set("performative"), "performative is not set.")
-        return cast(TelegramMessage.Performative, self.get("performative"))
+        return cast(ChatroomMessage.Performative, self.get("performative"))
 
     @property
     def target(self) -> int:
@@ -205,12 +199,6 @@ class TelegramMessage(Message):
         return cast(Optional[int], self.get("id"))
 
     @property
-    def msg_status(self) -> CustomMessageStatus:
-        """Get the 'msg_status' content from the message."""
-        enforce(self.is_set("msg_status"), "'msg_status' content is not set.")
-        return cast(CustomMessageStatus, self.get("msg_status"))
-
-    @property
     def parse_mode(self) -> Optional[str]:
         """Get the 'parse_mode' content from the message."""
         return cast(Optional[str], self.get("parse_mode"))
@@ -238,7 +226,7 @@ class TelegramMessage(Message):
         return cast(Optional[int], self.get("timestamp"))
 
     def _is_consistent(self) -> bool:
-        """Check that the message follows the telegram protocol."""
+        """Check that the message follows the chatroom protocol."""
         try:
             enforce(
                 isinstance(self.dialogue_reference, tuple),
@@ -274,7 +262,7 @@ class TelegramMessage(Message):
             # Light Protocol Rule 2
             # Check correct performative
             enforce(
-                isinstance(self.performative, TelegramMessage.Performative),
+                isinstance(self.performative, ChatroomMessage.Performative),
                 "Invalid 'performative'. Expected either of '{}'. Found '{}'.".format(
                     self.valid_performatives, self.performative
                 ),
@@ -283,7 +271,7 @@ class TelegramMessage(Message):
             # Check correct contents
             actual_nb_of_contents = len(self._body) - DEFAULT_BODY_SIZE
             expected_nb_of_contents = 0
-            if self.performative == TelegramMessage.Performative.MESSAGE:
+            if self.performative == ChatroomMessage.Performative.MESSAGE:
                 expected_nb_of_contents = 2
                 enforce(
                     isinstance(self.chat_id, str),
@@ -342,8 +330,8 @@ class TelegramMessage(Message):
                             type(timestamp)
                         ),
                     )
-            elif self.performative == TelegramMessage.Performative.MESSAGE_SENT:
-                expected_nb_of_contents = 1
+            elif self.performative == ChatroomMessage.Performative.MESSAGE_SENT:
+                expected_nb_of_contents = 0
                 if self.is_set("id"):
                     expected_nb_of_contents += 1
                     id = cast(int, self.id)
@@ -353,13 +341,7 @@ class TelegramMessage(Message):
                             type(id)
                         ),
                     )
-                enforce(
-                    isinstance(self.msg_status, CustomMessageStatus),
-                    "Invalid type for content 'msg_status'. Expected 'MessageStatus'. Found '{}'.".format(
-                        type(self.msg_status)
-                    ),
-                )
-            elif self.performative == TelegramMessage.Performative.ERROR:
+            elif self.performative == ChatroomMessage.Performative.ERROR:
                 expected_nb_of_contents = 3
                 enforce(
                     isinstance(self.error_code, CustomErrorCode),
@@ -392,7 +374,7 @@ class TelegramMessage(Message):
                             type(value_of_error_data)
                         ),
                     )
-            elif self.performative == TelegramMessage.Performative.SUBSCRIBE:
+            elif self.performative == ChatroomMessage.Performative.SUBSCRIBE:
                 expected_nb_of_contents = 1
                 enforce(
                     isinstance(self.chat_id, str),
@@ -400,7 +382,7 @@ class TelegramMessage(Message):
                         type(self.chat_id)
                     ),
                 )
-            elif self.performative == TelegramMessage.Performative.UNSUBSCRIBE:
+            elif self.performative == ChatroomMessage.Performative.UNSUBSCRIBE:
                 expected_nb_of_contents = 1
                 enforce(
                     isinstance(self.chat_id, str),
@@ -408,7 +390,7 @@ class TelegramMessage(Message):
                         type(self.chat_id)
                     ),
                 )
-            elif self.performative == TelegramMessage.Performative.GET_CHANNELS:
+            elif self.performative == ChatroomMessage.Performative.GET_CHANNELS:
                 expected_nb_of_contents = 1
                 enforce(
                     isinstance(self.agent_id, str),
@@ -417,7 +399,7 @@ class TelegramMessage(Message):
                     ),
                 )
             elif (
-                self.performative == TelegramMessage.Performative.UNSUBSCRIPTION_RESULT
+                self.performative == ChatroomMessage.Performative.UNSUBSCRIPTION_RESULT
             ):
                 expected_nb_of_contents = 2
                 enforce(
@@ -432,7 +414,7 @@ class TelegramMessage(Message):
                         type(self.status)
                     ),
                 )
-            elif self.performative == TelegramMessage.Performative.SUBSCRIPTION_RESULT:
+            elif self.performative == ChatroomMessage.Performative.SUBSCRIPTION_RESULT:
                 expected_nb_of_contents = 2
                 enforce(
                     isinstance(self.chat_id, str),
@@ -446,7 +428,7 @@ class TelegramMessage(Message):
                         type(self.status)
                     ),
                 )
-            elif self.performative == TelegramMessage.Performative.CHANNELS:
+            elif self.performative == ChatroomMessage.Performative.CHANNELS:
                 expected_nb_of_contents = 1
                 enforce(
                     isinstance(self.channels, tuple),

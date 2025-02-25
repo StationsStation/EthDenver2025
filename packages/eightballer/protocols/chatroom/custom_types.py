@@ -48,47 +48,6 @@ class ErrorCode(Enum):
         return ErrorCode(error_code_protobuf_object.error_code)
 
 
-class MessageStatus(Enum):
-    """This class represents an instance of MessageStatus."""
-
-    SENT = 0
-    FAILED = 1
-
-    @staticmethod
-    def encode(message_status_protobuf_object, message_status_object: "MessageStatus") -> None:
-        """Encode an instance of this class into the protocol buffer object.
-
-        The protocol buffer object in the message_status_protobuf_object argument is matched with the instance of this
-        class in the 'message_status_object' argument.
-
-
-
-        Args:
-        ----
-               message_status_protobuf_object:  the protocol buffer object whose type corresponds with this class.
-               message_status_object:  an instance of this class to be encoded in the protocol buffer object.
-
-        """
-        message_status_protobuf_object.message_status = message_status_object.value
-
-    @classmethod
-    def decode(cls, message_status_protobuf_object) -> "MessageStatus":
-        """Decode a protocol buffer object that corresponds with this class into an instance of this class.
-
-        A new instance of this class is created that matches the protocol buffer object in the
-        'message_status_protobuf_object' argument.
-
-        'message_status_protobuf_object' argument.
-
-
-        Args:
-        ----
-               message_status_protobuf_object:  the protocol buffer object whose type corresponds with this class.
-
-        """
-        return MessageStatus(message_status_protobuf_object.message_status)
-
-
 class BaseCustomEncoder(BaseModel):
     """This class is a base class for encoding and decoding protocol buffer objects."""
 
@@ -163,4 +122,4 @@ class BaseCustomEncoder(BaseModel):
         return hash(self.dict())
 
 
-CUSTOM_ENUM_MAP = {"<class 'telegram_pb2.ErrorCode'>": ErrorCode, "<class 'telegram_pb2.MessageStatus'>": MessageStatus}
+CUSTOM_ENUM_MAP = {"<class 'chatroom_pb2.ErrorCode'>": ErrorCode}

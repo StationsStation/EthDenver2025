@@ -6,11 +6,11 @@ from pathlib import Path
 from aea.test_tools.test_cases import AEATestCaseMany
 
 
-AGENT_NAME = "asylum_agent"
+AGENT_NAME = "telegram_bot"
 AUTHOR = "eightballer"
 VERSION = "0.1.0"
 DEFAULT_LAUNCH_TIMEOUT = 10
-LAUNCH_SUCCEED_MESSAGE = "Start processing"
+LAUNCH_SUCCEED_MESSAGE = "Starting AEA 'base' in 'async' mode..."
 
 
 class TestAgentLaunch(AEATestCaseMany):

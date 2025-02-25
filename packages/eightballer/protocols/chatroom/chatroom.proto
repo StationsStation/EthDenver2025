@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package aea.eightballer.telegram.v0_1_0;
+package aea.eightballer.chatroom.v0_1_0;
 
-message TelegramMessage{
+message ChatroomMessage{
 
   // Custom Types
   message ErrorCode{
@@ -12,14 +12,6 @@ message TelegramMessage{
       ERROR_CODE_ENUM_INVALID_MESSAGE_FORMAT = 2;
     }
     ErrorCodeEnum error_code = 1;
-  }
-
-  message MessageStatus{
-    enum MessageStatusEnum {
-      MESSAGE_STATUS_ENUM_SENT = 0;
-      MESSAGE_STATUS_ENUM_FAILED = 1;
-    }
-    MessageStatusEnum status = 1;
   }
 
 
@@ -42,7 +34,6 @@ message TelegramMessage{
   message Message_Sent_Performative{
     int32 id = 1;
     bool id_is_set = 2;
-    MessageStatus msg_status = 3;
   }
 
   message Error_Performative{
