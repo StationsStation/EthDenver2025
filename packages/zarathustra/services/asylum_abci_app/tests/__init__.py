@@ -16,4 +16,4 @@
 #
 # ------------------------------------------------------------------------------
 
-"""This module contains the implementation of the asymlum ABCI app tests."""
+"""This module contains the implementation of the asymlum ABCI app service tests."""

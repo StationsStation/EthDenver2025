@@ -146,6 +146,8 @@ class TestOpenaiApiConnection:
         response_envelope = await self.openai_api_connection.receive()
         if response_envelope.message.performative == LlmChatCompletionMessage.Performative.ERROR:
             self.openai_api_connection.logger.exception(f"{response_envelope.message}")
+            assert response_envelope.message.error_code == LlmChatCompletionMessage.ErrorCode.OPENAI_ERROR
+            return
         model_chat_completion = reconstitute(response_envelope.message)
         assert len(model_chat_completion.choices) == number_of_responses
         for response in model_chat_completion.choices:

@@ -17,7 +17,7 @@ fingerprint:
   tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
 fingerprint_ignore_patterns: []
 connections:
-- zarathustra/openai_api:0.1.0:bafybeieecj7oiq2w4hqykwoojai56tjjvr4g36s7i4y2z3kb4vpikgz5vm
+- zarathustra/openai_api:0.1.0:bafybeighjnqwq2bjiwuapjxqkaot2rx6aibxlr7sdmqypyhfjllicoktfy
 contracts: []
 protocols:
 - eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
