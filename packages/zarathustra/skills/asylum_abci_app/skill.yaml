@@ -8,10 +8,10 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
-  behaviours.py: bafybeif5qmqdmzanb5zjkgq4rn6fh2x2rjzjpqcsvfx72xg7os4wmxrutu
+  behaviours.py: bafybeigtnbfdkn3hj2ke6teixvmw7kbiirr5trf7urjntaw5knsniwrjx4
   dialogues.py: bafybeiggsfafkurldxnvjhqw3l424acxmpgr4x6qs36ociozuobikpqejy
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeiec4ivmwpa3s3j7fn5tr6nofckdnadz5gkzeotjhqgbscuwp7e3hi
+  handlers.py: bafybeictctq3wlvj2pjknqlj2vqbeycd2qsukplj5pqssgupxtykqgnwuu
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
   tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
@@ -21,6 +21,7 @@ contracts: []
 protocols:
 - eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
 - eightballer/http:0.1.0:bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme
+- eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
 skills: []
 behaviours:
   main:
@@ -31,6 +32,9 @@ handlers:
     args:
       enable_cors: false
     class_name: HttpHandler
+  telegram_handler:
+    args: {}
+    class_name: TelegramHandler
 models:
   default_dialogues:
     args: {}
@@ -38,6 +42,9 @@ models:
   http_dialogues:
     args: {}
     class_name: HttpDialogues
+  telegram_dialogues:
+    args: {}
+    class_name: TelegramDialogues
 dependencies: {}
 is_abstract: false
 customs: []
