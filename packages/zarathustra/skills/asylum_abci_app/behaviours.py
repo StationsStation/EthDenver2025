@@ -21,6 +21,7 @@
 import os
 from abc import ABC
 from enum import Enum
+from time import sleep
 from typing import Any
 
 from aea.skills.behaviours import State, FSMBehaviour
@@ -105,6 +106,7 @@ class CheckTelegramQueueRound(BaseState):
         self.context.logger.info(f"In state: {self._state}")
         self._is_done = True
         self._event = AsylumAbciAppEvents.NEW_MESSAGES
+        sleep(1)
 
 
 class RequestLLMResponseRound(BaseState):
