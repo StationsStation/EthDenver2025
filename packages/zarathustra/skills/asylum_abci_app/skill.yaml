@@ -8,16 +8,19 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
-  behaviours.py: bafybeiaxaqzyzuy5yj2a7ojsg6hsykbtg3fo5ttatxprftzzz43oihsitu
+  behaviours.py: bafybeihlxkwyzatfctg4p4a53nvmp5t7oheozlx2kdxbqlgghlclh7nu5e
   dialogues.py: bafybeiggsfafkurldxnvjhqw3l424acxmpgr4x6qs36ociozuobikpqejy
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeictctq3wlvj2pjknqlj2vqbeycd2qsukplj5pqssgupxtykqgnwuu
+  handlers.py: bafybeieaylx6lbb5zpcm7y3vebufj4usrpolzhdkbzpwv4nra2diacgqc4
+  strategy.py: bafybeieuj6w4rsycrq6shupc7lqeoijwpybu46mhqf6iw6dgo36hrmsxmy
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
   tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
+  workflows/create_new_repo.yaml: bafybeihpwlqom5wptz4pqunoehwwyynbqj26iawvenzbhibtj4gmaacc5i
 fingerprint_ignore_patterns: []
 connections:
-- zarathustra/openai_api:0.1.0:bafybeighjnqwq2bjiwuapjxqkaot2rx6aibxlr7sdmqypyhfjllicoktfy
+- zarathustra/openai_api:0.1.0:bafybeicc5jficpwqebgm3eeub4kohvka7si4zllmdl45c7p2n5tyv7fr3i
+- eightballer/telegram_wrapper:0.1.0:bafybeiamd2pwu75xlxl6lo6xq24eoddoapuukdja5sm5mbh7b3h3tepgvy
 contracts: []
 protocols:
 - eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
@@ -46,6 +49,9 @@ models:
   telegram_dialogues:
     args: {}
     class_name: TelegramDialogues
+  asylum_strategy:
+    args: {}
+    class_name: AsylumStrategy
 dependencies: {}
 is_abstract: false
 customs: []

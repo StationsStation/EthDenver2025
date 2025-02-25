@@ -1,15 +1,13 @@
 {
     "dev": {
         "protocol/eightballer/chatroom/0.1.0": "bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy",
-        "protocol/zarathustra/llm_chat_completion/1.0.0": "bafybeic45jnu5pyvam5kgykisfgupyug4jcqxvsumra6ogfh7t3czsksue",
-        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeihwngxvaefwrkx6sa2bwuu3nklytxpsapmlpbz5gpewz7mu3irt2e",
-        "connection/zarathustra/openai_api/0.1.0": "bafybeighjnqwq2bjiwuapjxqkaot2rx6aibxlr7sdmqypyhfjllicoktfy",
-        "skill/eightballer/metrics/0.1.0": "bafybeiams7g4pynaklci2zatx2ick62smkkcli4p3zuimrtv334plbhi7e",
-        "skill/eightballer/prometheus/0.1.0": "bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu",
-        "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeidaqra2rppdjjm2szap2zul6sdgj2zmuprfny44upfglf7ylung2e",
-        "agent/eightballer/telegram_bot/0.1.0": "bafybeiba3ixvspnt5suurrcor6fwswm7wzllowpp4pu5jahoeklx3b5ske",
-        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeiaevhm3mr3wlewx2oe4utvjuryacjupvo4xyx4esvmymtimupyvba",
-        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeiesn7f7hay7ctzvp762z4fqregkoy3fa3d7i5xxuv2ntyjxbltaya"
+        "protocol/zarathustra/llm_chat_completion/1.0.0": "bafybeiae7sdfovhjt32zqmdz7fshejtnihty4lfptn3z2xmrmg4j66fwlq",
+        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeiamd2pwu75xlxl6lo6xq24eoddoapuukdja5sm5mbh7b3h3tepgvy",
+        "connection/zarathustra/openai_api/0.1.0": "bafybeicc5jficpwqebgm3eeub4kohvka7si4zllmdl45c7p2n5tyv7fr3i",
+        "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeigvmk4t5ftv2yg5hi5ed7jcpxdofzfzmtvpmnjbbrp2jvsmsjwjum",
+        "agent/eightballer/telegram_bot/0.1.0": "bafybeif7bux7p6bpvsqpeczo5voi6hadzr5cev3bqaxirceqnu4eau75va",
+        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeihplh6u7bah7vj663dyguyrzck5bddn6ppfv6qrdukzootp5o56qa",
+        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeiggikifopz3psxrgipktyv2y5gwj3i455aselyxdnbjkn77zcnxbu"
     },
     "third_party": {
         "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",
@@ -18,6 +16,8 @@
         "protocol/open_aea/signing/1.0.0": "bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm",
         "connection/eightballer/http_client/0.1.0": "bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u",
         "connection/eightballer/http_server/0.1.0": "bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq",
-        "connection/eightballer/prometheus/0.1.1": "bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi"
+        "connection/eightballer/prometheus/0.1.1": "bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi",
+        "skill/eightballer/metrics/0.1.0": "bafybeiams7g4pynaklci2zatx2ick62smkkcli4p3zuimrtv334plbhi7e",
+        "skill/eightballer/prometheus/0.1.0": "bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu"
     }
 }

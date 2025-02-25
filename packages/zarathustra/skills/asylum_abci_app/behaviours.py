@@ -22,11 +22,21 @@ import os
 from abc import ABC
 from enum import Enum
 from time import sleep
-from typing import Any
+from typing import Any, cast
+from pathlib import Path
+from datetime import UTC, datetime
+from textwrap import dedent
 
 from aea.skills.behaviours import State, FSMBehaviour
+from auto_dev.workflow_manager import Workflow, WorkflowManager
 
+from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
+from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy
 from packages.zarathustra.connections.openai_api.connection import CONNECTION_ID
+from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
+
+
+TIMEZONE_UTC = UTC
 
 
 class AsylumAbciAppEvents(Enum):
@@ -39,6 +49,13 @@ class AsylumAbciAppEvents(Enum):
     NEW_MESSAGES = "NEW_MESSAGES"
     TIMEOUT = "TIMEOUT"
     DONE = "DONE"
+
+
+class LLMActions(Enum):
+    """LLMActions."""
+
+    WORKFLOW = "workflow"
+    REPLY = "reply"
 
 
 class AsylumAbciAppStates(Enum):
@@ -69,6 +86,7 @@ class BaseState(State, ABC):
         self.context.logger.info(f"In state: {self._state}")
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
+        sleep(1)
 
     def is_done(self) -> bool:
         """Is done flag."""
@@ -78,6 +96,11 @@ class BaseState(State, ABC):
     def event(self) -> str | None:
         """Event."""
         return self._event
+
+    @property
+    def strategy(self):
+        """Get the strategy."""
+        return cast(AsylumStrategy, self.context.asylum_strategy)
 
 
 class ProcessLLMResponseRound(BaseState):
@@ -90,8 +113,15 @@ class ProcessLLMResponseRound(BaseState):
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        self._is_done = True
-        self._event = AsylumAbciAppEvents.REPLY
+        for action in self.strategy.llm_responses:
+            self.context.logger.info(f"Action: {action}")
+            if action[0] == LLMActions.REPLY:
+                self._event = AsylumAbciAppEvents.REPLY
+                self._is_done = True
+            elif action[0] == LLMActions.WORKFLOW:
+                self._event = AsylumAbciAppEvents.WORK
+                self._is_done = True
+        sleep(1)
 
 
 class CheckTelegramQueueRound(BaseState):
@@ -100,13 +130,24 @@ class CheckTelegramQueueRound(BaseState):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.CHECK_TELEGRAM_QUEUE_ROUND
+        self.processing_since = None
+        self.timeout = 60
 
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        self._is_done = True
-        self._event = AsylumAbciAppEvents.NEW_MESSAGES
-        sleep(1)
+        if self.processing_since is None:
+            self.processing_since = datetime.now(tz=TIMEZONE_UTC).timestamp()
+        if datetime.now(tz=TIMEZONE_UTC).timestamp() - self.processing_since > self.timeout:
+            self._event = AsylumAbciAppEvents.TIMEOUT
+            self._is_done = True
+            self.processing_since = None
+        if self.strategy.pending_messages:
+            self.context.logger.info(f"New messages found: {len(self.strategy.pending_messages)}")
+            self._event = AsylumAbciAppEvents.NEW_MESSAGES
+            self._is_done = True
+            self.processing_since = None
+        sleep(0.5)
 
 
 class RequestLLMResponseRound(BaseState):
@@ -120,6 +161,17 @@ class RequestLLMResponseRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {CONNECTION_ID}")
+        while self.strategy.pending_messages:
+            msg = self.strategy.pending_messages.pop()
+            text_data = msg.text
+            if text_data.startswith("/work"):
+                # we dummy an llm response for the work tol here.
+                self.strategy.llm_responses.append((LLMActions.WORKFLOW, "create_new_repo.yaml"))
+            else:
+                # we dummy an llm response for the reply tol here.
+                self.strategy.llm_responses.append((LLMActions.REPLY, "I am a bot! replying to your message."))
+
+        # we need to request the llm here.
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
 
@@ -127,9 +179,34 @@ class RequestLLMResponseRound(BaseState):
 class SendTelegramMessageRound(BaseState):
     """This class implements the behaviour of the state SendTelegramMessageRound."""
 
+    counterparty = str(TELEGRAM_CONNECTION_ID)
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.SEND_TELEGRAM_MESSAGE_ROUND
+
+    def act(self):
+        """Act."""
+        self.context.logger.info(f"In state: {self._state}")
+        while self.strategy.llm_responses:
+            msg = self.strategy.llm_responses.pop()
+            self.context.logger.info(f"Sending message: {msg[1]}")
+            self.create_and_send(
+                performative=TelegramMessage.Performative.MESSAGE,
+                chat_id="-4765622287",
+                text=msg[1],
+            )
+        self._is_done = True
+        self._event = AsylumAbciAppEvents.DONE
+
+    def create_and_send(self, send=True, **kwargs) -> None:
+        """Create and send a message."""
+        message, _dialogue = self.context.telegram_dialogues.create(
+            counterparty=self.counterparty,
+            **kwargs,
+        )
+        if send:
+            self.context.outbox.put_message(message)
 
 
 class ScrapeGithubRound(BaseState):
@@ -162,6 +239,31 @@ class ExecuteProposedWorkflowRound(BaseState):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.EXECUTE_PROPOSED_WORKFLOW_ROUND
+        self.wf_manager = WorkflowManager()
+
+    def act(self) -> None:
+        """Act."""
+        self.context.logger.info(f"In state: {self._state}")
+        # we now do the work.
+        try:
+            workflow_path = Path(__file__).parent / "workflows" / "create_new_repo.yaml"
+            workflow = Workflow.from_file(workflow_path)
+            self.wf_manager.add_workflow(workflow)
+            self.wf_manager.run_workflow(workflow.id, display_process=False)
+            result_str = dedent(f"""
+            Workflow id: {workflow.id}
+            Workflow name: {workflow.name}
+            Workflow status: {workflow.is_done}
+            Workflow is success: {workflow.is_success}
+            """)
+            self.strategy.llm_responses.append((LLMActions.REPLY, result_str))
+            self.context.logger.info(f"There are {len(self.strategy.llm_responses)} responses.")
+
+        except Exception as e:
+            self.context.logger.exception(f"Error: {e}")
+        finally:
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.DONE
 
 
 class AsylumAbciAppFsmBehaviour(FSMBehaviour):
