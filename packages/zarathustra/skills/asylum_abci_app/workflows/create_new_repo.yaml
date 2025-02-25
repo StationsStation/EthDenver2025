@@ -1,0 +1,12 @@
+id: '1'
+name: create_new_repo
+description: A workflow to create a new repository for hackathon project. Adds the new repo to the agent-asylum organisation on github. Additionally, the workflow adds the repository to submodules of the current repository.
+kwargs:
+  organisation: agent-asylum
+  repo_name: new_repo
+tasks:
+  - id: '1'
+    name: create_repo
+    description: Create a new repository locally
+    command: echo hello
+    stream: False

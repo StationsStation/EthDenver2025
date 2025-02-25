@@ -36,6 +36,7 @@ from telegram.ext import (
     filters,
 )
 from aea.mail.base import Message, Envelope
+from telegram.constants import ChatType
 from aea.connections.base import Connection, ConnectionStates
 from aea.configurations.base import PublicId
 from telegram.ext._application import (
@@ -130,7 +131,7 @@ class Application(BaseApplication):
         write_timeout: ODVInput[float] = DEFAULT_NONE,
         connect_timeout: ODVInput[float] = DEFAULT_NONE,
         pool_timeout: ODVInput[float] = DEFAULT_NONE,
-        allowed_updates: List[str] = None,
+        allowed_updates: List[str] = Update.ALL_TYPES,
         drop_pending_updates: bool | None = None,
         close_loop: bool = True,
         stop_signals: ODVInput[Sequence[int]] = DEFAULT_NONE,
@@ -406,12 +407,21 @@ class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many
                 async def _handle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                     """Echo the user message."""
                     del context
-                    response_envelope = self._from_tg_to_aea(update)
-                    await self._in_queue.put(response_envelope)
+                    response_envelope = None
+                    self.logger.info(f"Received message: {update}")
+                    if update.message.chat.type == ChatType.GROUP:
+                        self.logger.info("Group chat message")
+                        response_envelope = self._from_group_to_aea(update)
+                    elif update.message.chat.type == ChatType.PRIVATE:
+                        self.logger.info("Private chat message")
+                        response_envelope = self._from_tg_to_aea(update)
+                    if response_envelope:
+                        await self._in_queue.put(response_envelope)
+
                     # to allow the thing to work in reverse await update.message.reply_text(update.message.text)
 
-                app.add_handler(MessageHandler(filters.TEXT, _handle))
-                app.run_polling()
+                app.add_handler(MessageHandler(filters.ALL, _handle))
+                app.run_polling(allowed_updates=Update.ALL_TYPES)
                 self.logger.info("Telegram Wrapper has connected.")
             except Exception as e:
                 self.is_stopped = True
@@ -426,6 +436,24 @@ class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many
             performative=TelegramMessage.Performative.MESSAGE,
             chat_id=str(update.message.chat_id),
             id=update.message.message_id,
+            text=update.message.text,
+            from_user=str(update.message.from_user.id),
+            timestamp=int(update.message.date.timestamp()),
+        )
+        return Envelope(
+            to=str(self.target_skill_id),
+            sender=str(self.connection_id),
+            message=msg,
+            protocol_specification_id=self.message_type.protocol_specification_id,
+        )
+
+    def _from_group_to_aea(self, update: Update) -> TelegramMessage:
+        """Convert a telegram update to a TelegramMessage object."""
+
+        msg = TelegramMessage(
+            performative=TelegramMessage.Performative.MESSAGE,
+            chat_id=str(update.message.chat.id),
+            id=update.message.id,
             text=update.message.text,
             from_user=str(update.message.from_user.id),
             timestamp=int(update.message.date.timestamp()),
