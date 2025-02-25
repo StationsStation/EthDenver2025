@@ -22,7 +22,7 @@ open-aea = "==1.64.0"
 open-aea-cli-ipfs = "==1.64.0"
 open-aea-test-autonomy = "==0.19.4"
 open-autonomy = "==0.19.4"
-autonomy-dev = {extras = ["all"], version = ">=0.2.64,<=0.2.138"}
+autonomy-dev = {version = "==0.2.138", extras = ["all"]}
 python-telegram-bot = "<=21"
 
 [tool.poetry.group.dev.dependencies]
