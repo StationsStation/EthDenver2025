@@ -8,24 +8,27 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
-  behaviours.py: bafybeihlxkwyzatfctg4p4a53nvmp5t7oheozlx2kdxbqlgghlclh7nu5e
-  dialogues.py: bafybeiggsfafkurldxnvjhqw3l424acxmpgr4x6qs36ociozuobikpqejy
+  behaviours.py: bafybeihxu243v5hmanlir47wo7guof2jzrejaap5b3boszy6gvob65u5ay
+  dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeieaylx6lbb5zpcm7y3vebufj4usrpolzhdkbzpwv4nra2diacgqc4
-  strategy.py: bafybeieuj6w4rsycrq6shupc7lqeoijwpybu46mhqf6iw6dgo36hrmsxmy
+  handlers.py: bafybeieqnwlyqdbdrgytc3ypoo25pk7svteco5nmi7qnhw5o3hkxh7dpuu
+  mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
+  strategy.py: bafybeid3gpcjroubntu7dp4lyucqqxxg5k2mpd2cpcmvqtism6eaomcm54
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
   tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
   workflows/create_new_repo.yaml: bafybeihpwlqom5wptz4pqunoehwwyynbqj26iawvenzbhibtj4gmaacc5i
+  workflows/lint_repo.yaml: bafybeichu6lslos7eboobzh75ryadr2yyhegyojjemq3yrnkhyet6rd5bq
 fingerprint_ignore_patterns: []
 connections:
-- zarathustra/openai_api:0.1.0:bafybeighjnqwq2bjiwuapjxqkaot2rx6aibxlr7sdmqypyhfjllicoktfy
-- eightballer/telegram_wrapper:0.1.0:bafybeiamd2pwu75xlxl6lo6xq24eoddoapuukdja5sm5mbh7b3h3tepgvy
+- zarathustra/openai_api:0.1.0:bafybeicqj36os66ut5kpogax3nponnbcaqr3bflahpo6pb433iac36enf4
+- eightballer/telegram_wrapper:0.1.0:bafybeidkd2jwm6upndqpwpuzwtmjobzt4qe4pesndbrynvgrl65kcepc34
 contracts: []
 protocols:
 - eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
 - eightballer/http:0.1.0:bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme
 - eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
+- zarathustra/llm_chat_completion:1.0.0:bafybeifdp2rwfar5vbs33p56dlin76v62p5fdvspwnpasraunp2wa7gxo4
 skills: []
 behaviours:
   main:
@@ -39,6 +42,9 @@ handlers:
   telegram_handler:
     args: {}
     class_name: TelegramHandler
+  llm_chat_completion_handler:
+    args: {}
+    class_name: LlmChatCompletionHandler
 models:
   default_dialogues:
     args: {}
@@ -49,6 +55,9 @@ models:
   telegram_dialogues:
     args: {}
     class_name: TelegramDialogues
+  llm_chat_completion_dialogues:
+    args: {}
+    class_name: LlmChatCompletionDialogues
   asylum_strategy:
     args: {}
     class_name: AsylumStrategy
