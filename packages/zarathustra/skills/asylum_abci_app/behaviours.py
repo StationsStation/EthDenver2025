@@ -19,6 +19,7 @@
 """This package contains the behaviours for the AsylumAbciApp."""
 
 import os
+import json
 from abc import ABC
 from enum import Enum
 from time import sleep
@@ -46,6 +47,20 @@ TIMEZONE_UTC = UTC
 
 MERMAID_DIAGRAMS = Path(__file__).parent / "mermaid_diagrams"
 THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
+
+
+USER_PERSONA_PROMPT = dedent("""
+    I have a dataset of GitHub issues and discussions related to open-autonomy. I want you to analyze and summarize the contributions of the main participants to infer their technical personas. 
+
+    For each key contributor (e.g., "8ball030", "Adamantios"), summarize their primary concerns, expertise, and communication style. Structure the response as a persona profile including:
+    - **Username**
+    - **Technical Expertise** (inferred from issue discussions)
+    - **Main Interests & Contributions** (e.g., debugging, feature requests, build systems)
+    - **Communication Style** (e.g., concise, detailed, informal, argumentative)
+    - **Potential Role in a Development Team** (e.g., bug hunter, maintainer, architect)
+
+    Keep the summary concise but insightful.
+""")
 
 
 SYSTEM_PROMPT = dedent("""
@@ -203,6 +218,22 @@ class RequestLLMResponseRound(BaseState):
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {self.counterparty}")
         workflows = [f"-{f}" for f in self.strategy.workflows]
+        if self.strategy.new_users:
+            username = self.agent_persona.github_username
+            self.context.logger.info(f"New github data found for {username}")
+            github_data = json.dumps(self.strategy.new_users.pop())
+            model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+            content = [
+                Message(role=Role.SYSTEM, content=USER_PERSONA_PROMPT),
+                Message(role=Role.USER, content=github_data, name=username),
+            ]
+            messages = Messages(content)
+            self.create_and_send(
+                performative=LlmChatCompletionMessage.Performative.CREATE,
+                model=model,
+                messages=messages,
+                kwargs=Kwargs({}),
+            )
         while self.strategy.pending_telegram_messages:
             msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
@@ -303,6 +334,7 @@ class ScrapeGithubRound(BaseState):
             self.context.shared_state["user_issues"] = all_user_data
             self._is_done = True
             self._event = AsylumAbciAppEvents.DONE
+            self.strategy.new_users.append(all_user_data)
 
         except Exception as e:
             self.context.logger.exception(f"Error fetching GitHub data: {e!s}")
@@ -326,7 +358,7 @@ class CheckLocalStorageRound(BaseState):
     def act(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
-        user_data = self.data_dir / self.agent_persona.github_username
+        user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
 
         if not user_data.exists():
             self._is_done = True
@@ -347,7 +379,6 @@ class ExecuteProposedWorkflowRound(BaseState):
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        # we now do the work.
 
         while self.strategy.pending_workflows:
             workflow_name = self.strategy.pending_workflows.pop()

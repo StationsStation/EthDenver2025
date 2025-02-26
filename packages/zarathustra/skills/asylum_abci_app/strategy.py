@@ -24,6 +24,7 @@ class LLMActions(Enum):
 class AsylumStrategy(Model):
     """This class models the AdvancedDataRequest skill."""
 
+    new_users: deque[dict] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_telegram_messages: deque[ChatroomMessage] = deque(maxlen=MAX_QUEUE_LENGTH)
     llm_responses: deque[tuple[LLMActions, str]] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_workflows: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
@@ -38,7 +39,6 @@ class AsylumStrategy(Model):
         """Initialize dialogues."""
 
         Model.__init__(self, **kwargs)
-
 
 
 class AgentPersona(Model, PydanticModel):
