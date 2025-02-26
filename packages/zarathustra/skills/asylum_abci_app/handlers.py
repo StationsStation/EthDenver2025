@@ -21,7 +21,6 @@
 
 import json
 from typing import cast
-from collections import deque
 
 from aea.skills.base import Handler
 from aea.protocols.base import Message
@@ -52,8 +51,6 @@ class TelegramHandler(Handler):
 
     SUPPORTED_PROTOCOL = TelegramMessage.protocol_id
 
-    pending_messages = deque(maxlen=1000)
-
     def handle(self, message: Message) -> None:
         """Implement the reaction to an envelope."""
 
@@ -69,7 +66,7 @@ class TelegramHandler(Handler):
             self.context.logger.debug(f"received invalid telegram message={telegram_msg}, unidentified dialogue.")
 
         self.context.logger.info(f"received telegram message={telegram_msg.from_user}, content={telegram_msg.text}")
-        self.strategy.pending_messages.append(telegram_msg)
+        self.strategy.pending_telegram_messages.append(telegram_msg)
 
     @property
     def strategy(self):

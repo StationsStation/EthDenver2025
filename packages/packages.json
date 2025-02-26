@@ -1,23 +1,23 @@
 {
-        "dev": {
-                "protocol/eightballer/chatroom/0.1.0": "bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy",
-                "protocol/zarathustra/llm_chat_completion/1.0.0": "bafybeic45jnu5pyvam5kgykisfgupyug4jcqxvsumra6ogfh7t3czsksue",
-                "connection/eightballer/telegram_wrapper/0.1.0": "bafybeiamd2pwu75xlxl6lo6xq24eoddoapuukdja5sm5mbh7b3h3tepgvy",
-                "connection/zarathustra/openai_api/0.1.0": "bafybeighjnqwq2bjiwuapjxqkaot2rx6aibxlr7sdmqypyhfjllicoktfy",
-                "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeifdik2rw2p7g52xvoknmhk37lpncb7wmngjipcmpsftgoz2ic7sgq",
-                "agent/eightballer/telegram_bot/0.1.0": "bafybeif7bux7p6bpvsqpeczo5voi6hadzr5cev3bqaxirceqnu4eau75va",
-                "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeiezqlri3wd47tiokz574zsx4gywmn7yzkauc3lfzpjzbxtbblalhe",
-                "service/zarathustra/asylum_abci_app/0.1.0": "bafybeifbolmevy32iyln46spphppwnio6za2rgveo3fnfhixrnutoj7uha"
-        },
-        "third_party": {
-                "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",
-                "protocol/eightballer/http/0.1.0": "bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme",
-                "protocol/eightballer/prometheus/1.0.0": "bafybeidxo32tu43ru3xlk3kd5b6xlwf6vaytxvvhtjbh7ag52kexos4ke4",
-                "protocol/open_aea/signing/1.0.0": "bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm",
-                "connection/eightballer/http_client/0.1.0": "bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u",
-                "connection/eightballer/http_server/0.1.0": "bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq",
-                "connection/eightballer/prometheus/0.1.1": "bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi",
-                "skill/eightballer/metrics/0.1.0": "bafybeiams7g4pynaklci2zatx2ick62smkkcli4p3zuimrtv334plbhi7e",
-                "skill/eightballer/prometheus/0.1.0": "bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu"
-        }
+    "dev": {
+        "protocol/eightballer/chatroom/0.1.0": "bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy",
+        "protocol/zarathustra/llm_chat_completion/1.0.0": "bafybeifdp2rwfar5vbs33p56dlin76v62p5fdvspwnpasraunp2wa7gxo4",
+        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeidkd2jwm6upndqpwpuzwtmjobzt4qe4pesndbrynvgrl65kcepc34",
+        "connection/zarathustra/openai_api/0.1.0": "bafybeicqj36os66ut5kpogax3nponnbcaqr3bflahpo6pb433iac36enf4",
+        "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeihfuueue5bjgvikuihhhlulkh523nbk2lfpo2bcewbvhy25bh6pki",
+        "agent/eightballer/telegram_bot/0.1.0": "bafybeifdk5ze2bqe2vbhtwb5hmjo5nfvu4hjjy3neh6dd7wbqc7o7uetnu",
+        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeicvips5gyhed3kgyx7wodjhrksxrsysgflqq2kb2wfkmurqonocc4",
+        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeialjqtog44bpknm5ugq3le626zcvkmbru46yb5euutf4j5qg233iq"
+    },
+    "third_party": {
+        "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",
+        "protocol/eightballer/http/0.1.0": "bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme",
+        "protocol/eightballer/prometheus/1.0.0": "bafybeidxo32tu43ru3xlk3kd5b6xlwf6vaytxvvhtjbh7ag52kexos4ke4",
+        "protocol/open_aea/signing/1.0.0": "bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm",
+        "connection/eightballer/http_client/0.1.0": "bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u",
+        "connection/eightballer/http_server/0.1.0": "bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq",
+        "connection/eightballer/prometheus/0.1.1": "bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi",
+        "skill/eightballer/metrics/0.1.0": "bafybeiams7g4pynaklci2zatx2ick62smkkcli4p3zuimrtv334plbhi7e",
+        "skill/eightballer/prometheus/0.1.0": "bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu"
+    }
 }

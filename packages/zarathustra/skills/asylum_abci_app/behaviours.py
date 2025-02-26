@@ -40,6 +40,7 @@ from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCo
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
 from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
 
+
 TIMEZONE_UTC = UTC
 
 MERMAID_DIAGRAMS = Path(__file__).parent / "mermaid_diagrams"
@@ -132,12 +133,12 @@ class ProcessLLMResponseRound(BaseState):
 
         if self.strategy.llm_responses:
             self.context.logger.info("Processing LLM responses")
-
-        for action, text in self.strategy.llm_responses:
+            action, text = self.strategy.llm_responses.pop()
             self.context.logger.info(f"Action: {action}: {text}")
             if action == LLMActions.REPLY:
                 self._event = AsylumAbciAppEvents.REPLY
                 self._is_done = True
+                self.strategy.telegram_responses.append(text)
             elif action == LLMActions.WORKFLOW:
                 self._event = AsylumAbciAppEvents.WORK
                 self._is_done = True
@@ -169,8 +170,8 @@ class CheckTelegramQueueRound(BaseState):
             self._is_done = True
             self.processing_since = None
             return
-        if self.strategy.pending_messages:
-            self.context.logger.info(f"New messages found: {len(self.strategy.pending_messages)}")
+        if self.strategy.pending_telegram_messages:
+            self.context.logger.info(f"New messages found: {len(self.strategy.pending_telegram_messages)}")
             self._event = AsylumAbciAppEvents.NEW_MESSAGES
             self._is_done = True
             self.processing_since = None
@@ -190,11 +191,11 @@ class RequestLLMResponseRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {self.counterparty}")
-        while self.strategy.pending_messages:
-            msg = self.strategy.pending_messages.pop()
+        workflows = [f"-{f}" for f in self.strategy.workflows]
+        while self.strategy.pending_telegram_messages:
+            msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
             username = msg.from_user
-            workflows = [f"-{f}" for f in self.strategy.workflows]
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -203,7 +204,6 @@ class RequestLLMResponseRound(BaseState):
                 """)
                 response = response.format(workflows="\n".join(workflows))
                 self.strategy.telegram_responses.append(response)
-
             elif text_data.startswith("/workflow"):
                 workflow_name = text_data.split()[1]
                 if workflow_name in self.strategy.workflows:
@@ -211,10 +211,7 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
-                # we dummy an llm response for the reply tol here.
-                # self.strategy.telegram_responses.append("I am a bot! replying to your message.")
-                this_mermaid = THIS_MERMAID_PATH.read_text()
-
+                THIS_MERMAID_PATH.read_text()
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 content = [
                     Message(role=Role.SYSTEM, content=SYSTEM_PROMPT.format(username=username)),
@@ -254,7 +251,7 @@ class SendTelegramMessageRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.telegram_responses:
-            _action, text = self.strategy.telegram_responses.pop()
+            text = self.strategy.telegram_responses.pop()
             self.context.logger.info(f"Sending message: {text}")
             self.create_and_send(
                 performative=TelegramMessage.Performative.MESSAGE,
