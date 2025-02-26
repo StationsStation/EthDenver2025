@@ -287,14 +287,14 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
                 timeout=LLM_RESPONSE_TIMEOUT,
             )
         except (TimeoutError, asyncio.exceptions.CancelledError) as e:
-            self.logger.error(f"Model {model} did not respond timely: {e}")
+            self.logger.exception(f"Model {model} did not respond timely: {e}")
             return dialogue.reply(
                 performative=LlmChatCompletionMessage.Performative.ERROR,
                 error_code=message.ErrorCode.OPENAI_ERROR,
                 error_msg=f"Model {model} did not respond timely: {e}",
             )
         except Exception as e:
-            self.logger.error(f"Caught another exception: {e}")
+            self.logger.exception(f"Caught another exception: {e}")
             return dialogue.reply(
                 performative=LlmChatCompletionMessage.Performative.ERROR,
                 error_code=message.ErrorCode.OTHER_EXCEPTION,

@@ -8,10 +8,10 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
-  behaviours.py: bafybeia45tyzmidkswsmv6tbxyh335olrd4alla2mk7atnubu3jy7mq6sq
+  behaviours.py: bafybeiaeazdb7fiagdcxbvnj6opodjoft5y63f45ulv66d7qktdn2aaz3y
   dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeidl65pki4vpf7wlabl23t24b3yusxat6k2kmhtlf2clcir65kt6sq
+  handlers.py: bafybeiavsbyajbof7iluc7xk6uz6abb3efgr5sjjp27j37rdbqiln3wi3y
   strategy.py: bafybeihcymcyqvewrgfguldapmff2uckwd3rudru6br56ic6ihqmw4d3e4
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
@@ -19,7 +19,7 @@ fingerprint:
   workflows/create_new_repo.yaml: bafybeihpwlqom5wptz4pqunoehwwyynbqj26iawvenzbhibtj4gmaacc5i
 fingerprint_ignore_patterns: []
 connections:
-- zarathustra/openai_api:0.1.0:bafybeih3yibcygaszbqhvle6rh56ksohvboi3tc6lpg26o7oyw7n7yhogy
+- zarathustra/openai_api:0.1.0:bafybeicqj36os66ut5kpogax3nponnbcaqr3bflahpo6pb433iac36enf4
 - eightballer/telegram_wrapper:0.1.0:bafybeiamd2pwu75xlxl6lo6xq24eoddoapuukdja5sm5mbh7b3h3tepgvy
 contracts: []
 protocols:

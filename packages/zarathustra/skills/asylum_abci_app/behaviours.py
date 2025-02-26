@@ -22,7 +22,7 @@ import os
 from abc import ABC
 from enum import Enum
 from time import sleep
-from typing import Any, cast, Callable
+from typing import Any, cast
 from pathlib import Path
 from datetime import UTC, datetime
 from textwrap import dedent
@@ -31,13 +31,15 @@ from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
+from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy
+from packages.zarathustra.connections.openai_api.connection import (
+    CONNECTION_ID as OPENAI_API_CONNECTION_ID,
+    Model as LLMModel,
+)
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
-from packages.zarathustra.protocols.llm_chat_completion.custom_types import Kwargs
-from packages.zarathustra.protocols.llm_chat_completion.tests.data import MESSAGES
-from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy, LLMActions
-from packages.zarathustra.connections.openai_api.connection import CONNECTION_ID as OPENAI_API_CONNECTION_ID
-from packages.zarathustra.connections.openai_api.connection import Model as LLMModel
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
+from packages.zarathustra.protocols.llm_chat_completion.tests.data import MESSAGES
+from packages.zarathustra.protocols.llm_chat_completion.custom_types import Kwargs
 
 
 TIMEZONE_UTC = UTC
@@ -110,7 +112,7 @@ class ProcessLLMResponseRound(BaseState):
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        for (action, text) in self.strategy.llm_responses:
+        for action, text in self.strategy.llm_responses:
             self.context.logger.info(f"Action: {action}: {text}")
             if action == LLMActions.REPLY:
                 self._event = AsylumAbciAppEvents.REPLY
@@ -183,7 +185,7 @@ class RequestLLMResponseRound(BaseState):
 
     def create_and_send(self, **kwargs) -> None:
         """Create and send a message."""
-        message, dialogue = self.context.llm_chat_completion_dialogues.create(
+        message, _dialogue = self.context.llm_chat_completion_dialogues.create(
             counterparty=self.counterparty,
             **kwargs,
         )
@@ -203,7 +205,7 @@ class SendTelegramMessageRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.llm_responses:
-            action, text = self.strategy.llm_responses.pop()
+            _action, text = self.strategy.llm_responses.pop()
             self.context.logger.info(f"Sending message: {text}")
             self.create_and_send(
                 performative=TelegramMessage.Performative.MESSAGE,
