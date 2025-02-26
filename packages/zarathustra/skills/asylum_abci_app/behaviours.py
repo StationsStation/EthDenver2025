@@ -40,8 +40,10 @@ from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCo
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
 from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
 
-
 TIMEZONE_UTC = UTC
+
+MERMAID_DIAGRAMS = Path(__file__).parent / "mermaid_diagrams"
+THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
 
 
 SYSTEM_PROMPT = dedent("""
@@ -181,6 +183,8 @@ class RequestLLMResponseRound(BaseState):
                 # we dummy an llm response for the work tol here.
                 self.strategy.llm_responses.append((LLMActions.WORKFLOW, "create_new_repo.yaml"))
             else:
+                this_mermaid = THIS_MERMAID_PATH.read_text()
+
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 content = [
                     Message(role=Role.SYSTEM, content=SYSTEM_PROMPT.format(username=username)),
