@@ -38,11 +38,21 @@ from packages.zarathustra.connections.openai_api.connection import (
 )
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
-from packages.zarathustra.protocols.llm_chat_completion.tests.data import MESSAGES
-from packages.zarathustra.protocols.llm_chat_completion.custom_types import Kwargs
+from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
 
 
 TIMEZONE_UTC = UTC
+
+
+SYSTEM_PROMPT = dedent("""
+    You are responding to user messages sent via a Telegram channel.
+    Users may send any kind of message, including casual conversation, questions, or gibberish.
+    Your goal is to generate a serious and relevant response to all meaningful messages.
+
+    However, if a message is nonsensical or gibberish, respond with a witty remark while including an echo of their message.
+
+    Always reference (and tag) the user by their username (@{username}) in a natural and appropriate way within your response.
+""")  # noqa: E501
 
 
 class AsylumAbciAppEvents(Enum):
@@ -165,13 +175,18 @@ class RequestLLMResponseRound(BaseState):
         while self.strategy.pending_messages:
             msg = self.strategy.pending_messages.pop()
             text_data = msg.text
+            username = msg.from_user
 
             if text_data.startswith("/work"):
                 # we dummy an llm response for the work tol here.
                 self.strategy.llm_responses.append((LLMActions.WORKFLOW, "create_new_repo.yaml"))
             else:
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
-                messages = MESSAGES
+                content = [
+                    Message(role=Role.SYSTEM, content=SYSTEM_PROMPT.format(username=username)),
+                    Message(role=Role.USER, content=text_data, name=username),
+                ]
+                messages = Messages(content)
                 self.create_and_send(
                     performative=LlmChatCompletionMessage.Performative.CREATE,
                     model=model,
