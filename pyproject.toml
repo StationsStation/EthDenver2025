@@ -14,7 +14,7 @@ classifiers = [
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.11,<3.12"
 open-aea-ledger-solana = "==1.64.0"
 open-aea-ledger-cosmos = "==1.64.0"
 open-aea-ledger-ethereum = "==1.64.0"
@@ -22,9 +22,10 @@ open-aea = "==1.64.0"
 open-aea-cli-ipfs = "==1.64.0"
 open-aea-test-autonomy = "==0.19.4"
 open-autonomy = "==0.19.4"
-autonomy-dev = {extras = ["all"], version = ">=0.2.64,<=0.2.138"}
+autonomy-dev = { extras = ["all"], version = ">=0.2.64,<=0.2.138" }
 python-telegram-bot = "<=21"
 rich = "^13.9.4"
+openai = "^1.64.0"
 
 [tool.poetry.group.dev.dependencies]
 

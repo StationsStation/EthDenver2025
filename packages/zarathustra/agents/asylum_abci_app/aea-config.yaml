@@ -1,28 +1,29 @@
-agent_name: telegram_bot
-author: eightballer
+agent_name: asylum_abci_app
+author: zarathustra
 version: 0.1.0
 license: Apache-2.0
 description: ''
 aea_version: '>=1.55.0, <2.0.0'
 fingerprint:
-  tests/__init__.py: bafybeibk76alseqt3ufreyev7rnz5zuk6dcftt7c2ob54gmhpt6xrhkg2y
-  tests/test_tg_agent.py: bafybeiffgf4j266hzubde2c3l7dta5hsg3syignybvazwkrgm3e4xxzsa4
+  tests/__init__.py: bafybeidvyqwngmyx6fxs7f5lxkah5iis5elvnywjewxp4dp2afxfzjkr7m
+  tests/test_agent.py: bafybeib5bc55nvmuemamyb6ikkq6j4dl6yqq7bwtrtkgig2za3glxyekaq
 fingerprint_ignore_patterns: []
 connections:
 - eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
 - eightballer/http_server:0.1.0:bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq
 - eightballer/prometheus:0.1.1:bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi
 - eightballer/telegram_wrapper:0.1.0:bafybeidkd2jwm6upndqpwpuzwtmjobzt4qe4pesndbrynvgrl65kcepc34
+- zarathustra/openai_api:0.1.0:bafybeicqj36os66ut5kpogax3nponnbcaqr3bflahpo6pb433iac36enf4
 contracts: []
 protocols:
+- eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
 - eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
 - eightballer/http:0.1.0:bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme
 - eightballer/prometheus:1.0.0:bafybeidxo32tu43ru3xlk3kd5b6xlwf6vaytxvvhtjbh7ag52kexos4ke4
-- eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
-- eightballer/metrics:0.1.0:bafybeiams7g4pynaklci2zatx2ick62smkkcli4p3zuimrtv334plbhi7e
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
+- zarathustra/asylum_abci_app:0.1.0:bafybeid5erdlyspayfeojnodxu2czwfxwlygnrbj7x3nu4dp2yd3rtqlo4
 customs: []
 default_ledger: ethereum
 required_ledgers:
@@ -63,10 +64,16 @@ type: connection
 config:
   host: 0.0.0.0
   port: 8888
-  target_skill_id: eightballer/metrics:0.1.0
+  target_skill_id: zarathustra/asylum_abci_app:0.1.0
+---
+public_id: zarathustra/openai_api:0.1.0
+type: connection
+config:
+  api_key: ${str:sk-TK0YiafaI1lX61UyT1Ij5g}
+  base_url: ${str:https://chatapi.akash.network/api/v1}
 ---
 public_id: eightballer/telegram_wrapper:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
 type: connection
 config:
-  target_skill_id: eightballer/metrics:0.1.0
+  target_skill_id: zarathustra/asylum_abci_app:0.1.0
   token: ${TELEGRAM_TOKEN:str:123}
