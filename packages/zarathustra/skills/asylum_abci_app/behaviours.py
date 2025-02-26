@@ -32,7 +32,7 @@ from auto_dev.workflow_manager import Workflow, WorkflowManager
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
 from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
-from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy
+from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy, AgentPersona
 from packages.zarathustra.connections.openai_api.connection import (
     CONNECTION_ID as OPENAI_API_CONNECTION_ID,
     Model as LLMModel,
@@ -119,6 +119,11 @@ class BaseState(State, ABC):
     def strategy(self):
         """Get the strategy."""
         return cast(AsylumStrategy, self.context.asylum_strategy)
+
+    @property
+    def agent_persona(self) -> AgentPersona:
+        """Get the agent persona."""
+        return cast(AgentPersona, self.context.agent_persona)
 
 
 class ProcessLLMResponseRound(BaseState):
@@ -287,12 +292,13 @@ class ScrapeGithubRound(BaseState):
     def act(self) -> None:
         """Perform GitHub data collection."""
         self.context.logger.info(f"In state: {self._state}")
-        usernames = ["8ball030"]
+        usernames = [self.agent_persona.github_username]
+        repos = self.agent_persona.github_repositories
         try:
             self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
             all_user_data = self.github_scraper.scrape_user_interactions(
                 usernames=usernames,
-                repos=["https://github.com/valory-xyz/open-autonomy"],
+                repos=repos,
             )
             self.context.shared_state["user_issues"] = all_user_data
             self._is_done = True
@@ -320,8 +326,7 @@ class CheckLocalStorageRound(BaseState):
     def act(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
-        username = "8ball030"
-        user_data = self.data_dir / username
+        user_data = self.data_dir / self.agent_persona.github_username
 
         if not user_data.exists():
             self._is_done = True

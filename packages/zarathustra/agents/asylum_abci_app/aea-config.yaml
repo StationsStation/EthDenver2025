@@ -77,3 +77,13 @@ type: connection
 config:
   target_skill_id: zarathustra/asylum_abci_app:0.1.0
   token: ${TELEGRAM_TOKEN:str:123}
+---
+public_id: zarathustra/asylum_abci_app:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
+type: skill
+models:
+  agent_persona:
+    args:
+      role: developer
+      github_username: 8ball030
+      github_repositories:
+      - https://github.com/valory-xyz/open-autonomy

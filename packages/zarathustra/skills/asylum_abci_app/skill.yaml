@@ -63,6 +63,12 @@ models:
   asylum_strategy:
     args: {}
     class_name: AsylumStrategy
+  agent_persona:
+    args:
+      role: null
+      github_username: null
+      github_repositories: null
+    class_name: AgentPersona
 dependencies: {}
 is_abstract: false
 customs: []

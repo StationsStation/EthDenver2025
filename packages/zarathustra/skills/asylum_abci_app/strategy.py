@@ -4,10 +4,12 @@ from enum import Enum
 from typing import Any
 from collections import deque
 
+from pydantic import conlist
+
 from aea.skills.base import Model
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage
-
+from packages.zarathustra.skills.asylum_abci_app import PydanticModel
 
 MAX_QUEUE_LENGTH = 1_000
 
@@ -35,4 +37,17 @@ class AsylumStrategy(Model):
     def __init__(self, **kwargs: Any) -> None:
         """Initialize dialogues."""
 
+        Model.__init__(self, **kwargs)
+
+
+
+class AgentPersona(Model, PydanticModel):
+    github_username: str
+    role: str
+    github_repositories: conlist(str, min_length=1)
+
+    def __init__(self, **kwargs: Any) -> None:
+        """Initialize agent persona."""
+        pydantic_kwargs = {k: kwargs.pop(k) for k in self.__fields__}
+        PydanticModel.__init__(self, **pydantic_kwargs)
         Model.__init__(self, **kwargs)
