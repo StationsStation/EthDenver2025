@@ -19,7 +19,7 @@ tasks:
     description: Format the codebase
     command: adev fmt -p packages/zarathustra/skills/asylum_abci_app
     working_dir: ".."
-    stre
+    stream: true
 
   - id: '3'
     name: lint_code
@@ -27,25 +27,3 @@ tasks:
     command: adev lint -p packages/zarathustra/skills/asylum_abci_app
     working_dir: ".."
     stream: true
-
-  # - id: '5'
-  #   name: add_changes
-  #   description: Add changes to git 
-  #   command: git add auto_dev docs scripts tests
-
-  # - id: '6'
-  #   name: commit_changes
-  #   description: Commit changes to git
-  #   command: git commit -m auto_dev:lint-and-format-code
-
-  # - id: '7'
-  #   name: push_changes
-  #   description: Push changes to git
-  #   command: git push origin ${task.0.client.stdout}
-  #   pause_after: 5
-
-  # - id: '9'
-  #   name: create_pull_request
-  #   description: Create a pull request on github in the main branch
-  #   command: gh pr create --base main --head ${task.0.client.stdout} --title auto_dev:lint-and-format-code --fill
-  #   pause_after: 5

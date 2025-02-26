@@ -130,7 +130,7 @@ class BaseLlmChatCompletionDialogues(Dialogues, ABC):
         )
 
 
-class LlmChatCompletionDialogues(BaseLlmChatCompletionDialogues):
+class LlmChatCompletionDialogues(BaseLlmChatCompletionDialogues, Model):
     """This class defines the dialogues used in LLM Chat completion."""
 
     def __init__(self, **kwargs):

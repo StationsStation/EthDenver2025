@@ -31,12 +31,31 @@ from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
-from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy
-from packages.zarathustra.connections.openai_api.connection import CONNECTION_ID
+from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy
+from packages.zarathustra.connections.openai_api.connection import (
+    CONNECTION_ID as OPENAI_API_CONNECTION_ID,
+    Model as LLMModel,
+)
+from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
+from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
 
 
 TIMEZONE_UTC = UTC
+
+MERMAID_DIAGRAMS = Path(__file__).parent / "mermaid_diagrams"
+THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
+
+
+SYSTEM_PROMPT = dedent("""
+    You are responding to user messages sent via a Telegram channel.
+    Users may send any kind of message, including casual conversation, questions, or gibberish.
+    Your goal is to generate a serious and relevant response to all meaningful messages.
+
+    However, if a message is nonsensical or gibberish, respond with a witty remark while including an echo of their message.
+
+    Always reference (and tag) the user by their username (@{username}) in a natural and appropriate way within your response.
+""")  # noqa: E501
 
 
 class AsylumAbciAppEvents(Enum):
@@ -49,13 +68,6 @@ class AsylumAbciAppEvents(Enum):
     NEW_MESSAGES = "NEW_MESSAGES"
     TIMEOUT = "TIMEOUT"
     DONE = "DONE"
-
-
-class LLMActions(Enum):
-    """LLMActions."""
-
-    WORKFLOW = "workflow"
-    REPLY = "reply"
 
 
 class AsylumAbciAppStates(Enum):
@@ -121,11 +133,14 @@ class ProcessLLMResponseRound(BaseState):
 
         if self.strategy.llm_responses:
             self.context.logger.info("Processing LLM responses")
-
-        for action in self.strategy.llm_responses:
-            self.context.logger.info(f"Action: {action}")
-            if action[0] == LLMActions.REPLY:
+            action, text = self.strategy.llm_responses.pop()
+            self.context.logger.info(f"Action: {action}: {text}")
+            if action == LLMActions.REPLY:
                 self._event = AsylumAbciAppEvents.REPLY
+                self._is_done = True
+                self.strategy.telegram_responses.append(text)
+            elif action == LLMActions.WORKFLOW:
+                self._event = AsylumAbciAppEvents.WORK
                 self._is_done = True
 
         for msg in self.strategy.telegram_responses:
@@ -155,8 +170,8 @@ class CheckTelegramQueueRound(BaseState):
             self._is_done = True
             self.processing_since = None
             return
-        if self.strategy.pending_messages:
-            self.context.logger.info(f"New messages found: {len(self.strategy.pending_messages)}")
+        if self.strategy.pending_telegram_messages:
+            self.context.logger.info(f"New messages found: {len(self.strategy.pending_telegram_messages)}")
             self._event = AsylumAbciAppEvents.NEW_MESSAGES
             self._is_done = True
             self.processing_since = None
@@ -166,6 +181,8 @@ class CheckTelegramQueueRound(BaseState):
 class RequestLLMResponseRound(BaseState):
     """This class implements the behaviour of the state RequestLLMResponseRound."""
 
+    counterparty = str(OPENAI_API_CONNECTION_ID)
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND
@@ -173,11 +190,12 @@ class RequestLLMResponseRound(BaseState):
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        self.context.logger.info(f"Sending to: {CONNECTION_ID}")
-        while self.strategy.pending_messages:
-            msg = self.strategy.pending_messages.pop()
+        self.context.logger.info(f"Sending to: {self.counterparty}")
+        workflows = [f"-{f}" for f in self.strategy.workflows]
+        while self.strategy.pending_telegram_messages:
+            msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
-            workflows = [f"-{f}" for f in self.strategy.workflows]
+            username = msg.from_user
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -186,7 +204,6 @@ class RequestLLMResponseRound(BaseState):
                 """)
                 response = response.format(workflows="\n".join(workflows))
                 self.strategy.telegram_responses.append(response)
-
             elif text_data.startswith("/workflow"):
                 workflow_name = text_data.split()[1]
                 if workflow_name in self.strategy.workflows:
@@ -194,12 +211,31 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
-                # we dummy an llm response for the reply tol here.
-                self.strategy.telegram_responses.append("I am a bot! replying to your message.")
+                THIS_MERMAID_PATH.read_text()
+                model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+                content = [
+                    Message(role=Role.SYSTEM, content=SYSTEM_PROMPT.format(username=username)),
+                    Message(role=Role.USER, content=text_data, name=username),
+                ]
+                messages = Messages(content)
+                self.create_and_send(
+                    performative=LlmChatCompletionMessage.Performative.CREATE,
+                    model=model,
+                    messages=messages,
+                    kwargs=Kwargs({}),
+                )
 
         # we need to request the llm here.
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
+
+    def create_and_send(self, **kwargs) -> None:
+        """Create and send a message."""
+        message, _dialogue = self.context.llm_chat_completion_dialogues.create(
+            counterparty=self.counterparty,
+            **kwargs,
+        )
+        self.context.outbox.put_message(message)
 
 
 class SendTelegramMessageRound(BaseState):
@@ -215,12 +251,12 @@ class SendTelegramMessageRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.telegram_responses:
-            msg = self.strategy.telegram_responses.pop()
-            self.context.logger.info(f"Sending message: {msg}")
+            text = self.strategy.telegram_responses.pop()
+            self.context.logger.info(f"Sending message: {text}")
             self.create_and_send(
                 performative=TelegramMessage.Performative.MESSAGE,
                 chat_id="-4765622287",
-                text=msg,
+                text=text,
             )
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
