@@ -23,7 +23,7 @@ function generate_protocol {
 
 
 rm -rf tmp_agent
-generate_protocol 'telegram'
+generate_protocol 'chatroom'
 # generate_protocol 'balances'
 # generate_protocol 'liquidity_provision'
 # generate_protocol 'default'

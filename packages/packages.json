@@ -1,15 +1,13 @@
 {
     "dev": {
-        "protocol/eightballer/telegram/0.1.0": "bafybeieumglsywzwccr3zflld227l5jcqboanedujnjxdu5bf4ouzc2sbm",
-        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeiblenz7ua7on6c5orvotvtam54ya5scmjbarhgvzvdabmpmolhmvm",
-        "skill/eightballer/participate_in_abci_app/0.1.0": "bafybeiff6gmudvyjzanen7x62plummdesuyfvjiv4qhmni2nn4sqo3zl2i",
-        "skill/eightballer/demo_fsm_abci_app/0.1.0": "bafybeickf737owdpq3hof4u6ps6wd52ziaglqlyxriycddlmmto7ui6irm",
-        "skill/henrikkv/demo_fsm_abci_app/0.1.0": "bafybeicvcdw6oa6wwmcrbo5erhqjp4dt6qof3wzfaisbjooiqevc7c75bi",
-        "agent/eightballer/asylum_agent/0.1.0": "bafybeigm5d6cj23cxorz5j2pmqmfovglhabrc6lswozfdkeqrekgphe7hm",
-        "agent/eightballer/telegram_bot/0.1.0": "bafybeibqw65tbc4dwwplfb7cvax3iut7w7lchlxjtvhoos2ajjgsrpircy",
-        "agent/henrikkv/git_scraper/0.1.0": "bafybeiawypwxp4xgfzwpvwfnbf6b3xydhvinthgiyfitww373htciwueoa",
-        "service/eightballer/asylum_agent/0.1.0": "bafybeigdxn3o4ailg3cvebwujia5rv743izmtzbud5szbz22edhrz34v4y",
-        "service/henrikkv/git_scraper/0.1.0": "bafybeie3nu4glkbq5qkfmi75diyzrhrau6dfnuxw5jcanupi3ezvncsbv4"
+        "protocol/eightballer/chatroom/0.1.0": "bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy",
+        "protocol/zarathustra/llm_chat_completion/1.0.0": "bafybeifdp2rwfar5vbs33p56dlin76v62p5fdvspwnpasraunp2wa7gxo4",
+        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeidkd2jwm6upndqpwpuzwtmjobzt4qe4pesndbrynvgrl65kcepc34",
+        "connection/zarathustra/openai_api/0.1.0": "bafybeicqj36os66ut5kpogax3nponnbcaqr3bflahpo6pb433iac36enf4",
+        "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeif6wafr5t6r6pvk4srjbj2h6fv3rak4n73zmteopciiztf2sm7fo4",
+        "agent/eightballer/telegram_bot/0.1.0": "bafybeifdk5ze2bqe2vbhtwb5hmjo5nfvu4hjjy3neh6dd7wbqc7o7uetnu",
+        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeidtowoxcnosiaxycjmvbvk4qffigoutd26ssdwd3qfsxckkmf2blq",
+        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeid2qkl356jy3uqdt5hq256ge33atmut4ltvlynztxqs3pskouz2s4"
     },
     "third_party": {
         "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",

@@ -1,0 +1,24 @@
+name: asylum_abci_app
+author: zarathustra
+version: 0.1.0
+description: A new service, scaffolded by the Adev cli from zarathustra/asylum_abci_app:0.1.0
+aea_version: '>=1.0.0, <2.0.0'
+license: apache-2.0
+fingerprint:
+  .env.example: bafybeigmgmwown66u7j5pqancojrc5ry2pwzmnlvqnwg2rfcjfi6irgplu
+  tests/__init__.py: bafybeicnqy6locbf7iaso22skucjclhw4ykitninog3gljhp5ngywd567y
+  tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
+fingerprint_ignore_patterns: []
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeidtowoxcnosiaxycjmvbvk4qffigoutd26ssdwd3qfsxckkmf2blq
+number_of_agents: 1
+deployment:
+  agent:
+    ports: {}
+    volumes: {}
+---
+public_id: eightballer/http_server:0.1.0:bafybeicp3ubkonolxjgnwgqmaz624qduwzzz74fbjizu77lyvnpo77uv7u
+type: connection
+config:
+  host: 0.0.0.0
+  port: 8888
+  target_skill_id: zarathustra/asylum_abci_app:0.1.0

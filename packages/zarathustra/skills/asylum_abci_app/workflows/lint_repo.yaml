@@ -1,0 +1,29 @@
+id: '2'
+name: lint_and_fmt_workflow
+description: A workflow to lint and format code
+tasks:
+  - id: '0'
+    name: get_branch
+    description: get the current branch
+    command: git branch --show-current
+
+  - id: '1'
+    name: abort_if_main_or_master
+    description: Abort if the current branch is main or master
+    conditions: 
+    - '"${task.0.client.stdout}" == "main" or "${task.0.client.stdout}" == "master"'
+    command: exit 1
+
+  - id: '2'
+    name: format_code
+    description: Format the codebase
+    command: adev fmt -p packages/zarathustra/skills/asylum_abci_app
+    working_dir: ".."
+    stream: true
+
+  - id: '3'
+    name: lint_code
+    description: Lint the codebase
+    command: adev lint -p packages/zarathustra/skills/asylum_abci_app
+    working_dir: ".."
+    stream: true
