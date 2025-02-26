@@ -113,14 +113,25 @@ class ProcessLLMResponseRound(BaseState):
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
+
+        if self.strategy.pending_workflows:
+            self._event = AsylumAbciAppEvents.WORK
+            self._is_done = True
+            return
+
+        if self.strategy.llm_responses:
+            self.context.logger.info("Processing LLM responses")
+
         for action in self.strategy.llm_responses:
             self.context.logger.info(f"Action: {action}")
             if action[0] == LLMActions.REPLY:
                 self._event = AsylumAbciAppEvents.REPLY
                 self._is_done = True
-            elif action[0] == LLMActions.WORKFLOW:
-                self._event = AsylumAbciAppEvents.WORK
-                self._is_done = True
+
+        for msg in self.strategy.telegram_responses:
+            self.context.logger.info(f"Telegram response: {msg}")
+            self._event = AsylumAbciAppEvents.REPLY
+            self._is_done = True
         sleep(1)
 
 
@@ -138,10 +149,12 @@ class CheckTelegramQueueRound(BaseState):
         self.context.logger.info(f"In state: {self._state}")
         if self.processing_since is None:
             self.processing_since = datetime.now(tz=TIMEZONE_UTC).timestamp()
+            return
         if datetime.now(tz=TIMEZONE_UTC).timestamp() - self.processing_since > self.timeout:
             self._event = AsylumAbciAppEvents.TIMEOUT
             self._is_done = True
             self.processing_since = None
+            return
         if self.strategy.pending_messages:
             self.context.logger.info(f"New messages found: {len(self.strategy.pending_messages)}")
             self._event = AsylumAbciAppEvents.NEW_MESSAGES
@@ -164,12 +177,26 @@ class RequestLLMResponseRound(BaseState):
         while self.strategy.pending_messages:
             msg = self.strategy.pending_messages.pop()
             text_data = msg.text
-            if text_data.startswith("/work"):
+            workflows = [f"-{f}" for f in self.strategy.workflows]
+            if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
-                self.strategy.llm_responses.append((LLMActions.WORKFLOW, "create_new_repo.yaml"))
+                response = dedent(f"""
+                Hi there! I am a bot. I can help you with the following workflows;
+                {workflows}
+                """)
+                response = response.format(workflows="\n".join(workflows))
+                self.strategy.telegram_responses.append(response)
+                # self.strategy.llm_responses.append((LLMActions.WORKFLOW, "create_new_repo.yaml"))
+
+            elif text_data.startswith("/workflow"):
+                workflow_name = text_data.split()[1]
+                if workflow_name in self.strategy.workflows:
+                    self.strategy.pending_workflows.append(workflow_name)
+                else:
+                    self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
                 # we dummy an llm response for the reply tol here.
-                self.strategy.llm_responses.append((LLMActions.REPLY, "I am a bot! replying to your message."))
+                self.strategy.telegram_responses.append("I am a bot! replying to your message.")
 
         # we need to request the llm here.
         self._is_done = True
@@ -188,13 +215,13 @@ class SendTelegramMessageRound(BaseState):
     def act(self):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        while self.strategy.llm_responses:
-            msg = self.strategy.llm_responses.pop()
-            self.context.logger.info(f"Sending message: {msg[1]}")
+        while self.strategy.telegram_responses:
+            msg = self.strategy.telegram_responses.pop()
+            self.context.logger.info(f"Sending message: {msg}")
             self.create_and_send(
                 performative=TelegramMessage.Performative.MESSAGE,
                 chat_id="-4765622287",
-                text=msg[1],
+                text=msg,
             )
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
@@ -245,25 +272,40 @@ class ExecuteProposedWorkflowRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         # we now do the work.
-        try:
-            workflow_path = Path(__file__).parent / "workflows" / "create_new_repo.yaml"
-            workflow = Workflow.from_file(workflow_path)
-            self.wf_manager.add_workflow(workflow)
-            self.wf_manager.run_workflow(workflow.id, display_process=False)
-            result_str = dedent(f"""
-            Workflow id: {workflow.id}
-            Workflow name: {workflow.name}
-            Workflow status: {workflow.is_done}
-            Workflow is success: {workflow.is_success}
-            """)
-            self.strategy.llm_responses.append((LLMActions.REPLY, result_str))
-            self.context.logger.info(f"There are {len(self.strategy.llm_responses)} responses.")
 
-        except Exception as e:
-            self.context.logger.exception(f"Error: {e}")
-        finally:
-            self._is_done = True
-            self._event = AsylumAbciAppEvents.DONE
+        while self.strategy.pending_workflows:
+            workflow_name = self.strategy.pending_workflows.pop()
+            workflow_path = Path(__file__).parent / "workflows" / self.strategy.workflows[workflow_name]
+            try:
+                workflow = Workflow.from_file(workflow_path)
+                self.wf_manager.add_workflow(workflow)
+                self.wf_manager.run_workflow(workflow.id, display_process=False)
+                self.context.logger.info(f"There are {len(self.strategy.llm_responses)} responses.")
+
+            except Exception as e:
+                self.context.logger.exception(f"Error: {e}")
+            finally:
+                result_str = dedent(f"""
+                Workflow id: {workflow.id}
+                Workflow name: {workflow.name}
+
+                Total Tasks: {len(workflow.tasks)}
+                Completed Tasks: {len([f for f in workflow.tasks if f.is_done])}
+                Failed Tasks: {len([f for f in workflow.tasks if f.is_failed])}
+                Successful Tasks: {len([f for f in workflow.tasks if not f.is_failed])}
+
+                Workflow status: {workflow.is_done}
+                Workflow is success: {workflow.is_success}
+                """)
+                for task in workflow.tasks:
+                    result_str += dedent(
+                        f"""- Task({task.id}): {task.name}: {task.is_done} - Success: {task.is_failed}"""
+                    )
+
+                self.strategy.telegram_responses.append(result_str)
+
+                self._is_done = True
+                self._event = AsylumAbciAppEvents.DONE
 
 
 class AsylumAbciAppFsmBehaviour(FSMBehaviour):
