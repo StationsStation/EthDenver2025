@@ -33,7 +33,7 @@ from auto_dev.workflow_manager import Workflow, WorkflowManager
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
 from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
-from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy, AgentPersona
+from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AgentPersona, AsylumStrategy
 from packages.zarathustra.connections.openai_api.connection import (
     CONNECTION_ID as OPENAI_API_CONNECTION_ID,
     Model as LLMModel,
@@ -50,7 +50,7 @@ THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
 
 
 USER_PERSONA_PROMPT = dedent("""
-    I have a dataset of GitHub issues and discussions related to open-autonomy. I want you to analyze and summarize the contributions of the main participants to infer their technical personas. 
+    I have a dataset of GitHub issues and discussions related to open-autonomy. I want you to analyze and summarize the contributions of the main participants to infer their technical personas.
 
     For each key contributor (e.g., "8ball030", "Adamantios"), summarize their primary concerns, expertise, and communication style. Structure the response as a persona profile including:
     - **Username**
@@ -60,7 +60,7 @@ USER_PERSONA_PROMPT = dedent("""
     - **Potential Role in a Development Team** (e.g., bug hunter, maintainer, architect)
 
     Keep the summary concise but insightful.
-""")
+""")  # noqa: E501
 
 
 SYSTEM_PROMPT = dedent("""

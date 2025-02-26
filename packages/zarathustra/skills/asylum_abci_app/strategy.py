@@ -5,11 +5,11 @@ from typing import Any
 from collections import deque
 
 from pydantic import conlist
-
 from aea.skills.base import Model
 
-from packages.eightballer.protocols.chatroom.message import ChatroomMessage
 from packages.zarathustra.skills.asylum_abci_app import PydanticModel
+from packages.eightballer.protocols.chatroom.message import ChatroomMessage
+
 
 MAX_QUEUE_LENGTH = 1_000
 
@@ -42,6 +42,8 @@ class AsylumStrategy(Model):
 
 
 class AgentPersona(Model, PydanticModel):
+    """AgentPersona."""
+
     github_username: str
     role: str
     github_repositories: conlist(str, min_length=1)

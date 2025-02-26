@@ -7,14 +7,14 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
-  __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
-  behaviours.py: bafybeia2c22dghkxueu2akxqditm6f2a45w2nrub3rrekxi7o6j6zqcjey
+  __init__.py: bafybeied6edelpdmsqdlvzqh5hyqmrjn6kdya2z4sa2pt3d6fq6w6p2ima
+  behaviours.py: bafybeicybfptcue33b44aoqhfcjnusm6fyrwpm7rgdvggece7ea7eudrwe
   dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
   handlers.py: bafybeieqnwlyqdbdrgytc3ypoo25pk7svteco5nmi7qnhw5o3hkxh7dpuu
   mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
-  scraper.py: bafybeidcaadmwdtffksyirdbtbqwg4clh5tdlhbdrfuis6oeczibkbjwam
-  strategy.py: bafybeid3gpcjroubntu7dp4lyucqqxxg5k2mpd2cpcmvqtism6eaomcm54
+  scraper.py: bafybeiaip4j5krhj6xd47bs5bu7jtlddy2swxtxonn5lnmqgamhro6pqda
+  strategy.py: bafybeiet32mbxdngborqcnwecjv3cc3pobzzmvvxurj4hflnzrgsfv7xxi
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
@@ -23,7 +23,7 @@ fingerprint:
   workflows/lint_repo.yaml: bafybeichu6lslos7eboobzh75ryadr2yyhegyojjemq3yrnkhyet6rd5bq
 fingerprint_ignore_patterns: []
 connections:
-- zarathustra/openai_api:0.1.0:bafybeicqj36os66ut5kpogax3nponnbcaqr3bflahpo6pb433iac36enf4
+- zarathustra/openai_api:0.1.0:bafybeihfzkq5mxzf54kgtbrlgrbwd5l2osixnur7e6iszumla3vbgoucue
 - eightballer/telegram_wrapper:0.1.0:bafybeidkd2jwm6upndqpwpuzwtmjobzt4qe4pesndbrynvgrl65kcepc34
 contracts: []
 protocols:

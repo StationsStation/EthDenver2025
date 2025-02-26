@@ -49,7 +49,7 @@ class GitHubScraper:
         if not user_dir:
             return None
 
-        filename = f"repos.json"
+        filename = "repos.json"
         filepath = user_dir / filename
 
         with open(filepath, "w", encoding="utf-8") as f:

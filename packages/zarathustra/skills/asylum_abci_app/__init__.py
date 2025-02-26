@@ -19,8 +19,7 @@
 
 """This module contains the implementation of the asylum ABCI app skill."""
 
-from pydantic import BaseModel, AliasGenerator, ConfigDict
-
+from pydantic import BaseModel, ConfigDict, AliasGenerator
 from aea.configurations.base import PublicId
 
 
@@ -28,11 +27,12 @@ PUBLIC_ID = PublicId.from_str("zarathustra/asylum_abci_app:0.1.0")
 
 
 def snake_to_kebab(text: str) -> str:
+    """Snake to kebab-case."""
     return text.replace("_", "-")
 
 
 class PydanticModel(BaseModel):
-    """PydanticModel"""
+    """PydanticModel."""
 
     model_config = ConfigDict(
         extra="forbid",
