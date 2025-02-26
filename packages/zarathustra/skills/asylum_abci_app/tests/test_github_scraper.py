@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from dotenv import load_dotenv
 
-from demo_fsm_abci_app.scraper import GitHubScraper
+from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
 
 
 # Load environment variables from .env file
