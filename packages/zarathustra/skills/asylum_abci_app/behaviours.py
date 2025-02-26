@@ -186,7 +186,6 @@ class RequestLLMResponseRound(BaseState):
                 """)
                 response = response.format(workflows="\n".join(workflows))
                 self.strategy.telegram_responses.append(response)
-                # self.strategy.llm_responses.append((LLMActions.WORKFLOW, "create_new_repo.yaml"))
 
             elif text_data.startswith("/workflow"):
                 workflow_name = text_data.split()[1]
