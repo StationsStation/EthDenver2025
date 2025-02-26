@@ -1,11 +1,19 @@
 """This package contains a scaffold of a model."""
 
+from enum import Enum
 from typing import Any
 from collections import deque
 
 from aea.skills.base import Model
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage
+
+
+class LLMActions(Enum):
+    """LLMActions."""
+
+    WORKFLOW = "workflow"
+    REPLY = "reply"
 
 
 class AsylumStrategy(Model):

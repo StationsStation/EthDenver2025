@@ -33,7 +33,10 @@ from packages.eightballer.protocols.chatroom.dialogues import (
     ChatroomDialogue as TelegramDialogue,
     ChatroomDialogues as TelegramDialogues,
 )
-from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy
+from packages.zarathustra.connections.openai_api.connection import reconstitute
+from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
+from packages.zarathustra.protocols.llm_chat_completion.dialogues import LlmChatCompletionDialogue, LlmChatCompletionDialogues
+from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy, LLMActions
 from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     HttpDialogue,
     HttpDialogues,
@@ -50,6 +53,10 @@ class TelegramHandler(Handler):
 
     def handle(self, message: Message) -> None:
         """Implement the reaction to an envelope."""
+        if not isinstance(message, TelegramMessage):
+            self.context.logger.error(f"Unexpected message type: {message}")
+            return
+
         telegram_msg = cast(TelegramMessage, message)
         if telegram_msg.performative == TelegramMessage.Performative.MESSAGE_SENT:
             self.context.logger.debug(f"received telegram message={telegram_msg}")
@@ -63,6 +70,50 @@ class TelegramHandler(Handler):
 
         self.context.logger.info(f"received telegram message={telegram_msg.from_user}, content={telegram_msg.text}")
         self.strategy.pending_messages.append(telegram_msg)
+
+    @property
+    def strategy(self):
+        """Get the strategy."""
+        return cast(AsylumStrategy, self.context.asylum_strategy)
+
+    def setup(self):
+        """Implement the setup."""
+
+    def teardown(self):
+        """Implement the handler teardown."""
+
+
+
+class LlmChatCompletionHandler(Handler):
+    """This implements the LlmChatCompletion handler."""
+
+    SUPPORTED_PROTOCOL = LlmChatCompletionMessage.protocol_id
+
+    def handle(self, message: Message) -> None:
+        """Implement the reaction to an envelope."""
+        # self.context.logger.error(f"MESSAGE MESSAGE MESSAGE: {message}")
+
+        if not isinstance(message, LlmChatCompletionMessage):
+            self.context.logger.error(f"Unexpected message type: {message}")
+            return
+
+        llm_chat_completion_msg = cast(LlmChatCompletionMessage, message)
+        if llm_chat_completion_msg.performative == LlmChatCompletionMessage.Performative.ERROR:
+            self.context.logger.error(f"Received error={llm_chat_completion_msg}")
+            return
+
+        if llm_chat_completion_msg.performative == LlmChatCompletionMessage.Performative.RESPONSE:
+            self.context.logger.debug(f"received LLM chat completion message={llm_chat_completion_msg}")
+        # recover dialogue
+        llm_chat_completion_dialogues = cast(LlmChatCompletionDialogues, self.context.llm_chat_completion_dialogues)
+        llm_chat_completion_dialogue = cast(LlmChatCompletionDialogue, llm_chat_completion_dialogues.update(llm_chat_completion_msg))
+
+        if not llm_chat_completion_dialogue:
+            self.context.logger.debug(f"received invalid llm chat completion message={llm_chat_completion_msg}, unidentified dialogue.")
+
+        llm_chat_completion = reconstitute(message)
+        self.context.logger.debug(f"Reconstituted: {llm_chat_completion}")
+        self.strategy.llm_responses.append((LLMActions.REPLY, llm_chat_completion.choices[0].message.content))
 
     @property
     def strategy(self):

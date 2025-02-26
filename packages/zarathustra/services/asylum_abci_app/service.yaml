@@ -9,7 +9,7 @@ fingerprint:
   tests/__init__.py: bafybeicnqy6locbf7iaso22skucjclhw4ykitninog3gljhp5ngywd567y
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeigudhhwythu4ahwnrtlnock434k5ikbhvq3g3dhltukkepoqxi73a
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeigmkqxqqsfbypvhlv2aq2zauo7woio3syobzddxa7htrmlyj7etpu
 number_of_agents: 1
 deployment:
   agent:

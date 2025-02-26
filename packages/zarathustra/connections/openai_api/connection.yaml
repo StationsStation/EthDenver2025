@@ -14,7 +14,7 @@ fingerprint:
 fingerprint_ignore_patterns: []
 connections: []
 protocols:
-- zarathustra/llm_chat_completion:1.0.0:bafybeic45jnu5pyvam5kgykisfgupyug4jcqxvsumra6ogfh7t3czsksue
+- zarathustra/llm_chat_completion:1.0.0:bafybeifdp2rwfar5vbs33p56dlin76v62p5fdvspwnpasraunp2wa7gxo4
 class_name: OpenaiApiConnection
 config:
   api_key: ${str:sk-TK0YiafaI1lX61UyT1Ij5g}

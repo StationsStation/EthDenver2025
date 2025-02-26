@@ -1,0 +1,130 @@
+{
+  "2295": {
+    "title": "Relax enforcement of all unwanted keys.",
+    "body": null,
+    "state": "open",
+    "created_at": "2025-01-27T14:14:04Z",
+    "comments": [
+      {
+        "author": "8ball030",
+        "body": "https://github.com/valory-xyz/open-autonomy/blob/005353b4874de49c809c54a46fe0c6d6c18422c5/autonomy/deploy/base.py#L397\n\n\n\nThis is very very annoying, \n\nI dont believbe that the entire build should be averted just beause there is more than expected keys. \n\nIf anything, the keys should be selected from the keys and indexed in rather than this approach which basically forces a dev to re-generate specific keys etc."
+      },
+      {
+        "author": "Adamantios",
+        "body": "Please follow the provided template for bug reports, e.g., the \"Steps to reproduce\" part is missing."
+      },
+      {
+        "author": "8ball030",
+        "body": "will add it to the to ser apologies\n"
+      }
+    ]
+  },
+  "2292": {
+    "title": "[v0.19.1]: Temporarily work around deploy build command issue",
+    "body": "## Proposed changes\r\n\r\nResolves issue with path directory when using default build commands.\r\n",
+    "state": "closed",
+    "created_at": "2025-01-13T21:10:17Z",
+    "comments": [
+      {
+        "author": "8ball030",
+        "body": "## Proposed changes\r\n\r\nResolves issue with path directory when using default build commands.\r\n"
+      },
+      {
+        "author": "8ball030",
+        "body": "In order to reproduce;\r\n\r\nA) create a new service (Note, this  is to show the bug and can be done in any other repo with a  service);\r\n```\r\n[I] eight@gefion ~/P/S/r/experimentation_station (main)> adev create author/cool_agent\r\n16:52:31 INFO     Creating agent author/cool_agent:latest from template eightballer/frontend_agent                                                                                                   \r\n16:52:40 INFO     Agent published successfully.                                                                                                                                                      \r\n         INFO     Agent cleaned up successfully.                                                                                                                                                     \r\n         INFO     Agent author/cool_agent:latest created successfully 🎉🎉🎉🎉                                                                                                                       \r\n[I] eight@gefion ~/P/S/r/experimentation_station (main)> adev convert agent-to-service author/cool_agent author/cool_agent --force\r\n16:52:48 INFO     Converting agent author/cool_agent:latest to service author/cool_agent:latest.                                                                                                     \r\n         INFO     Conversion complete. Service is ready! 🚀  \r\n\r\n```\r\n\r\nB) try to deploy that service;\r\n\r\n```\r\nautonomy generate-key ethereum -n 1\r\nautonomy fetch --service --local author/cool_agent\r\ncd cool_agent\r\nautonomy deploy build ../keys.json --n 1\r\n```\r\n\r\n![image](https://github.com/user-attachments/assets/73a29539-2746-4b11-8fef-833396e82baf)\r\n"
+      },
+      {
+        "author": "Adamantios",
+        "body": "An update regarding your PR:\r\n- It seems that there is indeed a bug, which was introduced in [v0.18.4](https://github.com/valory-xyz/open-autonomy/releases/tag/v0.18.4).\r\n- The bug went unnoticed because the Ubuntu unit test job has been [timing out](https://github.com/valory-xyz/open-autonomy/actions/runs/13056610849/job/36429613260#step:6:15122) while still :grey_question:showing a green status:grey_question:.\r\n- The solution suggested in this PR does not resolve the real source of the issue and will not be necessary after addressing it.\r\n\r\nPlease bear with us while we investigate the above situation."
+      },
+      {
+        "author": "8ball030",
+        "body": "coolio any idea when this will be resolved, is blocking us haha\r\n\r\n\r\nThat timing out out issue seems quite nasty to be honest.\r\n\r\nYou can specifically see its a cancelled job as well."
+      },
+      {
+        "author": "Adamantios",
+        "body": "> coolio any idea when this will be resolved, is blocking us haha\r\n\r\nReleasing this to unblock you. Will address the issues in https://github.com/valory-xyz/open-autonomy/pull/2292#issuecomment-2631553260 in the next release."
+      },
+      {
+        "author": "8ball030",
+        "body": "Thank you alot ser "
+      }
+    ]
+  },
+  "2255": {
+    "title": "issue: Custom components are not published with --push-missing",
+    "body": "### When publishing from an existing agent, custom components are not pushed to the packages directory.\r\nDescribe your issue here.\r\n",
+    "state": "closed",
+    "created_at": "2024-09-01T20:02:13Z",
+    "comments": [
+      {
+        "author": "8ball030",
+        "body": "### When publishing from an existing agent, custom components are not pushed to the packages directory.\r\nDescribe your issue here.\r\n"
+      },
+      {
+        "author": "Adamantios",
+        "body": "Duplicate of https://github.com/valory-xyz/open-autonomy/issues/2226."
+      }
+    ]
+  },
+  "2250": {
+    "title": "Please bump docker to 7.1.2",
+    "body": "https://github.com/valory-xyz/open-autonomy/blob/31ab0338e649e74ba0309638e13d09fba6b967ec/setup.py#L61",
+    "state": "open",
+    "created_at": "2024-07-21T11:26:53Z",
+    "comments": [
+      {
+        "author": "8ball030",
+        "body": "https://github.com/valory-xyz/open-autonomy/blob/31ab0338e649e74ba0309638e13d09fba6b967ec/setup.py#L61"
+      },
+      {
+        "author": "8ball030",
+        "body": "7.1.2 has  few changes, would be nice to keep.\r\n\r\nSeems to require that requests be pinned at 2.31.1 OR bumping docker to 7.12.0\r\n\r\nplease see;\r\n\r\nhttps://github.com/docker/docker-py/issues/3256\r\n\r\nhttps://stackoverflow.com/questions/75234161/python-docker-sdk-error-while-fetching-server-api-version\r\n\r\n\r\n\r\n"
+      }
+    ]
+  },
+  "2237": {
+    "title": "Please allow ejection of customs.",
+    "body": "**Is your feature request related to a problem? Please describe.**\r\nCustom components cannot be ejected;\r\n\r\n![image](https://github.com/valory-xyz/open-autonomy/assets/35799987/d1fda204-342f-4d29-977f-17f4a24fed32)\r\n\r\n**Describe the solution you'd like**\r\nWould be nice if the customs component was added to the eject group\r\n\r\n**Describe alternatives you've considered**\r\nA clear and concise description of any alternative solutions or features you've considered.\r\n\r\n**Additional context**\r\nAdd any other context or screenshots about the feature request here.\r\n",
+    "state": "closed",
+    "created_at": "2024-06-03T00:08:57Z",
+    "comments": [
+      {
+        "author": "8ball030",
+        "body": "**Is your feature request related to a problem? Please describe.**\r\nCustom components cannot be ejected;\r\n\r\n![image](https://github.com/valory-xyz/open-autonomy/assets/35799987/d1fda204-342f-4d29-977f-17f4a24fed32)\r\n\r\n**Describe the solution you'd like**\r\nWould be nice if the customs component was added to the eject group\r\n\r\n**Describe alternatives you've considered**\r\nA clear and concise description of any alternative solutions or features you've considered.\r\n\r\n**Additional context**\r\nAdd any other context or screenshots about the feature request here.\r\n"
+      }
+    ]
+  },
+  "2226": {
+    "title": "Cusom component are not ejected with the command publish.",
+    "body": "when running the command `aea publish --push-missing`\r\npackages are copied from the agent intot he packages dir.\r\nUnfortunately, the new custom tyes are not ejected.\r\n",
+    "state": "closed",
+    "created_at": "2024-05-16T07:53:35Z",
+    "comments": [
+      {
+        "author": "8ball030",
+        "body": "when running the command `aea publish --push-missing`\r\npackages are copied from the agent intot he packages dir.\r\nUnfortunately, the new custom tyes are not ejected.\r\n"
+      }
+    ]
+  },
+  "2223": {
+    "title": "Relax deps",
+    "body": "## Proposed changes\r\n\r\nDescribe the big picture of your changes here to communicate to the maintainers why we should accept this pull request.\r\n\r\n## Fixes\r\n\r\nIf it fixes a bug or resolves a feature request, be sure to link to that issue.\r\n\r\n## Types of changes\r\n\r\nWhat types of changes does your code introduce? (A **breaking change** is a fix or feature that would cause existing functionality and APIs to not work as expected.)\r\n_Put an `x` in the box that applies_\r\n\r\n- [ x] Non-breaking fix (non-breaking change which fixes an issue)\r\n- [ ] Breaking fix (breaking change which fixes an issue)\r\n- [ ] Non-breaking feature (non-breaking change which adds functionality)\r\n- [ ] Breaking feature (breaking change which adds functionality)\r\n- [ ] Refactor (non-breaking change which changes implementation)\r\n- [ ] Messy (mixture of the above - requires explanation!)\r\n\r\n## Checklist\r\n\r\n_Put an `x` in the boxes that apply._\r\n\r\n- [ x] I have read the [CONTRIBUTING](../blob/main/CONTRIBUTING.md) doc\r\n- [ x] I am making a pull request against the `main` branch (left side). Also you should start your branch off our `main`.\r\n- [ ] Lint and unit tests pass locally with my changes\r\n- [ ] I have added tests that prove my fix is effective or that my feature works\r\n- [ ] I have locally run services that could be impacted and they do not present failures derived from my changes\r\n- [ ] Public-facing documentation has been updated with the changes affected by this PR. Even if the provided contents are not in their final form, all significant information must be included.\r\n- [ ] Any backwards-incompatible/breaking change has been clearly documented in the upgrading document.\r\n\r\n## Further comments\r\n\r\nLocally I'm getting this error while running `make common-checks-2` but that shouldn't be related to my changes.\r\n\r\nI tried to install `grpcio` directly from pip, I tried upgrading of pip, installing `-dev` version of python, but so far nothing, do you have experience in running this on Mac with M2 please?\r\n\r\n![Screenshot by Dropbox Capture](https://github.com/valory-xyz/open-autonomy/assets/15619339/489adfeb-c614-4ab2-b972-89973d2d2cb8)\r\n",
+    "state": "open",
+    "created_at": "2024-04-26T09:23:03Z",
+    "comments": [
+      {
+        "author": "kongzii",
+        "body": "## Proposed changes\r\n\r\nDescribe the big picture of your changes here to communicate to the maintainers why we should accept this pull request.\r\n\r\n## Fixes\r\n\r\nIf it fixes a bug or resolves a feature request, be sure to link to that issue.\r\n\r\n## Types of changes\r\n\r\nWhat types of changes does your code introduce? (A **breaking change** is a fix or feature that would cause existing functionality and APIs to not work as expected.)\r\n_Put an `x` in the box that applies_\r\n\r\n- [ x] Non-breaking fix (non-breaking change which fixes an issue)\r\n- [ ] Breaking fix (breaking change which fixes an issue)\r\n- [ ] Non-breaking feature (non-breaking change which adds functionality)\r\n- [ ] Breaking feature (breaking change which adds functionality)\r\n- [ ] Refactor (non-breaking change which changes implementation)\r\n- [ ] Messy (mixture of the above - requires explanation!)\r\n\r\n## Checklist\r\n\r\n_Put an `x` in the boxes that apply._\r\n\r\n- [ x] I have read the [CONTRIBUTING](../blob/main/CONTRIBUTING.md) doc\r\n- [ x] I am making a pull request against the `main` branch (left side). Also you should start your branch off our `main`.\r\n- [ ] Lint and unit tests pass locally with my changes\r\n- [ ] I have added tests that prove my fix is effective or that my feature works\r\n- [ ] I have locally run services that could be impacted and they do not present failures derived from my changes\r\n- [ ] Public-facing documentation has been updated with the changes affected by this PR. Even if the provided contents are not in their final form, all significant information must be included.\r\n- [ ] Any backwards-incompatible/breaking change has been clearly documented in the upgrading document.\r\n\r\n## Further comments\r\n\r\nLocally I'm getting this error while running `make common-checks-2` but that shouldn't be related to my changes.\r\n\r\nI tried to install `grpcio` directly from pip, I tried upgrading of pip, installing `-dev` version of python, but so far nothing, do you have experience in running this on Mac with M2 please?\r\n\r\n![Screenshot by Dropbox Capture](https://github.com/valory-xyz/open-autonomy/assets/15619339/489adfeb-c614-4ab2-b972-89973d2d2cb8)\r\n"
+      },
+      {
+        "author": "8ball030",
+        "body": "@kongzii Are you still working on relaxing the dependencies here?\r\n\r\nIf so would you mind adding `semver` to you list of deps to relax?\r\n\r\nAt it looks to be pinned at;\r\n\r\n`semver (>=2.9.1,<3.0.0)`\r\n\r\nIf we could get this changed it would be great.\r\n\r\nNot even sure why where using semver! :) \r\n"
+      },
+      {
+        "author": "kongzii",
+        "body": "@8ball030 Just waiting for review and hopefully merge+release. Last commit was just to fix the docker version that was mentioned in a review elsewhere.\r\n\r\nCould you clarify what you mean? I don't see any semver listed in dependencies. Maybe it's a subdependency of something?\r\n\r\n![Screenshot by Dropbox Capture](https://github.com/user-attachments/assets/2eb2ddea-a9c2-473f-acbb-91b010ae397a)\r\n\r\n\r\n"
+      }
+    ]
+  }
+}
