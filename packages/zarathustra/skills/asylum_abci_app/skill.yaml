@@ -8,15 +8,16 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
-  behaviours.py: bafybeibdk4ibctxriamo6cmoszlvv7hyyrckegjf5chtnj5owvjtawxsfm
-  dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
+  behaviours.py: bafybeihtltjcdr4gxxblt4k6avhat5sliwi6nuxadjwglmobe6v5fad6sy
+  dialogues.py: bafybeiggsfafkurldxnvjhqw3l424acxmpgr4x6qs36ociozuobikpqejy
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeiavsbyajbof7iluc7xk6uz6abb3efgr5sjjp27j37rdbqiln3wi3y
-  strategy.py: bafybeihcymcyqvewrgfguldapmff2uckwd3rudru6br56ic6ihqmw4d3e4
+  handlers.py: bafybeieaylx6lbb5zpcm7y3vebufj4usrpolzhdkbzpwv4nra2diacgqc4
+  strategy.py: bafybeidvowr5rpywtphhmloukzz2c2lv2wgm5bavwjv7mpsig3ibmrz2dy
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
   tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
   workflows/create_new_repo.yaml: bafybeihpwlqom5wptz4pqunoehwwyynbqj26iawvenzbhibtj4gmaacc5i
+  workflows/lint_repo.yaml: bafybeihwhmrktsyhsjfdcaxhevbhujzr6fqlamqfkb4myialnzxlaz73bu
 fingerprint_ignore_patterns: []
 connections:
 - zarathustra/openai_api:0.1.0:bafybeicqj36os66ut5kpogax3nponnbcaqr3bflahpo6pb433iac36enf4
