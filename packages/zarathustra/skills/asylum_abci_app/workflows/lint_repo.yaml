@@ -19,7 +19,7 @@ tasks:
     description: Format the codebase
     command: adev fmt -p packages/zarathustra/skills/asylum_abci_app
     working_dir: ".."
-    stre
+    stream: true
 
   - id: '3'
     name: lint_code

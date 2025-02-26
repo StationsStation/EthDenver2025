@@ -17,7 +17,7 @@ fingerprint:
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
   tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
   workflows/create_new_repo.yaml: bafybeihpwlqom5wptz4pqunoehwwyynbqj26iawvenzbhibtj4gmaacc5i
-  workflows/lint_repo.yaml: bafybeihwhmrktsyhsjfdcaxhevbhujzr6fqlamqfkb4myialnzxlaz73bu
+  workflows/lint_repo.yaml: bafybeifpehig362zqe2xawfaksc6dtzphjoonlt2ndguq7j6fma6luplvi
 fingerprint_ignore_patterns: []
 connections:
 - zarathustra/openai_api:0.1.0:bafybeighjnqwq2bjiwuapjxqkaot2rx6aibxlr7sdmqypyhfjllicoktfy
