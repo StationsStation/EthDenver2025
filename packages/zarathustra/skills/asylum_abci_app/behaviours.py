@@ -31,6 +31,7 @@ from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
+from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
 from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy
 from packages.zarathustra.connections.openai_api.connection import (
     CONNECTION_ID as OPENAI_API_CONNECTION_ID,
@@ -92,6 +93,11 @@ class BaseState(State, ABC):
         super().__init__(**kwargs)
         self._event = None
         self._is_done = False  # Initially, the state is not done
+
+        self.data_dir = Path(__file__).parent / "data"
+        if not self.data_dir.exists():
+            self.data_dir.mkdir(parents=True)
+        self.github_scraper = GitHubScraper(data_dir=str(self.data_dir))
 
     def act(self) -> None:
         """Act."""
@@ -278,6 +284,23 @@ class ScrapeGithubRound(BaseState):
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.SCRAPE_GITHUB_ROUND
 
+    def act(self) -> None:
+        """Perform GitHub data collection."""
+        self.context.logger.info(f"In state: {self._state}")
+        usernames = ["8ball030"]
+        try:
+            self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
+            all_user_data = self.github_scraper.scrape_user_interactions(
+                usernames=usernames,
+                repos=["https://github.com/valory-xyz/open-autonomy"],
+            )
+            self.context.shared_state["user_issues"] = all_user_data
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.DONE
+
+        except Exception as e:
+            self.context.logger.exception(f"Error fetching GitHub data: {e!s}")
+
 
 class WaitBeforeRetryRound(BaseState):
     """This class implements the behaviour of the state WaitBeforeRetryRound."""
@@ -293,6 +316,19 @@ class CheckLocalStorageRound(BaseState):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.CHECK_LOCAL_STORAGE_ROUND
+
+    def act(self):
+        """Do the act."""
+        self.context.logger.info(f"In state: {self._state}")
+        username = "8ball030"
+        user_data = self.data_dir / username
+
+        if not user_data.exists():
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.UPDATE_NEEDED
+        else:
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.DONE
 
 
 class ExecuteProposedWorkflowRound(BaseState):
