@@ -1,0 +1,8 @@
+graph TD
+  TwitterScoringRound
+  FinishedTwitterScoringRound
+  TwitterScoringRound
+  TwitterScoringRound -->|API_ERROR| TwitterScoringRound
+  TwitterScoringRound -->|DONE| FinishedTwitterScoringRound
+  TwitterScoringRound -->|NO_MAJORITY| TwitterScoringRound
+  TwitterScoringRound -->|ROUND_TIMEOUT| TwitterScoringRound

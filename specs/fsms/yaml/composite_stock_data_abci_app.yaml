@@ -1,0 +1,28 @@
+alphabet_in:
+- DONE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: CollectRandomnessRound
+final_states:
+- FinishedHelloRound
+label: StockDataApiAbciApp
+start_states:
+- CollectRandomnessRound
+states:
+- CollectRandomnessRound
+- SelectKeeperRound
+- CollectAlpacaHistoricalDataRound
+- FinishedHelloRound
+transition_func:
+    (CollectRandomnessRound, DONE): SelectKeeperRound
+    (CollectRandomnessRound, NO_MAJORITY): CollectRandomnessRound
+    (CollectRandomnessRound, ROUND_TIMEOUT): CollectRandomnessRound
+    (SelectKeeperRound, DONE): CollectAlpacaHistoricalDataRound
+    (SelectKeeperRound, NO_MAJORITY): SelectKeeperRound
+    (SelectKeeperRound, ROUND_TIMEOUT): SelectKeeperRound
+    (CollectAlpacaHistoricalDataRound, DONE): CollectPolygonSentimentAnalysisRound
+    (CollectAlpacaHistoricalDataRound, NO_MAJORITY): CollectAlpacaHistoricalDataRound
+    (CollectAlpacaHistoricalDataRound, ROUND_TIMEOUT): CollectAlpacaHistoricalDataRound
+    (CollectPolygonSentimentAnalysisRound, DONE): FinishedHelloRound
+    (CollectPolygonSentimentAnalysisRound, NO_MAJORITY): CollectPolygonSentimentAnalysisRound
+    (CollectPolygonSentimentAnalysisRound, ROUND_TIMEOUT): CollectPolygonSentimentAnalysisRound

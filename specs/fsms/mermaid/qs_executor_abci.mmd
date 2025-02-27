@@ -1,0 +1,27 @@
+graph TD
+  PostTransactionRound
+  AwaitBuyerTransactionsRound
+  PrepareRefundTransactionsRound
+  SuccessfulExecutionRound
+  FinalisedClaimTransactionsRound
+  PrepareClaimTransactionsRound
+  FinalisedRefundTransactionsRound
+  PostTransactionRound
+  FinalisedSupplyTransactionsRound
+  UnSuccessfulExecutionRound
+  CollectExchangeDataRound
+  PrepareSupplyTransactionRound
+  AwaitRFQsRound
+  AwaitBuyerTransactionsRound -->|DONE| PrepareClaimTransactionsRound
+  AwaitBuyerTransactionsRound -->|RFQ_EXPIRED| PrepareRefundTransactionsRound
+  AwaitRFQsRound -->|QUOTE_ACCEPTED| PrepareSupplyTransactionRound
+  CollectExchangeDataRound -->|DONE| AwaitRFQsRound
+  PostTransactionRound -->|POST_CLAIM| SuccessfulExecutionRound
+  PostTransactionRound -->|POST_NEW_SWAP| AwaitBuyerTransactionsRound
+  PostTransactionRound -->|POST_REFUND| UnSuccessfulExecutionRound
+  PrepareClaimTransactionsRound -->|DONE| FinalisedClaimTransactionsRound
+  PrepareClaimTransactionsRound -->|FINALISED| SuccessfulExecutionRound
+  PrepareRefundTransactionsRound -->|DONE| FinalisedRefundTransactionsRound
+  PrepareRefundTransactionsRound -->|FINALISED| UnSuccessfulExecutionRound
+  PrepareSupplyTransactionRound -->|DONE| FinalisedSupplyTransactionsRound
+  PrepareSupplyTransactionRound -->|FINALISED| AwaitBuyerTransactionsRound

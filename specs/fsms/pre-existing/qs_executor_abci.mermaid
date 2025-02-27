@@ -1,0 +1,22 @@
+graph TD
+    CollectExchangeDataRound -->|DONE| AwaitRFQsRound 
+    AwaitRFQsRound -->|QUOTE_ACCEPTED| PrepareSupplyTransactionRound
+
+    PrepareSupplyTransactionRound -->|DONE| FinalisedSupplyTransactionsRound
+    PrepareSupplyTransactionRound -->|FINALISED| AwaitBuyerTransactionsRound
+    
+    AwaitBuyerTransactionsRound -->|DONE| PrepareClaimTransactionsRound
+    AwaitBuyerTransactionsRound -->|RFQ_EXPIRED| PrepareRefundTransactionsRound
+    
+
+    PrepareClaimTransactionsRound -->|FINALISED| SuccessfulExecutionRound
+    PrepareClaimTransactionsRound -->|DONE| FinalisedClaimTransactionsRound
+    
+    PrepareRefundTransactionsRound -->|FINALISED| UnSuccessfulExecutionRound
+    PrepareRefundTransactionsRound -->|DONE| FinalisedRefundTransactionsRound
+    
+    
+    PostTransactionRound  -->|POST_NEW_SWAP| AwaitBuyerTransactionsRound
+    PostTransactionRound  -->|POST_CLAIM| SuccessfulExecutionRound
+    PostTransactionRound  -->|POST_REFUND| UnSuccessfulExecutionRound
+

@@ -1,0 +1,17 @@
+alphabet_in:
+- DONE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: GenericScoringRound
+final_states:
+- FinishedGenericScoringRound
+label: GenericScoringAbciApp
+start_states:
+- GenericScoringRound
+states:
+- FinishedGenericScoringRound
+- GenericScoringRound
+transition_func:
+    (GenericScoringRound, DONE): FinishedGenericScoringRound
+    (GenericScoringRound, NO_MAJORITY): GenericScoringRound
+    (GenericScoringRound, ROUND_TIMEOUT): GenericScoringRound

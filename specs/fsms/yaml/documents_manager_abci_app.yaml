@@ -1,0 +1,45 @@
+alphabet_in:
+- DONE
+- TO_UPDATE
+- NO_UPDATES
+- UPDATE_FAILED
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: CheckDocumentsRound
+final_states:
+- FinishedDocumentsManagerRound
+- FinishedDocumentsManagerWithSearchEngineRound
+- FailedDocumentsManagerRound
+label: ScraperAbciApp
+start_states:
+- UpdateQueriesRound
+- CheckDocumentsRound
+states:
+- CheckDocumentsRound
+- FailedDocumentsManagerRound
+- FinishedDocumentsManagerRound
+- FinishedDocumentsManagerWithSearchEngineRound
+- SearchEngineRound
+- UpdateQueriesRound
+- UpdateFilesRound
+transition_func:
+    (CheckDocumentsRound, TO_UPDATE): SampleQueryRound
+    (CheckDocumentsRound, NO_UPDATES): FinishedDocumentsManagerRound
+    (CheckDocumentsRound, NO_MAJORITY): CheckDocumentsRound
+    (CheckDocumentsRound, ROUND_TIMEOUT): CheckDocumentsRound
+    (SampleQueryRound, DONE): SearchEngineRound
+    (SampleQueryRound, NONE): FailedDocumentsManagerRound
+    (SampleQueryRound, NO_MAJORITY): SampleQueryRound
+    (SampleQueryRound, ROUND_TIMEOUT): SampleQueryRound
+    (SearchEngineRound, DONE): FinishedDocumentsManagerWithSearchEngineRound
+    (SearchEngineRound, UPDATE_FAILED): FailedDocumentsManagerRound
+    (SearchEngineRound, NO_MAJORITY): SearchEngineRound
+    (SearchEngineRound, ROUND_TIMEOUT): SearchEngineRound
+    (UpdateQueriesRound, DONE): UpdateFilesRound
+    (UpdateQueriesRound, FETCH_ERROR): FailedMarketManagerRound
+    (UpdateQueriesRound, NO_MAJORITY): UpdateQueriesRound
+    (UpdateQueriesRound, ROUND_TIMEOUT): UpdateQueriesRound
+    (UpdateFilesRound, DONE): CheckDocumentsRound
+    (UpdateFilesRound, UPDATE_FAILED): FailedDocumentsManagerRound
+    (UpdateFilesRound, NO_MAJORITY): UpdateFilesRound
+    (UpdateFilesRound, ROUND_TIMEOUT): UpdateFilesRound

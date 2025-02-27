@@ -1,0 +1,19 @@
+alphabet_in:
+- HEALTHY
+- UNHEALTHY
+- DONE
+default_start_state: HealthCheckRound
+final_states:
+- SuccessfulDeploymentRound
+label: OrchestratorAbciApp
+start_states:
+- HealthCheckRound
+states:
+- SuccessfulDeploymentRound
+- HealthCheckRound
+- CreateContainersRound
+transition_func:
+  (CreateContainersRound, DONE): HealthCheckRound
+  (HealthCheckRound, HEALTHY): SuccessfulDeploymentRound
+  (HealthCheckRound, UNHEALTHY): CreateContainersRound
+

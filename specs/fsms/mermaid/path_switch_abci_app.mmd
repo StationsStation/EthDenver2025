@@ -1,0 +1,9 @@
+graph TD
+  PathSwitchRound
+  FinishedPathSwitchReadRound
+  FinishedPathSwitchScoreRound
+  PathSwitchRound
+  PathSwitchRound -->|DONE_READ| FinishedPathSwitchReadRound
+  PathSwitchRound -->|DONE_SCORE| FinishedPathSwitchScoreRound
+  PathSwitchRound -->|NO_MAJORITY| PathSwitchRound
+  PathSwitchRound -->|ROUND_TIMEOUT| PathSwitchRound

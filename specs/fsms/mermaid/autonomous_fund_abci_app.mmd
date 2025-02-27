@@ -1,0 +1,125 @@
+graph TD
+  RegistrationStartupRound
+  AllowListUpdateRound
+  CheckLateTxHashesRound
+  CheckTransactionHistoryRound
+  CollectSignatureRound
+  DecisionMakingRound
+  DeploySafeRound
+  EstimationRound
+  FinalizationRound
+  ObservationRound
+  OutlierDetectionRound
+  PostTransactionSettlementRound
+  RandomnessSafeRound
+  RandomnessTransactionSubmissionRound
+  RegistrationRound
+  RegistrationStartupRound
+  ResetAndPauseRound
+  ResetRound
+  SelectKeeperSafeRound
+  SelectKeeperTransactionSubmissionRoundA
+  SelectKeeperTransactionSubmissionRoundB
+  SelectKeeperTransactionSubmissionRoundBAfterTimeout
+  SynchronizeLateMessagesRound
+  UpdatePoolTxRound
+  ValidateSafeRound
+  ValidateTransactionRound
+  AllowListUpdateRound -->|DONE| RandomnessTransactionSubmissionRound
+  AllowListUpdateRound -->|ERROR| AllowListUpdateRound
+  AllowListUpdateRound -->|NO_ACTION| ObservationRound
+  AllowListUpdateRound -->|NO_MAJORITY| AllowListUpdateRound
+  AllowListUpdateRound -->|ROUND_TIMEOUT| AllowListUpdateRound
+  CheckLateTxHashesRound -->|CHECK_LATE_ARRIVING_MESSAGE| SynchronizeLateMessagesRound
+  CheckLateTxHashesRound -->|CHECK_TIMEOUT| CheckLateTxHashesRound
+  CheckLateTxHashesRound -->|DONE| PostTransactionSettlementRound
+  CheckLateTxHashesRound -->|NEGATIVE| AllowListUpdateRound
+  CheckLateTxHashesRound -->|NONE| AllowListUpdateRound
+  CheckLateTxHashesRound -->|NO_MAJORITY| AllowListUpdateRound
+  CheckTransactionHistoryRound -->|CHECK_LATE_ARRIVING_MESSAGE| SynchronizeLateMessagesRound
+  CheckTransactionHistoryRound -->|CHECK_TIMEOUT| CheckTransactionHistoryRound
+  CheckTransactionHistoryRound -->|DONE| PostTransactionSettlementRound
+  CheckTransactionHistoryRound -->|NEGATIVE| SelectKeeperTransactionSubmissionRoundB
+  CheckTransactionHistoryRound -->|NONE| AllowListUpdateRound
+  CheckTransactionHistoryRound -->|NO_MAJORITY| CheckTransactionHistoryRound
+  CollectSignatureRound -->|DONE| FinalizationRound
+  CollectSignatureRound -->|NO_MAJORITY| ResetRound
+  CollectSignatureRound -->|ROUND_TIMEOUT| CollectSignatureRound
+  DecisionMakingRound -->|DONE| UpdatePoolTxRound
+  DecisionMakingRound -->|NO_ACTION| ResetAndPauseRound
+  DecisionMakingRound -->|NO_MAJORITY| DecisionMakingRound
+  DecisionMakingRound -->|ROUND_TIMEOUT| DecisionMakingRound
+  DeploySafeRound -->|DEPLOY_TIMEOUT| SelectKeeperSafeRound
+  DeploySafeRound -->|DONE| ValidateSafeRound
+  DeploySafeRound -->|FAILED| SelectKeeperSafeRound
+  EstimationRound -->|DONE| OutlierDetectionRound
+  EstimationRound -->|NO_ACTION| ObservationRound
+  EstimationRound -->|NO_MAJORITY| ObservationRound
+  EstimationRound -->|ROUND_TIMEOUT| ObservationRound
+  FinalizationRound -->|CHECK_HISTORY| CheckTransactionHistoryRound
+  FinalizationRound -->|CHECK_LATE_ARRIVING_MESSAGE| SynchronizeLateMessagesRound
+  FinalizationRound -->|DONE| ValidateTransactionRound
+  FinalizationRound -->|FINALIZATION_FAILED| SelectKeeperTransactionSubmissionRoundB
+  FinalizationRound -->|FINALIZE_TIMEOUT| SelectKeeperTransactionSubmissionRoundBAfterTimeout
+  FinalizationRound -->|INSUFFICIENT_FUNDS| SelectKeeperTransactionSubmissionRoundB
+  ObservationRound -->|DONE| EstimationRound
+  ObservationRound -->|NO_ACTION| ObservationRound
+  ObservationRound -->|NO_MAJORITY| ObservationRound
+  ObservationRound -->|ROUND_TIMEOUT| ObservationRound
+  OutlierDetectionRound -->|DONE| DecisionMakingRound
+  OutlierDetectionRound -->|NO_ACTION| ObservationRound
+  OutlierDetectionRound -->|NO_MAJORITY| ObservationRound
+  PostTransactionSettlementRound -->|ALLOWLIST_UPDATE_DONE| ObservationRound
+  PostTransactionSettlementRound -->|WEIGHT_UPDATE_DONE| ResetAndPauseRound
+  RandomnessSafeRound -->|DONE| SelectKeeperSafeRound
+  RandomnessSafeRound -->|NO_MAJORITY| RandomnessSafeRound
+  RandomnessSafeRound -->|ROUND_TIMEOUT| RandomnessSafeRound
+  RandomnessTransactionSubmissionRound -->|DONE| SelectKeeperTransactionSubmissionRoundA
+  RandomnessTransactionSubmissionRound -->|NO_MAJORITY| RandomnessTransactionSubmissionRound
+  RandomnessTransactionSubmissionRound -->|ROUND_TIMEOUT| RandomnessTransactionSubmissionRound
+  RegistrationRound -->|DONE| AllowListUpdateRound
+  RegistrationRound -->|NO_MAJORITY| RegistrationRound
+  RegistrationStartupRound -->|DONE| RandomnessSafeRound
+  RegistrationStartupRound -->|FAST_FORWARD| AllowListUpdateRound
+  ResetAndPauseRound -->|DONE| ObservationRound
+  ResetAndPauseRound -->|NO_MAJORITY| RegistrationRound
+  ResetAndPauseRound -->|RESET_AND_PAUSE_TIMEOUT| RegistrationRound
+  ResetRound -->|DONE| RandomnessTransactionSubmissionRound
+  ResetRound -->|NO_MAJORITY| AllowListUpdateRound
+  ResetRound -->|RESET_TIMEOUT| AllowListUpdateRound
+  SelectKeeperSafeRound -->|DONE| DeploySafeRound
+  SelectKeeperSafeRound -->|NO_MAJORITY| RandomnessSafeRound
+  SelectKeeperSafeRound -->|ROUND_TIMEOUT| RandomnessSafeRound
+  SelectKeeperTransactionSubmissionRoundA -->|DONE| CollectSignatureRound
+  SelectKeeperTransactionSubmissionRoundA -->|INCORRECT_SERIALIZATION| AllowListUpdateRound
+  SelectKeeperTransactionSubmissionRoundA -->|NO_MAJORITY| ResetRound
+  SelectKeeperTransactionSubmissionRoundA -->|ROUND_TIMEOUT| SelectKeeperTransactionSubmissionRoundA
+  SelectKeeperTransactionSubmissionRoundB -->|DONE| FinalizationRound
+  SelectKeeperTransactionSubmissionRoundB -->|INCORRECT_SERIALIZATION| AllowListUpdateRound
+  SelectKeeperTransactionSubmissionRoundB -->|NO_MAJORITY| ResetRound
+  SelectKeeperTransactionSubmissionRoundB -->|ROUND_TIMEOUT| SelectKeeperTransactionSubmissionRoundB
+  SelectKeeperTransactionSubmissionRoundBAfterTimeout -->|CHECK_HISTORY| CheckTransactionHistoryRound
+  SelectKeeperTransactionSubmissionRoundBAfterTimeout -->|CHECK_LATE_ARRIVING_MESSAGE| SynchronizeLateMessagesRound
+  SelectKeeperTransactionSubmissionRoundBAfterTimeout -->|DONE| FinalizationRound
+  SelectKeeperTransactionSubmissionRoundBAfterTimeout -->|INCORRECT_SERIALIZATION| AllowListUpdateRound
+  SelectKeeperTransactionSubmissionRoundBAfterTimeout -->|NO_MAJORITY| ResetRound
+  SelectKeeperTransactionSubmissionRoundBAfterTimeout -->|ROUND_TIMEOUT| SelectKeeperTransactionSubmissionRoundBAfterTimeout
+  SynchronizeLateMessagesRound -->|DONE| CheckLateTxHashesRound
+  SynchronizeLateMessagesRound -->|MISSED_AND_LATE_MESSAGES_MISMATCH| AllowListUpdateRound
+  SynchronizeLateMessagesRound -->|NONE| SelectKeeperTransactionSubmissionRoundB
+  SynchronizeLateMessagesRound -->|NO_MAJORITY| SynchronizeLateMessagesRound
+  SynchronizeLateMessagesRound -->|ROUND_TIMEOUT| SynchronizeLateMessagesRound
+  UpdatePoolTxRound -->|DONE| RandomnessTransactionSubmissionRound
+  UpdatePoolTxRound -->|NO_ACTION| UpdatePoolTxRound
+  UpdatePoolTxRound -->|NO_MAJORITY| UpdatePoolTxRound
+  UpdatePoolTxRound -->|ROUND_TIMEOUT| UpdatePoolTxRound
+  ValidateSafeRound -->|DONE| AllowListUpdateRound
+  ValidateSafeRound -->|NEGATIVE| RandomnessSafeRound
+  ValidateSafeRound -->|NONE| RandomnessSafeRound
+  ValidateSafeRound -->|NO_MAJORITY| RandomnessSafeRound
+  ValidateSafeRound -->|VALIDATE_TIMEOUT| RandomnessSafeRound
+  ValidateTransactionRound -->|DONE| PostTransactionSettlementRound
+  ValidateTransactionRound -->|NEGATIVE| CheckTransactionHistoryRound
+  ValidateTransactionRound -->|NONE| SelectKeeperTransactionSubmissionRoundB
+  ValidateTransactionRound -->|NO_MAJORITY| ValidateTransactionRound
+  ValidateTransactionRound -->|VALIDATE_TIMEOUT| SelectKeeperTransactionSubmissionRoundB

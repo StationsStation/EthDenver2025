@@ -1,0 +1,22 @@
+graph TD
+  PreTxSettlementRound
+  ChecksPassedRound
+  FailedMultiplexerRound
+  FinishedBetPlacementTxRound
+  FinishedMechRequestTxRound
+  FinishedRedeemingTxRound
+  FinishedStakingTxRound
+  FinishedSubscriptionTxRound
+  PostTxSettlementRound
+  PreTxSettlementRound
+  PostTxSettlementRound -->|BET_PLACEMENT_DONE| FinishedBetPlacementTxRound
+  PostTxSettlementRound -->|MECH_REQUESTING_DONE| FinishedMechRequestTxRound
+  PostTxSettlementRound -->|REDEEMING_DONE| FinishedRedeemingTxRound
+  PostTxSettlementRound -->|ROUND_TIMEOUT| PostTxSettlementRound
+  PostTxSettlementRound -->|STAKING_DONE| FinishedStakingTxRound
+  PostTxSettlementRound -->|SUBSCRIPTION_DONE| FinishedSubscriptionTxRound
+  PostTxSettlementRound -->|UNRECOGNIZED| FailedMultiplexerRound
+  PreTxSettlementRound -->|CHECKS_PASSED| ChecksPassedRound
+  PreTxSettlementRound -->|NO_MAJORITY| PreTxSettlementRound
+  PreTxSettlementRound -->|REFILL_REQUIRED| PreTxSettlementRound
+  PreTxSettlementRound -->|ROUND_TIMEOUT| PreTxSettlementRound

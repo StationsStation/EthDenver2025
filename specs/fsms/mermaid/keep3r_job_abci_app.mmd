@@ -1,0 +1,64 @@
+graph TD
+  PathSelectionRound
+  ActivationRound
+  ApproveBondRound
+  AwaitTopUpRound
+  BlacklistedRound
+  BondingRound
+  DegenerateRound
+  FinalizeActivationRound
+  FinalizeApproveBondRound
+  FinalizeBondingRound
+  FinalizeWorkRound
+  GetJobsRound
+  IsProfitableRound
+  IsWorkableRound
+  JobSelectionRound
+  PathSelectionRound
+  PerformWorkRound
+  WaitingRound
+  ActivationRound -->|ACTIVATION_TX| FinalizeActivationRound
+  ActivationRound -->|AWAITING_BONDING| WaitingRound
+  ActivationRound -->|NO_MAJORITY| ActivationRound
+  ActivationRound -->|ROUND_TIMEOUT| ActivationRound
+  ApproveBondRound -->|APPROVE_BOND| FinalizeApproveBondRound
+  ApproveBondRound -->|NO_MAJORITY| ApproveBondRound
+  ApproveBondRound -->|ROUND_TIMEOUT| ApproveBondRound
+  AwaitTopUpRound -->|NO_MAJORITY| AwaitTopUpRound
+  AwaitTopUpRound -->|ROUND_TIMEOUT| AwaitTopUpRound
+  AwaitTopUpRound -->|TOP_UP| PathSelectionRound
+  BondingRound -->|BONDING_TX| FinalizeBondingRound
+  BondingRound -->|NO_MAJORITY| BondingRound
+  BondingRound -->|ROUND_TIMEOUT| BondingRound
+  GetJobsRound -->|DONE| JobSelectionRound
+  GetJobsRound -->|NO_MAJORITY| GetJobsRound
+  GetJobsRound -->|ROUND_TIMEOUT| GetJobsRound
+  IsProfitableRound -->|NOT_PROFITABLE| JobSelectionRound
+  IsProfitableRound -->|NO_MAJORITY| IsProfitableRound
+  IsProfitableRound -->|PROFITABLE| PerformWorkRound
+  IsProfitableRound -->|ROUND_TIMEOUT| IsProfitableRound
+  IsWorkableRound -->|NOT_WORKABLE| JobSelectionRound
+  IsWorkableRound -->|NO_MAJORITY| IsWorkableRound
+  IsWorkableRound -->|ROUND_TIMEOUT| IsWorkableRound
+  IsWorkableRound -->|WORKABLE| IsProfitableRound
+  JobSelectionRound -->|DONE| IsWorkableRound
+  JobSelectionRound -->|NO_JOBS| PathSelectionRound
+  JobSelectionRound -->|NO_MAJORITY| JobSelectionRound
+  JobSelectionRound -->|ROUND_TIMEOUT| JobSelectionRound
+  PathSelectionRound -->|APPROVE_BOND| ApproveBondRound
+  PathSelectionRound -->|BLACKLISTED| BlacklistedRound
+  PathSelectionRound -->|HEALTHY| GetJobsRound
+  PathSelectionRound -->|INSUFFICIENT_FUNDS| AwaitTopUpRound
+  PathSelectionRound -->|NOT_ACTIVATED| WaitingRound
+  PathSelectionRound -->|NOT_BONDED| BondingRound
+  PathSelectionRound -->|NO_MAJORITY| PathSelectionRound
+  PathSelectionRound -->|ROUND_TIMEOUT| PathSelectionRound
+  PathSelectionRound -->|UNKNOWN_HEALTH_ISSUE| DegenerateRound
+  PerformWorkRound -->|INSUFFICIENT_FUNDS| PathSelectionRound
+  PerformWorkRound -->|NO_MAJORITY| PerformWorkRound
+  PerformWorkRound -->|ROUND_TIMEOUT| PerformWorkRound
+  PerformWorkRound -->|SIMULATION_FAILED| JobSelectionRound
+  PerformWorkRound -->|WORK_TX| FinalizeWorkRound
+  WaitingRound -->|DONE| ActivationRound
+  WaitingRound -->|NO_MAJORITY| WaitingRound
+  WaitingRound -->|ROUND_TIMEOUT| WaitingRound

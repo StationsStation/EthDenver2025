@@ -1,0 +1,12 @@
+graph TD
+  CallCheckpointRound
+  CallCheckpointRound
+  CheckpointCallPreparedRound
+  FinishedStakingRound
+  ServiceEvictedRound
+  CallCheckpointRound -->|DONE| CheckpointCallPreparedRound
+  CallCheckpointRound -->|NEXT_CHECKPOINT_NOT_REACHED_YET| FinishedStakingRound
+  CallCheckpointRound -->|NO_MAJORITY| CallCheckpointRound
+  CallCheckpointRound -->|ROUND_TIMEOUT| CallCheckpointRound
+  CallCheckpointRound -->|SERVICE_EVICTED| ServiceEvictedRound
+  CallCheckpointRound -->|SERVICE_NOT_STAKED| FinishedStakingRound

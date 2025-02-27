@@ -21,7 +21,6 @@
 
 import json
 from typing import cast
-from collections import deque
 
 from aea.skills.base import Handler
 from aea.protocols.base import Message
@@ -33,11 +32,17 @@ from packages.eightballer.protocols.chatroom.dialogues import (
     ChatroomDialogue as TelegramDialogue,
     ChatroomDialogues as TelegramDialogues,
 )
-from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy
+from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy
 from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     HttpDialogue,
     HttpDialogues,
     DefaultDialogues,
+)
+from packages.zarathustra.connections.openai_api.connection import reconstitute
+from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
+from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
+    LlmChatCompletionDialogue,
+    LlmChatCompletionDialogues,
 )
 
 
@@ -46,15 +51,14 @@ class TelegramHandler(Handler):
 
     SUPPORTED_PROTOCOL = TelegramMessage.protocol_id
 
-    pending_messages = deque(maxlen=1000)
-
     def handle(self, message: Message) -> None:
         """Implement the reaction to an envelope."""
+
         telegram_msg = cast(TelegramMessage, message)
         if telegram_msg.performative == TelegramMessage.Performative.MESSAGE_SENT:
             self.context.logger.debug(f"received telegram message={telegram_msg}")
             return
-        # recover dialogue
+
         telegram_dialogues = cast(TelegramDialogues, self.context.telegram_dialogues)
         telegram_dialogue = cast(TelegramDialogue, telegram_dialogues.update(telegram_msg))
 
@@ -62,7 +66,52 @@ class TelegramHandler(Handler):
             self.context.logger.debug(f"received invalid telegram message={telegram_msg}, unidentified dialogue.")
 
         self.context.logger.info(f"received telegram message={telegram_msg.from_user}, content={telegram_msg.text}")
-        self.strategy.pending_messages.append(telegram_msg)
+        self.strategy.pending_telegram_messages.append(telegram_msg)
+
+    @property
+    def strategy(self):
+        """Get the strategy."""
+        return cast(AsylumStrategy, self.context.asylum_strategy)
+
+    def setup(self):
+        """Implement the setup."""
+
+    def teardown(self):
+        """Implement the handler teardown."""
+
+
+class LlmChatCompletionHandler(Handler):
+    """This implements the LlmChatCompletion handler."""
+
+    SUPPORTED_PROTOCOL = LlmChatCompletionMessage.protocol_id
+
+    def handle(self, message: Message) -> None:
+        """Implement the reaction to an envelope."""
+
+        llm_chat_completion_msg = cast(LlmChatCompletionMessage, message)
+        if llm_chat_completion_msg.performative == LlmChatCompletionMessage.Performative.ERROR:
+            self.context.logger.error(f"Received error={llm_chat_completion_msg}")
+            return
+
+        if llm_chat_completion_msg.performative == LlmChatCompletionMessage.Performative.RESPONSE:
+            self.context.logger.debug(f"received LLM chat completion message={llm_chat_completion_msg}")
+
+        llm_chat_completion_dialogues = cast(LlmChatCompletionDialogues, self.context.llm_chat_completion_dialogues)
+        llm_chat_completion_dialogue = cast(
+            LlmChatCompletionDialogue, llm_chat_completion_dialogues.update(llm_chat_completion_msg)
+        )
+
+        if not llm_chat_completion_dialogue:
+            self.context.logger.debug(
+                f"received invalid llm chat completion message={llm_chat_completion_msg}, unidentified dialogue."
+            )
+
+        llm_chat_completion = reconstitute(message)
+        self.context.logger.debug(f"Reconstituted: {llm_chat_completion}")
+        text = llm_chat_completion.choices[0].message.content
+        if not self.context.asylum_strategy.user_persona:
+            self.context.asylum_strategy.user_persona = text
+        self.strategy.llm_responses.append((LLMActions.REPLY, text))
 
     @property
     def strategy(self):

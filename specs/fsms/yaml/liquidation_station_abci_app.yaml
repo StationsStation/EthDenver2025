@@ -1,0 +1,42 @@
+alphabet_in:
+- DONE
+- NO_MAJORITY
+- RESET_TIMEOUT
+- ROUND_TIMEOUT
+- NOT_TRIGGERED
+default_start_state: RegistrationRound
+final_states: []
+label: LiquidationStationAbciApp
+start_states:
+- RegistrationRound
+states:
+- RegistrationRound
+- ResetAndPauseRound
+- CollectPositionsRound
+- CalculatePositionHealthRound
+- PrepareLiquidationTransactionsRound
+- SubmitPositionLiquidationTransactionsRound
+transition_func:
+    (RegistrationRound, DONE): CollectPositionsRound
+
+    (CollectPositionsRound, DONE): CalculatePositionHealthRound
+    (CollectPositionsRound, ROUND_TIMEOUT): ResetAndPauseRound
+    (CollectPositionsRound, NO_MAJORITY): ResetAndPauseRound
+
+    (CalculatePositionHealthRound, DONE): PrepareLiquidationTransactionsRound
+    (CalculatePositionHealthRound, ROUND_TIMEOUT): ResetAndPauseRound
+    (CalculatePositionHealthRound, NO_MAJORITY): ResetAndPauseRound
+
+    (PrepareLiquidationTransactionsRound, DONE): SubmitPositionLiquidationTransactionsRound
+    (PrepareLiquidationTransactionsRound, ROUND_TIMEOUT): ResetAndPauseRound
+    (PrepareLiquidationTransactionsRound, NO_MAJORITY): ResetAndPauseRound
+
+
+    (SubmitPositionLiquidationTransactionsRound, DONE): ResetAndPauseRound
+    (SubmitPositionLiquidationTransactionsRound, NOT_TRIGGERED): ResetAndPauseRound
+
+
+
+    (ResetAndPauseRound, DONE): CollectPositionsRound
+    (ResetAndPauseRound, NO_MAJORITY): ResetAndPauseRound
+    (ResetAndPauseRound, RESET_TIMEOUT): ResetAndPauseRound

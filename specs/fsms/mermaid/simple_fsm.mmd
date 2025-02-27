@@ -1,0 +1,16 @@
+graph TD
+  CheckRound
+  ErrorRound
+  PrepareRound
+  PauseRound
+  CheckRound
+  ExecuteRound
+  CheckRound -->|DONE| PrepareRound
+  CheckRound -->|NO_NEW_MESSAGES| PauseRound
+  ErrorRound -->|RETRY| CheckRound
+  ExecuteRound -->|DONE| PauseRound
+  ExecuteRound -->|ERROR| ErrorRound
+  PauseRound -->|DONE| CheckRound
+  PauseRound -->|TIMEOUT| ErrorRound
+  PrepareRound -->|DONE| ExecuteRound
+  PrepareRound -->|TIMEOUT| ErrorRound

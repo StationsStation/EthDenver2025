@@ -1,0 +1,18 @@
+graph TD
+  RegistrationRound
+  RegistrationRound
+  SynchronizeEmbeddingsRound
+  SynchronizeRequestsRound
+  EmbeddingRound
+  ChatRound
+  RegistrationRound -->|DONE| SynchronizeEmbeddingsRound
+  SynchronizeEmbeddingsRound -->|EMBEDDING| EmbeddingRound
+  SynchronizeEmbeddingsRound -->|NO_REQUEST| SynchronizeRequestsRound
+  SynchronizeEmbeddingsRound -->|ROUND_TIMEOUT| SynchronizeRequestsRound
+  EmbeddingRound -->|DONE| SynchronizeRequestsRound
+  EmbeddingRound -->|ERROR| SynchronizeRequestsRound
+  SynchronizeRequestsRound -->|CHAT| ChatRound
+  SynchronizeRequestsRound -->|NO_REQUEST| SynchronizeEmbeddingsRound
+  SynchronizeRequestsRound -->|ROUND_TIMEOUT| SynchronizeEmbeddingsRound
+  ChatRound -->|DONE| SynchronizeEmbeddingsRound
+  ChatRound -->|ERROR| SynchronizeEmbeddingsRound

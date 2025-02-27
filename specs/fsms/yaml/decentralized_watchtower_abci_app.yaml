@@ -1,0 +1,45 @@
+alphabet_in:
+- BAD_SUBMISSION
+- DONE
+- NO_ACTION
+- NO_MAJORITY
+- RESET_AND_PAUSE_TIMEOUT
+- ROUND_TIMEOUT
+default_start_state: RegistrationStartupRound
+final_states: []
+label: DecentralizedWatchtowerAbciApp
+start_states:
+- RegistrationRound
+- RegistrationStartupRound
+states:
+- PlaceOrdersRound
+- RandomnessRound
+- RegistrationRound
+- RegistrationStartupRound
+- ResetAndPauseRound
+- SelectKeeperRound
+- SelectOrdersRound
+- VerifyExecutionRound
+transition_func:
+    (PlaceOrdersRound, DONE): VerifyExecutionRound
+    (PlaceOrdersRound, ROUND_TIMEOUT): PlaceOrdersRound
+    (RandomnessRound, DONE): SelectKeeperRound
+    (RandomnessRound, NO_MAJORITY): RandomnessRound
+    (RandomnessRound, ROUND_TIMEOUT): RandomnessRound
+    (RegistrationRound, DONE): SelectOrdersRound
+    (RegistrationRound, NO_MAJORITY): RegistrationRound
+    (RegistrationStartupRound, DONE): SelectOrdersRound
+    (ResetAndPauseRound, DONE): SelectOrdersRound
+    (ResetAndPauseRound, NO_MAJORITY): RegistrationStartupRound
+    (ResetAndPauseRound, RESET_AND_PAUSE_TIMEOUT): RegistrationStartupRound
+    (SelectKeeperRound, DONE): PlaceOrdersRound
+    (SelectKeeperRound, NO_MAJORITY): RandomnessRound
+    (SelectKeeperRound, ROUND_TIMEOUT): SelectKeeperRound
+    (SelectOrdersRound, DONE): RandomnessRound
+    (SelectOrdersRound, NO_ACTION): ResetAndPauseRound
+    (SelectOrdersRound, NO_MAJORITY): SelectOrdersRound
+    (SelectOrdersRound, ROUND_TIMEOUT): SelectOrdersRound
+    (VerifyExecutionRound, BAD_SUBMISSION): RandomnessRound
+    (VerifyExecutionRound, DONE): SelectOrdersRound
+    (VerifyExecutionRound, NO_MAJORITY): PlaceOrdersRound
+    (VerifyExecutionRound, ROUND_TIMEOUT): PlaceOrdersRound

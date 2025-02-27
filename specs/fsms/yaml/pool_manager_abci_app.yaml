@@ -1,0 +1,26 @@
+alphabet_in:
+- DONE
+- NO_ACTION
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: DecisionMakingRound
+final_states:
+- FinishedTxPreparationRound
+- FinishedWithoutTxRound
+label: PoolManagerAbciApp
+start_states:
+- DecisionMakingRound
+states:
+- DecisionMakingRound
+- FinishedTxPreparationRound
+- FinishedWithoutTxRound
+- UpdatePoolTxRound
+transition_func:
+    (DecisionMakingRound, DONE): UpdatePoolTxRound
+    (DecisionMakingRound, NO_ACTION): FinishedWithoutTxRound
+    (DecisionMakingRound, NO_MAJORITY): DecisionMakingRound
+    (DecisionMakingRound, ROUND_TIMEOUT): DecisionMakingRound
+    (UpdatePoolTxRound, DONE): FinishedTxPreparationRound
+    (UpdatePoolTxRound, NO_ACTION): UpdatePoolTxRound
+    (UpdatePoolTxRound, NO_MAJORITY): UpdatePoolTxRound
+    (UpdatePoolTxRound, ROUND_TIMEOUT): UpdatePoolTxRound

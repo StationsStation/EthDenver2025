@@ -1,0 +1,40 @@
+alphabet_in:
+- DECIDED_NO
+- DECIDED_YES
+- DONE
+- ERROR
+- NO_ACTIVE_PROJECTS
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: ObservationRound
+final_states:
+- FinishedElCollectooorrWithoutPurchase
+- FinishedElCollectoorBaseRound
+label: ElcollectooorrBaseAbciApp
+start_states:
+- ObservationRound
+states:
+- DecisionRound
+- DetailsRound
+- FinishedElCollectooorrWithoutPurchase
+- FinishedElCollectoorBaseRound
+- ObservationRound
+- TransactionRound
+transition_func:
+    (DecisionRound, DECIDED_NO): FinishedElCollectooorrWithoutPurchase
+    (DecisionRound, DECIDED_YES): TransactionRound
+    (DecisionRound, NO_MAJORITY): FinishedElCollectooorrWithoutPurchase
+    (DecisionRound, ROUND_TIMEOUT): FinishedElCollectooorrWithoutPurchase
+    (DetailsRound, DONE): DecisionRound
+    (DetailsRound, ERROR): FinishedElCollectooorrWithoutPurchase
+    (DetailsRound, NO_MAJORITY): DecisionRound
+    (DetailsRound, ROUND_TIMEOUT): DecisionRound
+    (ObservationRound, DONE): DetailsRound
+    (ObservationRound, ERROR): ObservationRound
+    (ObservationRound, NO_ACTIVE_PROJECTS): FinishedElCollectooorrWithoutPurchase
+    (ObservationRound, NO_MAJORITY): ObservationRound
+    (ObservationRound, ROUND_TIMEOUT): ObservationRound
+    (TransactionRound, DONE): FinishedElCollectoorBaseRound
+    (TransactionRound, ERROR): ObservationRound
+    (TransactionRound, NO_MAJORITY): ObservationRound
+    (TransactionRound, ROUND_TIMEOUT): ObservationRound

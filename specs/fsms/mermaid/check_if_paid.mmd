@@ -1,0 +1,17 @@
+graph TD
+  setupRound
+  errorRound
+  noPaymentReceivedRound
+  newPaymentReceivedRound
+  postRound
+  setupRound
+  checkIfPaidRound
+  checkIfPaidRound -->|DONE| newPaymentReceivedRound
+  checkIfPaidRound -->|ERROR| errorRound
+  checkIfPaidRound -->|NO_PAYMENT| noPaymentReceivedRound
+  errorRound -->|DONE| postRound
+  newPaymentReceivedRound -->|DONE| postRound
+  newPaymentReceivedRound -->|ERROR| errorRound
+  noPaymentReceivedRound -->|DONE| postRound
+  noPaymentReceivedRound -->|ERROR| errorRound
+  setupRound -->|DONE| checkIfPaidRound

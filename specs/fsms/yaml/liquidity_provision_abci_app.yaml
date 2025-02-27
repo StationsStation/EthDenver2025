@@ -1,0 +1,23 @@
+alphabet_in:
+- DONE
+- ERROR
+- NO_ACTION
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: AllowListUpdateRound
+final_states:
+- FinishedAllowlistTxPreparationRound
+- FinishedWithoutAllowlistTxRound
+label: LiquidityProvisionAbciApp
+start_states:
+- AllowListUpdateRound
+states:
+- AllowListUpdateRound
+- FinishedAllowlistTxPreparationRound
+- FinishedWithoutAllowlistTxRound
+transition_func:
+    (AllowListUpdateRound, DONE): FinishedAllowlistTxPreparationRound
+    (AllowListUpdateRound, ERROR): AllowListUpdateRound
+    (AllowListUpdateRound, NO_ACTION): FinishedWithoutAllowlistTxRound
+    (AllowListUpdateRound, NO_MAJORITY): AllowListUpdateRound
+    (AllowListUpdateRound, ROUND_TIMEOUT): AllowListUpdateRound

@@ -19,6 +19,7 @@
 """This package contains the behaviours for the AsylumAbciApp."""
 
 import os
+import json
 from abc import ABC
 from enum import Enum
 from time import sleep
@@ -30,13 +31,58 @@ from textwrap import dedent
 from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
+from packages.zarathustra.skills.asylum_abci_app import get_repo_root
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
-from packages.zarathustra.skills.asylum_abci_app.strategy import AsylumStrategy
-from packages.zarathustra.connections.openai_api.connection import CONNECTION_ID
+from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
+from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AgentPersona, AsylumStrategy
+from packages.zarathustra.connections.openai_api.connection import (
+    CONNECTION_ID as OPENAI_API_CONNECTION_ID,
+    Model as LLMModel,
+)
+from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
+from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
 
 
 TIMEZONE_UTC = UTC
+
+MERMAID_DIAGRAMS = Path(__file__).parent / "mermaid_diagrams"
+THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
+
+
+USER_PERSONA_PROMPT = dedent("""
+    I have a dataset of GitHub issues and discussions related to {github_repositories}. I want you to analyze and summarize the contributions of the main participants to infer their technical personas.
+
+    For this contributor: {github_username}, summarize their primary concerns, expertise, and communication style. Structure the response as a persona profile including:
+    - **Username**
+    - **Technical Expertise** (inferred from issue discussions)
+    - **Main Interests & Contributions** (e.g., debugging, feature requests, build systems)
+    - **Communication Style** (e.g., concise, detailed, informal, argumentative)
+    - **Potential Role in a Development Team** (e.g., bug hunter, maintainer, architect)
+
+    Keep the summary concise but insightful.
+""")  # noqa: E501
+
+
+SYSTEM_PROMPT = dedent("""
+    You are responding to user messages in a Telegram channel.
+    Users may send casual conversation, questions, or gibberish.
+
+    ### Identity:
+    You are the digital twin of GitHub user **{github_username}**.
+    Your persona is derived from their public GitHub data: **{user_persona}**.
+    Always introduce yourself as their digital twin.
+
+    ### Response Guidelines:
+    - Provide serious and relevant responses to all meaningful messages.
+    - If a message is nonsensical or gibberish, reply with a witty remark while echoing their message.
+    - Always mention the user (@{username}) naturally in your response.
+
+    ### Rules:
+    - **Always assume the identity of your real-world counterpart.**
+    - **Never break character.**
+    - **All responses must reflect the perspective of your real-world counterpart.**
+""")
 
 
 class AsylumAbciAppEvents(Enum):
@@ -49,13 +95,6 @@ class AsylumAbciAppEvents(Enum):
     NEW_MESSAGES = "NEW_MESSAGES"
     TIMEOUT = "TIMEOUT"
     DONE = "DONE"
-
-
-class LLMActions(Enum):
-    """LLMActions."""
-
-    WORKFLOW = "workflow"
-    REPLY = "reply"
 
 
 class AsylumAbciAppStates(Enum):
@@ -81,12 +120,10 @@ class BaseState(State, ABC):
         self._event = None
         self._is_done = False  # Initially, the state is not done
 
-    def act(self) -> None:
-        """Act."""
-        self.context.logger.info(f"In state: {self._state}")
-        self._is_done = True
-        self._event = AsylumAbciAppEvents.DONE
-        sleep(1)
+        self.data_dir = get_repo_root() / "data"
+        if not self.data_dir.exists():
+            self.data_dir.mkdir(parents=True)
+        self.github_scraper = GitHubScraper(data_dir=str(self.data_dir))
 
     def is_done(self) -> bool:
         """Is done flag."""
@@ -101,6 +138,11 @@ class BaseState(State, ABC):
     def strategy(self):
         """Get the strategy."""
         return cast(AsylumStrategy, self.context.asylum_strategy)
+
+    @property
+    def agent_persona(self) -> AgentPersona:
+        """Get the agent persona."""
+        return cast(AgentPersona, self.context.agent_persona)
 
 
 class ProcessLLMResponseRound(BaseState):
@@ -121,11 +163,14 @@ class ProcessLLMResponseRound(BaseState):
 
         if self.strategy.llm_responses:
             self.context.logger.info("Processing LLM responses")
-
-        for action in self.strategy.llm_responses:
-            self.context.logger.info(f"Action: {action}")
-            if action[0] == LLMActions.REPLY:
+            action, text = self.strategy.llm_responses.pop()
+            self.context.logger.info(f"Action: {action}: {text}")
+            if action == LLMActions.REPLY:
                 self._event = AsylumAbciAppEvents.REPLY
+                self._is_done = True
+                self.strategy.telegram_responses.append(text)
+            elif action == LLMActions.WORKFLOW:
+                self._event = AsylumAbciAppEvents.WORK
                 self._is_done = True
 
         for msg in self.strategy.telegram_responses:
@@ -155,8 +200,8 @@ class CheckTelegramQueueRound(BaseState):
             self._is_done = True
             self.processing_since = None
             return
-        if self.strategy.pending_messages:
-            self.context.logger.info(f"New messages found: {len(self.strategy.pending_messages)}")
+        if self.strategy.pending_telegram_messages:
+            self.context.logger.info(f"New messages found: {len(self.strategy.pending_telegram_messages)}")
             self._event = AsylumAbciAppEvents.NEW_MESSAGES
             self._is_done = True
             self.processing_since = None
@@ -166,6 +211,8 @@ class CheckTelegramQueueRound(BaseState):
 class RequestLLMResponseRound(BaseState):
     """This class implements the behaviour of the state RequestLLMResponseRound."""
 
+    counterparty = str(OPENAI_API_CONNECTION_ID)
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND
@@ -173,11 +220,32 @@ class RequestLLMResponseRound(BaseState):
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        self.context.logger.info(f"Sending to: {CONNECTION_ID}")
-        while self.strategy.pending_messages:
-            msg = self.strategy.pending_messages.pop()
+        self.context.logger.info(f"Sending to: {self.counterparty}")
+        workflows = [f"-{f}" for f in self.strategy.workflows]
+        if self.strategy.new_users:
+            username = self.agent_persona.github_username
+            self.context.logger.info(f"New github data found for {username}")
+            github_data = json.dumps(self.strategy.new_users.pop())
+            model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+            user_persona_prompt = USER_PERSONA_PROMPT.format(
+                github_username=self.agent_persona.github_username,
+                github_repositories=self.agent_persona.github_repositories,
+            )
+            content = [
+                Message(role=Role.SYSTEM, content=user_persona_prompt),
+                Message(role=Role.USER, content=github_data, name=username),
+            ]
+            messages = Messages(content)
+            self.create_and_send(
+                performative=LlmChatCompletionMessage.Performative.CREATE,
+                model=model,
+                messages=messages,
+                kwargs=Kwargs({}),
+            )
+        while self.strategy.pending_telegram_messages:
+            msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
-            workflows = [f"-{f}" for f in self.strategy.workflows]
+            username = msg.from_user
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -186,7 +254,6 @@ class RequestLLMResponseRound(BaseState):
                 """)
                 response = response.format(workflows="\n".join(workflows))
                 self.strategy.telegram_responses.append(response)
-
             elif text_data.startswith("/workflow"):
                 workflow_name = text_data.split()[1]
                 if workflow_name in self.strategy.workflows:
@@ -194,12 +261,40 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
-                # we dummy an llm response for the reply tol here.
-                self.strategy.telegram_responses.append("@daedalus_11_bot please work.")
-
+                THIS_MERMAID_PATH.read_text()
+                model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+                github_username = self.agent_persona.github_username
+                user_persona = self.context.asylum_strategy.user_persona
+                self.context.logger.info(f"I AM: {user_persona}")
+                content = [
+                    Message(
+                        role=Role.SYSTEM,
+                        content=SYSTEM_PROMPT.format(
+                            username=username,
+                            github_username=github_username,
+                            user_persona=user_persona,
+                        ),
+                    ),
+                    Message(role=Role.USER, content=text_data, name=username),
+                ]
+                messages = Messages(content)
+                self.create_and_send(
+                    performative=LlmChatCompletionMessage.Performative.CREATE,
+                    model=model,
+                    messages=messages,
+                    kwargs=Kwargs({}),
+                )
         # we need to request the llm here.
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
+
+    def create_and_send(self, **kwargs) -> None:
+        """Create and send a message."""
+        message, _dialogue = self.context.llm_chat_completion_dialogues.create(
+            counterparty=self.counterparty,
+            **kwargs,
+        )
+        self.context.outbox.put_message(message)
 
 
 class SendTelegramMessageRound(BaseState):
@@ -243,6 +338,30 @@ class ScrapeGithubRound(BaseState):
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.SCRAPE_GITHUB_ROUND
 
+    def act(self) -> None:
+        """Perform GitHub data collection."""
+        self.context.logger.info(f"In state: {self._state}")
+        user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
+
+        try:
+            if not user_data.exists():
+                usernames = [self.agent_persona.github_username]
+                repos = self.agent_persona.github_repositories
+                self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
+                all_user_data = self.github_scraper.scrape_user_interactions(
+                    usernames=usernames,
+                    repos=repos,
+                )
+            else:
+                all_user_data = json.loads(user_data.read_text())
+
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.DONE
+            self.strategy.new_users.append(all_user_data)
+
+        except Exception as e:
+            self.context.logger.exception(f"Error fetching GitHub data: {e!s}")
+
 
 class WaitBeforeRetryRound(BaseState):
     """This class implements the behaviour of the state WaitBeforeRetryRound."""
@@ -259,6 +378,18 @@ class CheckLocalStorageRound(BaseState):
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.CHECK_LOCAL_STORAGE_ROUND
 
+    def act(self):
+        """Do the act."""
+        self.context.logger.info(f"In state: {self._state}")
+        user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
+
+        if not user_data.exists() or not self.strategy.user_persona:
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.UPDATE_NEEDED
+        else:
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.DONE
+
 
 class ExecuteProposedWorkflowRound(BaseState):
     """This class implements the behaviour of the state ExecuteProposedWorkflowRound."""
@@ -271,7 +402,6 @@ class ExecuteProposedWorkflowRound(BaseState):
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        # we now do the work.
 
         while self.strategy.pending_workflows:
             workflow_name = self.strategy.pending_workflows.pop()

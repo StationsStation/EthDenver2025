@@ -1,0 +1,214 @@
+alphabet_in:
+- BASKET_DONE
+- BASKET_PERMISSION
+- CHECK_HISTORY
+- CHECK_LATE_ARRIVING_MESSAGE
+- CHECK_TIMEOUT
+- DECIDED_NO
+- DECIDED_SKIP
+- DECIDED_YES
+- DEPLOY_TIMEOUT
+- DONE
+- EL_COLLECTOOORR_DONE
+- ERROR
+- FAILED
+- FAST_FORWARD
+- FINALIZATION_FAILED
+- FINALIZE_TIMEOUT
+- FRACTION_PAYOUT
+- INCORRECT_SERIALIZATION
+- INSUFFICIENT_FUNDS
+- MISSED_AND_LATE_MESSAGES_MISMATCH
+- NEGATIVE
+- NONE
+- NO_ACTIVE_PROJECTS
+- NO_MAJORITY
+- NO_PAYOUTS
+- NO_TRANSFER
+- RESET_AND_PAUSE_TIMEOUT
+- RESET_TIMEOUT
+- ROUND_TIMEOUT
+- TRANSFER_NFT_DONE
+- VALIDATE_TIMEOUT
+- VAULT_DONE
+default_start_state: RegistrationStartupRound
+final_states: []
+label: ElCollectooorrAbciApp
+start_states:
+- RegistrationStartupRound
+states:
+- BasketAddressRound
+- CheckLateTxHashesRound
+- CheckTransactionHistoryRound
+- CollectSignatureRound
+- DecisionRound
+- DeployBasketTxRound
+- DeployDecisionRound
+- DeploySafeRound
+- DeployVaultTxRound
+- DetailsRound
+- FinalizationRound
+- FundingRound
+- ObservationRound
+- PayoutFractionsRound
+- PermissionVaultFactoryRound
+- PostPayoutRound
+- PostTransactionSettlementRound
+- ProcessPurchaseRound
+- RandomnessSafeRound
+- RandomnessTransactionSubmissionRound
+- RegistrationRound
+- RegistrationStartupRound
+- ResetAndPauseRound
+- ResetRound
+- ResyncRound
+- SelectKeeperSafeRound
+- SelectKeeperTransactionSubmissionRoundA
+- SelectKeeperTransactionSubmissionRoundB
+- SelectKeeperTransactionSubmissionRoundBAfterTimeout
+- SynchronizeLateMessagesRound
+- TransactionRound
+- TransferNFTRound
+- ValidateSafeRound
+- ValidateTransactionRound
+- VaultAddressRound
+transition_func:
+    (BasketAddressRound, DONE): PermissionVaultFactoryRound
+    (BasketAddressRound, ERROR): BasketAddressRound
+    (BasketAddressRound, NO_MAJORITY): BasketAddressRound
+    (CheckLateTxHashesRound, CHECK_LATE_ARRIVING_MESSAGE): SynchronizeLateMessagesRound
+    (CheckLateTxHashesRound, CHECK_TIMEOUT): CheckLateTxHashesRound
+    (CheckLateTxHashesRound, DONE): PostTransactionSettlementRound
+    (CheckLateTxHashesRound, NEGATIVE): RegistrationRound
+    (CheckLateTxHashesRound, NONE): RegistrationRound
+    (CheckLateTxHashesRound, NO_MAJORITY): RegistrationRound
+    (CheckTransactionHistoryRound, CHECK_LATE_ARRIVING_MESSAGE): SynchronizeLateMessagesRound
+    (CheckTransactionHistoryRound, CHECK_TIMEOUT): CheckTransactionHistoryRound
+    (CheckTransactionHistoryRound, DONE): PostTransactionSettlementRound
+    (CheckTransactionHistoryRound, NEGATIVE): SelectKeeperTransactionSubmissionRoundB
+    (CheckTransactionHistoryRound, NONE): RegistrationRound
+    (CheckTransactionHistoryRound, NO_MAJORITY): CheckTransactionHistoryRound
+    (CollectSignatureRound, DONE): FinalizationRound
+    (CollectSignatureRound, NO_MAJORITY): ResetRound
+    (CollectSignatureRound, ROUND_TIMEOUT): CollectSignatureRound
+    (DecisionRound, DECIDED_NO): ResetAndPauseRound
+    (DecisionRound, DECIDED_YES): TransactionRound
+    (DecisionRound, NO_MAJORITY): ResetAndPauseRound
+    (DecisionRound, ROUND_TIMEOUT): ResetAndPauseRound
+    (DeployBasketTxRound, DONE): RandomnessTransactionSubmissionRound
+    (DeployBasketTxRound, ERROR): FundingRound
+    (DeployBasketTxRound, NO_MAJORITY): DeployBasketTxRound
+    (DeployDecisionRound, DECIDED_NO): FundingRound
+    (DeployDecisionRound, DECIDED_SKIP): BasketAddressRound
+    (DeployDecisionRound, DECIDED_YES): DeployBasketTxRound
+    (DeployDecisionRound, NO_MAJORITY): DeployDecisionRound
+    (DeploySafeRound, DEPLOY_TIMEOUT): SelectKeeperSafeRound
+    (DeploySafeRound, DONE): ValidateSafeRound
+    (DeploySafeRound, FAILED): SelectKeeperSafeRound
+    (DeployVaultTxRound, DONE): RandomnessTransactionSubmissionRound
+    (DeployVaultTxRound, ERROR): DeployVaultTxRound
+    (DeployVaultTxRound, NO_MAJORITY): DeployVaultTxRound
+    (DetailsRound, DONE): DecisionRound
+    (DetailsRound, ERROR): ResetAndPauseRound
+    (DetailsRound, NO_MAJORITY): DecisionRound
+    (DetailsRound, ROUND_TIMEOUT): DecisionRound
+    (FinalizationRound, CHECK_HISTORY): CheckTransactionHistoryRound
+    (FinalizationRound, CHECK_LATE_ARRIVING_MESSAGE): SynchronizeLateMessagesRound
+    (FinalizationRound, DONE): ValidateTransactionRound
+    (FinalizationRound, FINALIZATION_FAILED): SelectKeeperTransactionSubmissionRoundB
+    (FinalizationRound, FINALIZE_TIMEOUT): SelectKeeperTransactionSubmissionRoundBAfterTimeout
+    (FinalizationRound, INSUFFICIENT_FUNDS): SelectKeeperTransactionSubmissionRoundB
+    (FundingRound, DONE): PayoutFractionsRound
+    (FundingRound, NO_MAJORITY): FundingRound
+    (FundingRound, ROUND_TIMEOUT): FundingRound
+    (ObservationRound, DONE): DetailsRound
+    (ObservationRound, ERROR): ObservationRound
+    (ObservationRound, NO_ACTIVE_PROJECTS): ResetAndPauseRound
+    (ObservationRound, NO_MAJORITY): ObservationRound
+    (ObservationRound, ROUND_TIMEOUT): ObservationRound
+    (PayoutFractionsRound, DONE): RandomnessTransactionSubmissionRound
+    (PayoutFractionsRound, NO_MAJORITY): FundingRound
+    (PayoutFractionsRound, NO_PAYOUTS): ObservationRound
+    (PayoutFractionsRound, ROUND_TIMEOUT): FundingRound
+    (PermissionVaultFactoryRound, DECIDED_NO): DeployVaultTxRound
+    (PermissionVaultFactoryRound, DECIDED_YES): RandomnessTransactionSubmissionRound
+    (PermissionVaultFactoryRound, ERROR): PermissionVaultFactoryRound
+    (PermissionVaultFactoryRound, NO_MAJORITY): PermissionVaultFactoryRound
+    (PostPayoutRound, DONE): ObservationRound
+    (PostPayoutRound, NO_MAJORITY): PostPayoutRound
+    (PostPayoutRound, ROUND_TIMEOUT): PostPayoutRound
+    (PostTransactionSettlementRound, BASKET_DONE): BasketAddressRound
+    (PostTransactionSettlementRound, BASKET_PERMISSION): DeployVaultTxRound
+    (PostTransactionSettlementRound, EL_COLLECTOOORR_DONE): ProcessPurchaseRound
+    (PostTransactionSettlementRound, ERROR): RandomnessTransactionSubmissionRound
+    (PostTransactionSettlementRound, FRACTION_PAYOUT): PostPayoutRound
+    (PostTransactionSettlementRound, NO_MAJORITY): RandomnessTransactionSubmissionRound
+    (PostTransactionSettlementRound, TRANSFER_NFT_DONE): ResetAndPauseRound
+    (PostTransactionSettlementRound, VAULT_DONE): VaultAddressRound
+    (ProcessPurchaseRound, DONE): TransferNFTRound
+    (ProcessPurchaseRound, ERROR): ObservationRound
+    (ProcessPurchaseRound, NO_MAJORITY): ProcessPurchaseRound
+    (ProcessPurchaseRound, RESET_TIMEOUT): ProcessPurchaseRound
+    (RandomnessSafeRound, DONE): SelectKeeperSafeRound
+    (RandomnessSafeRound, NO_MAJORITY): RandomnessSafeRound
+    (RandomnessSafeRound, ROUND_TIMEOUT): RandomnessSafeRound
+    (RandomnessTransactionSubmissionRound, DONE): SelectKeeperTransactionSubmissionRoundA
+    (RandomnessTransactionSubmissionRound, NO_MAJORITY): RandomnessTransactionSubmissionRound
+    (RandomnessTransactionSubmissionRound, ROUND_TIMEOUT): RandomnessTransactionSubmissionRound
+    (RegistrationRound, DONE): ResyncRound
+    (RegistrationRound, NO_MAJORITY): RegistrationRound
+    (RegistrationStartupRound, DONE): RandomnessSafeRound
+    (RegistrationStartupRound, FAST_FORWARD): ResyncRound
+    (ResetAndPauseRound, DONE): DeployDecisionRound
+    (ResetAndPauseRound, NO_MAJORITY): RegistrationRound
+    (ResetAndPauseRound, RESET_AND_PAUSE_TIMEOUT): RegistrationRound
+    (ResetRound, DONE): RandomnessTransactionSubmissionRound
+    (ResetRound, NO_MAJORITY): RegistrationRound
+    (ResetRound, RESET_TIMEOUT): RegistrationRound
+    (ResyncRound, DONE): DeployDecisionRound
+    (ResyncRound, ERROR): ResyncRound
+    (ResyncRound, NO_MAJORITY): ResyncRound
+    (ResyncRound, ROUND_TIMEOUT): ResyncRound
+    (SelectKeeperSafeRound, DONE): DeploySafeRound
+    (SelectKeeperSafeRound, NO_MAJORITY): RandomnessSafeRound
+    (SelectKeeperSafeRound, ROUND_TIMEOUT): RandomnessSafeRound
+    (SelectKeeperTransactionSubmissionRoundA, DONE): CollectSignatureRound
+    (SelectKeeperTransactionSubmissionRoundA, INCORRECT_SERIALIZATION): RegistrationRound
+    (SelectKeeperTransactionSubmissionRoundA, NO_MAJORITY): ResetRound
+    (SelectKeeperTransactionSubmissionRoundA, ROUND_TIMEOUT): SelectKeeperTransactionSubmissionRoundA
+    (SelectKeeperTransactionSubmissionRoundB, DONE): FinalizationRound
+    (SelectKeeperTransactionSubmissionRoundB, INCORRECT_SERIALIZATION): RegistrationRound
+    (SelectKeeperTransactionSubmissionRoundB, NO_MAJORITY): ResetRound
+    (SelectKeeperTransactionSubmissionRoundB, ROUND_TIMEOUT): SelectKeeperTransactionSubmissionRoundB
+    (SelectKeeperTransactionSubmissionRoundBAfterTimeout, CHECK_HISTORY): CheckTransactionHistoryRound
+    (SelectKeeperTransactionSubmissionRoundBAfterTimeout, CHECK_LATE_ARRIVING_MESSAGE): SynchronizeLateMessagesRound
+    (SelectKeeperTransactionSubmissionRoundBAfterTimeout, DONE): FinalizationRound
+    (SelectKeeperTransactionSubmissionRoundBAfterTimeout, INCORRECT_SERIALIZATION): RegistrationRound
+    (SelectKeeperTransactionSubmissionRoundBAfterTimeout, NO_MAJORITY): ResetRound
+    (SelectKeeperTransactionSubmissionRoundBAfterTimeout, ROUND_TIMEOUT): SelectKeeperTransactionSubmissionRoundBAfterTimeout
+    (SynchronizeLateMessagesRound, DONE): CheckLateTxHashesRound
+    (SynchronizeLateMessagesRound, MISSED_AND_LATE_MESSAGES_MISMATCH): RegistrationRound
+    (SynchronizeLateMessagesRound, NONE): SelectKeeperTransactionSubmissionRoundB
+    (SynchronizeLateMessagesRound, NO_MAJORITY): SynchronizeLateMessagesRound
+    (SynchronizeLateMessagesRound, ROUND_TIMEOUT): SynchronizeLateMessagesRound
+    (TransactionRound, DONE): RandomnessTransactionSubmissionRound
+    (TransactionRound, ERROR): ObservationRound
+    (TransactionRound, NO_MAJORITY): ObservationRound
+    (TransactionRound, ROUND_TIMEOUT): ObservationRound
+    (TransferNFTRound, DONE): RandomnessTransactionSubmissionRound
+    (TransferNFTRound, NO_MAJORITY): TransferNFTRound
+    (TransferNFTRound, NO_TRANSFER): ResetAndPauseRound
+    (TransferNFTRound, ROUND_TIMEOUT): TransferNFTRound
+    (ValidateSafeRound, DONE): DeployDecisionRound
+    (ValidateSafeRound, NEGATIVE): RandomnessSafeRound
+    (ValidateSafeRound, NONE): RandomnessSafeRound
+    (ValidateSafeRound, NO_MAJORITY): RandomnessSafeRound
+    (ValidateSafeRound, VALIDATE_TIMEOUT): RandomnessSafeRound
+    (ValidateTransactionRound, DONE): PostTransactionSettlementRound
+    (ValidateTransactionRound, NEGATIVE): CheckTransactionHistoryRound
+    (ValidateTransactionRound, NONE): SelectKeeperTransactionSubmissionRoundB
+    (ValidateTransactionRound, NO_MAJORITY): ValidateTransactionRound
+    (ValidateTransactionRound, VALIDATE_TIMEOUT): SelectKeeperTransactionSubmissionRoundB
+    (VaultAddressRound, DONE): FundingRound
+    (VaultAddressRound, ERROR): VaultAddressRound
+    (VaultAddressRound, NO_MAJORITY): VaultAddressRound

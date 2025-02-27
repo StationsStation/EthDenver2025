@@ -1,0 +1,24 @@
+graph TD
+    AwaitingOpportunityRound -->|NOT_TRIGGERED| NoOpportunityRound
+    AwaitingOpportunityRound -->|TRIGGERED| SubmitRFQRound
+    SubmitRFQRound -->|DONE| AwaitQuotesRound
+    AwaitQuotesRound -->|NO_QUOTES| NoOpportunityRound
+    AwaitQuotesRound -->|QUOTES| SelectQuotesRound
+    SelectQuotesRound -->|ACCEPT_QUOTES| PrepareNewSwapTransactionsRound
+    PrepareNewSwapTransactionsRound -->|DONE| FinalisedSwapTransactionsRound
+    PrepareNewSwapTransactionsRound -->|FINALISED| AwaitSupplierTransactionsRound
+
+    AwaitSupplierTransactionsRound -->|DONE| PrepareClaimTransactionsRound
+    AwaitSupplierTransactionsRound -->|COUNTER_PARTY_TIMEOUT| PrepareRefundTransactionsRound
+    
+    PrepareClaimTransactionsRound -->|FINALISED| SuccessfulExecutionRound
+    PrepareClaimTransactionsRound -->|DONE| FinalisedClaimTransactionsRound
+    
+    PrepareRefundTransactionsRound -->|FINALISED| UnSuccessfulExecutionRound
+    PrepareRefundTransactionsRound -->|DONE| FinalisedRefundTransactionsRound
+    
+    
+    PostTransactionRound  -->|POST_NEW_SWAP| AwaitSupplierTransactionsRound
+    PostTransactionRound  -->|POST_CLAIM| SuccessfulExecutionRound
+    PostTransactionRound  -->|POST_REFUND| UnSuccessfulExecutionRound
+

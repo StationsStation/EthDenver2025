@@ -1,0 +1,8 @@
+graph TD
+  RegistrationStartupRound
+  FinishedRegistrationRound
+  RegistrationRound
+  RegistrationStartupRound
+  RegistrationRound -->|DONE| FinishedRegistrationRound
+  RegistrationRound -->|NO_MAJORITY| RegistrationRound
+  RegistrationStartupRound -->|DONE| FinishedRegistrationRound

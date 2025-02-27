@@ -1,0 +1,4 @@
+graph TD
+    CreateContainersRound -->|DONE| HealthCheckRound
+    HealthCheckRound -->|HEALTHY| SuccessfulDeploymentRound
+    HealthCheckRound -->|UNHEALTHY| CreateContainersRound

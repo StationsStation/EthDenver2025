@@ -1,0 +1,9 @@
+graph TD
+  UpdateSubscriptionRound
+  FinishedWithTxRound
+  FinishedWithoutTxRound
+  UpdateSubscriptionRound
+  UpdateSubscriptionRound -->|DONE| FinishedWithTxRound
+  UpdateSubscriptionRound -->|ERROR| UpdateSubscriptionRound
+  UpdateSubscriptionRound -->|NO_MAJORITY| UpdateSubscriptionRound
+  UpdateSubscriptionRound -->|NO_TX| FinishedWithoutTxRound

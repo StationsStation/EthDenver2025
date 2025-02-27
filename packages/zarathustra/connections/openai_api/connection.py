@@ -49,7 +49,7 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
 CONNECTION_ID = PublicId.from_str("zarathustra/openai_api:0.1.0")
 _default_logger = logging.getLogger("aea.packages.zarathustra.connections.openai_api")
 
-LLM_RESPONSE_TIMEOUT = 10
+LLM_RESPONSE_TIMEOUT = 30
 
 
 def get_repo_root() -> Path:
@@ -286,12 +286,19 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
                 ),
                 timeout=LLM_RESPONSE_TIMEOUT,
             )
-        except TimeoutError:
-            self.logger.exception(f"Model {model} did not respond timely")
+        except (TimeoutError, asyncio.exceptions.CancelledError) as e:
+            self.logger.exception(f"Model {model} did not respond timely: {e}")
             return dialogue.reply(
                 performative=LlmChatCompletionMessage.Performative.ERROR,
                 error_code=message.ErrorCode.OPENAI_ERROR,
-                error_msg=f"Model {model} did not respond timely",
+                error_msg=f"Model {model} did not respond timely: {e}",
+            )
+        except Exception as e:
+            self.logger.exception(f"Caught another exception: {e}")
+            return dialogue.reply(
+                performative=LlmChatCompletionMessage.Performative.ERROR,
+                error_code=message.ErrorCode.OTHER_EXCEPTION,
+                error_msg=f"{e}",
             )
 
         data = chat_completion.to_json()

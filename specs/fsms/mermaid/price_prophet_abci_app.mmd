@@ -1,0 +1,39 @@
+graph TD
+  RequestDataRound
+  RequestDataRound
+  ValidateDataRound
+  StoreDataRound
+  AnnotateDataRound
+  TrainModelRound
+  WeightSharingRound
+  ModelValidationRound
+  PredictionRound
+  TransactionRound
+  FinishedTransactionRound
+  RequestDataRound -->|DONE| AnnotateDataRound
+  RequestDataRound -->|ROUND_TIMEOUT| RequestDataRound
+  RequestDataRound -->|NO_MAJORITY| RequestDataRound
+  AnnotateDataRound -->|DONE| StoreDataRound
+  AnnotateDataRound -->|ROUND_TIMEOUT| RequestDataRound
+  AnnotateDataRound -->|NO_MAJORITY| RequestDataRound
+  StoreDataRound -->|DONE| ValidateDataRound
+  StoreDataRound -->|ROUND_TIMEOUT| RequestDataRound
+  StoreDataRound -->|NO_MAJORITY| RequestDataRound
+  ValidateDataRound -->|DONE| TrainModelRound
+  ValidateDataRound -->|ROUND_TIMEOUT| RequestDataRound
+  ValidateDataRound -->|NO_MAJORITY| RequestDataRound
+  TrainModelRound -->|DONE| WeightSharingRound
+  TrainModelRound -->|ROUND_TIMEOUT| RequestDataRound
+  TrainModelRound -->|NO_MAJORITY| RequestDataRound
+  WeightSharingRound -->|DONE| ModelValidationRound
+  WeightSharingRound -->|ROUND_TIMEOUT| RequestDataRound
+  WeightSharingRound -->|NO_MAJORITY| RequestDataRound
+  ModelValidationRound -->|DONE| PredictionRound
+  ModelValidationRound -->|ROUND_TIMEOUT| RequestDataRound
+  ModelValidationRound -->|NO_MAJORITY| RequestDataRound
+  PredictionRound -->|DONE| TransactionRound
+  PredictionRound -->|ROUND_TIMEOUT| RequestDataRound
+  PredictionRound -->|NO_MAJORITY| RequestDataRound
+  TransactionRound -->|DONE| FinishedTransactionRound
+  TransactionRound -->|ROUND_TIMEOUT| RequestDataRound
+  TransactionRound -->|NO_MAJORITY| RequestDataRound

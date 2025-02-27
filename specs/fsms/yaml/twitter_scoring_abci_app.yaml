@@ -1,0 +1,19 @@
+alphabet_in:
+- API_ERROR
+- DONE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: TwitterScoringRound
+final_states:
+- FinishedTwitterScoringRound
+label: TwitterScoringAbciApp
+start_states:
+- TwitterScoringRound
+states:
+- FinishedTwitterScoringRound
+- TwitterScoringRound
+transition_func:
+    (TwitterScoringRound, API_ERROR): TwitterScoringRound
+    (TwitterScoringRound, DONE): FinishedTwitterScoringRound
+    (TwitterScoringRound, NO_MAJORITY): TwitterScoringRound
+    (TwitterScoringRound, ROUND_TIMEOUT): TwitterScoringRound

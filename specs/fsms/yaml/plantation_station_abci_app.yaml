@@ -1,0 +1,60 @@
+alphabet_in:
+- DONE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+- PROPOSALS
+- NO_PROPOSALS
+default_start_state: ObservationCollectionRound
+final_states:
+- TransactionSubmissionRound
+- ResetPlantationStationRound
+label: PlantationStationAbciApp
+start_states:
+- ObservationCollectionRound
+states:
+- ObservationCollectionRound
+- FederatedLearningRound
+- CheckHarvestProposalRound
+- AttestProposalRound
+- PrepareAttestationTransactionRound
+- ReadSensorDataRound
+- ControlAdjustmentRound
+- PrepareObservationTransactionRound
+- TransactionSubmissionRound
+- ResetPlantationStationRound
+transition_func:
+
+    (ObservationCollectionRound, DONE): FederatedLearningRound
+    (ObservationCollectionRound, ROUND_TIMEOUT): ResetPlantationStationRound
+    (ObservationCollectionRound, NO_MAJORITY): ResetPlantationStationRound
+
+    (FederatedLearningRound, DONE): CheckHarvestProposalRound
+    (FederatedLearningRound, ROUND_TIMEOUT): ResetPlantationStationRound
+    (FederatedLearningRound, NO_MAJORITY): ResetPlantationStationRound
+
+    # 1
+    (CheckHarvestProposalRound, NO_PROPOSALS): ReadSensorDataRound
+    (CheckHarvestProposalRound, PROPOSALS): AttestProposalRound
+    (CheckHarvestProposalRound, ROUND_TIMEOUT): ResetPlantationStationRound
+    (CheckHarvestProposalRound, NO_MAJORITY): ResetPlantationStationRound
+
+    (AttestProposalRound, DONE): PrepareAttestationTransactionRound
+    (AttestProposalRound, ROUND_TIMEOUT): ResetPlantationStationRound
+    (AttestProposalRound, NO_MAJORITY): ResetPlantationStationRound
+
+    (PrepareAttestationTransactionRound, DONE): TransactionSubmissionRound
+    (PrepareAttestationTransactionRound, ROUND_TIMEOUT): ResetPlantationStationRound
+    (PrepareAttestationTransactionRound, NO_MAJORITY): ResetPlantationStationRound
+
+    # 2
+    (ReadSensorDataRound, DONE): ControlAdjustmentRound
+    (ReadSensorDataRound, ROUND_TIMEOUT): ResetPlantationStationRound
+    (ReadSensorDataRound, NO_MAJORITY): ResetPlantationStationRound
+
+    (ControlAdjustmentRound, DONE): PrepareObservationTransactionRound
+    (ControlAdjustmentRound, ROUND_TIMEOUT): ResetPlantationStationRound
+    (ControlAdjustmentRound, NO_MAJORITY): ResetPlantationStationRound
+
+    (PrepareObservationTransactionRound, DONE): TransactionSubmissionRound
+    (PrepareObservationTransactionRound, ROUND_TIMEOUT): ResetPlantationStationRound
+    (PrepareObservationTransactionRound, NO_MAJORITY): ResetPlantationStationRound

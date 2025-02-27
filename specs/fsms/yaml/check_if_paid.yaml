@@ -1,0 +1,28 @@
+alphabet_in:
+- DONE
+- ERROR
+- NO_PAYMENT
+default_start_state: setupRound
+final_states:
+- postRound
+label: OlasPaymentCheckingAbciApp
+start_states:
+- setupRound
+states:
+- errorRound
+- noPaymentReceivedRound
+- newPaymentReceivedRound
+- postRound
+- setupRound
+- checkIfPaidRound
+transition_func:
+  (checkIfPaidRound, DONE): newPaymentReceivedRound
+  (checkIfPaidRound, ERROR): errorRound
+  (checkIfPaidRound, NO_PAYMENT): noPaymentReceivedRound
+  (errorRound, DONE): postRound
+  (newPaymentReceivedRound, DONE): postRound
+  (newPaymentReceivedRound, ERROR): errorRound
+  (noPaymentReceivedRound, DONE): postRound
+  (noPaymentReceivedRound, ERROR): errorRound
+  (setupRound, DONE): checkIfPaidRound
+

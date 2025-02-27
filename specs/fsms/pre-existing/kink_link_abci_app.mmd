@@ -1,0 +1,27 @@
+graph TB
+
+    subgraph "RegistrationStartUpAbciApp"
+       RegistrationRound
+    end
+
+    subgraph "KinkLinkAbciApp"
+        MatchmakingRound --> |NO_MATCHES| FeedbackProcessingRound
+        MatchmakingRound --> |MATCHES| PeerIDExchangeRound
+        PeerIDExchangeRound --> FeedbackProcessingRound
+        FeedbackProcessingRound --> |NO_FEEDBACK| TransactionSubmissionRound
+        FeedbackProcessingRound --> |FEEDBACK| RatingSystemUpdateRound
+        RatingSystemUpdateRound --> |DONE| TransactionSubmissionRound
+    end
+
+    subgraph "TransactionSettlementAbciApp"
+       TransactionSettlementRound
+    end
+    
+    subgraph "ResetAndPauseAbciApp"
+       ResetAndPauseRound
+    end
+   
+    RegistrationStartUpAbciApp --> MatchmakingRound
+    TransactionSubmissionRound --> TransactionSettlementAbciApp
+    TransactionSettlementAbciApp --> ResetAndPauseAbciApp
+    ResetAndPauseAbciApp --> MatchmakingRound

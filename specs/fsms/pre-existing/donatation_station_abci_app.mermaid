@@ -1,0 +1,25 @@
+graph TD
+    SetupDSRound -->|DONE| LoadDataRound
+    SetupDSRound -->|NOT_DONE| ErrorRound
+    SetupDSRound -->|NO_MAJORITY| ErrorRound
+    LoadDataRound -->|DONE| ProcessDataRound
+    LoadDataRound -->|NOT_DONE| ErrorRound
+    LoadDataRound -->|NO_MAJORITY| ErrorRound
+    
+    ProcessDataRound -->|DONE| VerifyDataRound
+    ProcessDataRound -->|NOT_DONE| ErrorRound
+    ProcessDataRound -->|NO_MAJORITY| ErrorRound
+
+    VerifyDataRound -->|DONE| CheckClaimableRound
+    VerifyDataRound -->|NOT_DONE| ErrorRound
+    VerifyDataRound -->|NO_MAJORITY| ErrorRound
+
+    CheckClaimableRound -->|DONE| PrepareClaimTransactionRound
+    CheckClaimableRound -->|NO_CLAIM| CheckDonationRound
+    CheckClaimableRound -->|NO_MAJORITY| ErrorRound
+    
+    CheckDonationRound -->|DONE| PrepareDonationTransactionRound
+    CheckDonationRound -->|NOT_DONE| NoActionNecessaryRound
+    CheckDonationRound -->|NO_MAJORITY| ErrorRound
+
+    

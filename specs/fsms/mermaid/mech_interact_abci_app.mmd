@@ -1,0 +1,15 @@
+graph TD
+  MechRequestRound
+  FinishedMechRequestRound
+  FinishedMechRequestSkipRound
+  FinishedMechResponseRound
+  FinishedMechResponseTimeoutRound
+  MechRequestRound
+  MechResponseRound
+  MechRequestRound -->|DONE| FinishedMechRequestRound
+  MechRequestRound -->|NO_MAJORITY| MechRequestRound
+  MechRequestRound -->|ROUND_TIMEOUT| MechRequestRound
+  MechRequestRound -->|SKIP_REQUEST| FinishedMechRequestSkipRound
+  MechResponseRound -->|DONE| FinishedMechResponseRound
+  MechResponseRound -->|NO_MAJORITY| MechResponseRound
+  MechResponseRound -->|ROUND_TIMEOUT| FinishedMechResponseTimeoutRound

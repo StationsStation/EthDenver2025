@@ -465,7 +465,7 @@ class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many
             chat_id=str(update.message.chat.id),
             id=update.message.id,
             text=update.message.text,
-            from_user=str(update.message.from_user.id),
+            from_user=str(update.message.from_user.username),
             timestamp=int(update.message.date.timestamp()),
         )
         return Envelope(

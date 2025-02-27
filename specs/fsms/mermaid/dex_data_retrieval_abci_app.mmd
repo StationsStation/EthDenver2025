@@ -1,0 +1,16 @@
+graph TD
+  FetchDexMarketsRound
+  FetchDexBalancesRound
+  FailedDexRound
+  RetrievedDexDataRound
+  FetchDexOrdersRound
+  FetchDexMarketsRound
+  FetchDexPositionsRound
+  FetchDexMarketsRound -->|DONE| FetchDexBalancesRound
+  FetchDexMarketsRound -->|FAILED| FailedDexRound
+  FetchDexBalancesRound -->|DONE| FetchDexPositionsRound
+  FetchDexBalancesRound -->|FAILED| FailedDexRound
+  FetchDexOrdersRound -->|DONE| RetrievedDexDataRound
+  FetchDexOrdersRound -->|FAILED| FailedDexRound
+  FetchDexPositionsRound -->|DONE| FetchDexOrdersRound
+  FetchDexPositionsRound -->|FAILED| FailedDexRound

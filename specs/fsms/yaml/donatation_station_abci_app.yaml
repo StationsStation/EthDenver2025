@@ -1,0 +1,45 @@
+alphabet_in:
+- NO_MAJORITY
+- NO_CLAIM
+- NOT_DONE
+- DONE
+default_start_state: SetupDSRound
+final_states:
+- PrepareDonationTransactionRound
+- ErrorRound
+- NoActionNecessaryRound
+- PrepareClaimTransactionRound
+label: DonatationStationAbciApp
+start_states:
+- SetupDSRound
+states:
+- ErrorRound
+- CheckDonationRound
+- ProcessDataRound
+- PrepareClaimTransactionRound
+- SetupDSRound
+- PrepareDonationTransactionRound
+- VerifyDataRound
+- LoadDataRound
+- NoActionNecessaryRound
+- CheckClaimableRound
+transition_func:
+  (CheckClaimableRound, DONE): PrepareClaimTransactionRound
+  (CheckClaimableRound, NO_CLAIM): CheckDonationRound
+  (CheckClaimableRound, NO_MAJORITY): ErrorRound
+  (CheckDonationRound, DONE): PrepareDonationTransactionRound
+  (CheckDonationRound, NOT_DONE): NoActionNecessaryRound
+  (CheckDonationRound, NO_MAJORITY): ErrorRound
+  (LoadDataRound, DONE): ProcessDataRound
+  (LoadDataRound, NOT_DONE): ErrorRound
+  (LoadDataRound, NO_MAJORITY): ErrorRound
+  (ProcessDataRound, DONE): VerifyDataRound
+  (ProcessDataRound, NOT_DONE): ErrorRound
+  (ProcessDataRound, NO_MAJORITY): ErrorRound
+  (SetupDSRound, DONE): LoadDataRound
+  (SetupDSRound, NOT_DONE): ErrorRound
+  (SetupDSRound, NO_MAJORITY): ErrorRound
+  (VerifyDataRound, DONE): CheckClaimableRound
+  (VerifyDataRound, NOT_DONE): ErrorRound
+  (VerifyDataRound, NO_MAJORITY): ErrorRound
+
