@@ -24,6 +24,7 @@ class LLMActions(Enum):
 class AsylumStrategy(Model):
     """This class models the AdvancedDataRequest skill."""
 
+    user_persona: str
     new_users: deque[dict] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_telegram_messages: deque[ChatroomMessage] = deque(maxlen=MAX_QUEUE_LENGTH)
     llm_responses: deque[tuple[LLMActions, str]] = deque(maxlen=MAX_QUEUE_LENGTH)
@@ -37,6 +38,7 @@ class AsylumStrategy(Model):
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize dialogues."""
+        self.user_persona = ""
 
         Model.__init__(self, **kwargs)
 

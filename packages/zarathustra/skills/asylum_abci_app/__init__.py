@@ -19,11 +19,20 @@
 
 """This module contains the implementation of the asylum ABCI app skill."""
 
+import subprocess  # noqa: S404
+from pathlib import Path
+
 from pydantic import BaseModel, ConfigDict, AliasGenerator
 from aea.configurations.base import PublicId
 
 
 PUBLIC_ID = PublicId.from_str("zarathustra/asylum_abci_app:0.1.0")
+
+
+def get_repo_root() -> Path:
+    command = ["git", "rev-parse", "--show-toplevel"]
+    repo_root = subprocess.check_output(command, stderr=subprocess.STDOUT).strip()  # noqa: S603
+    return Path(repo_root.decode("utf-8"))
 
 
 def snake_to_kebab(text: str) -> str:

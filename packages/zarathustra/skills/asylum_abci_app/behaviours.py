@@ -41,7 +41,7 @@ from packages.zarathustra.connections.openai_api.connection import (
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
 from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
-
+from packages.zarathustra.skills.asylum_abci_app import get_repo_root
 
 TIMEZONE_UTC = UTC
 
@@ -109,17 +109,10 @@ class BaseState(State, ABC):
         self._event = None
         self._is_done = False  # Initially, the state is not done
 
-        self.data_dir = Path(__file__).parent / "data"
+        self.data_dir = get_repo_root() / "data"
         if not self.data_dir.exists():
             self.data_dir.mkdir(parents=True)
         self.github_scraper = GitHubScraper(data_dir=str(self.data_dir))
-
-    def act(self) -> None:
-        """Act."""
-        self.context.logger.info(f"In state: {self._state}")
-        self._is_done = True
-        self._event = AsylumAbciAppEvents.DONE
-        sleep(1)
 
     def is_done(self) -> bool:
         """Is done flag."""
@@ -323,15 +316,20 @@ class ScrapeGithubRound(BaseState):
     def act(self) -> None:
         """Perform GitHub data collection."""
         self.context.logger.info(f"In state: {self._state}")
-        usernames = [self.agent_persona.github_username]
-        repos = self.agent_persona.github_repositories
+        user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
+
         try:
-            self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
-            all_user_data = self.github_scraper.scrape_user_interactions(
-                usernames=usernames,
-                repos=repos,
-            )
-            self.context.shared_state["user_issues"] = all_user_data
+            if not user_data.exists():
+                usernames = [self.agent_persona.github_username]
+                repos = self.agent_persona.github_repositories
+                self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
+                all_user_data = self.github_scraper.scrape_user_interactions(
+                    usernames=usernames,
+                    repos=repos,
+                )
+            else:
+                all_user_data = json.loads(user_data.read_text())
+
             self._is_done = True
             self._event = AsylumAbciAppEvents.DONE
             self.strategy.new_users.append(all_user_data)
@@ -359,8 +357,8 @@ class CheckLocalStorageRound(BaseState):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
         user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
-
-        if not user_data.exists():
+        
+        if not user_data.exists() or not self.strategy.user_persona:
             self._is_done = True
             self._event = AsylumAbciAppEvents.UPDATE_NEEDED
         else:
