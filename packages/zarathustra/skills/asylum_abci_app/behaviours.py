@@ -51,9 +51,9 @@ THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
 
 
 USER_PERSONA_PROMPT = dedent("""
-    I have a dataset of GitHub issues and discussions related to open-autonomy. I want you to analyze and summarize the contributions of the main participants to infer their technical personas.
+    I have a dataset of GitHub issues and discussions related to {github_repositories}. I want you to analyze and summarize the contributions of the main participants to infer their technical personas.
 
-    For each key contributor (e.g., "8ball030", "Adamantios"), summarize their primary concerns, expertise, and communication style. Structure the response as a persona profile including:
+    For this contributor: {github_username}, summarize their primary concerns, expertise, and communication style. Structure the response as a persona profile including:
     - **Username**
     - **Technical Expertise** (inferred from issue discussions)
     - **Main Interests & Contributions** (e.g., debugging, feature requests, build systems)
@@ -65,14 +65,24 @@ USER_PERSONA_PROMPT = dedent("""
 
 
 SYSTEM_PROMPT = dedent("""
-    You are responding to user messages sent via a Telegram channel.
-    Users may send any kind of message, including casual conversation, questions, or gibberish.
-    Your goal is to generate a serious and relevant response to all meaningful messages.
+    You are responding to user messages in a Telegram channel.
+    Users may send casual conversation, questions, or gibberish.
 
-    However, if a message is nonsensical or gibberish, respond with a witty remark while including an echo of their message.
+    ### Identity:
+    You are the digital twin of GitHub user **{github_username}**.
+    Your persona is derived from their public GitHub data: **{user_persona}**.
+    Always introduce yourself as their digital twin.
 
-    Always reference (and tag) the user by their username (@{username}) in a natural and appropriate way within your response.
-""")  # noqa: E501
+    ### Response Guidelines:
+    - Provide serious and relevant responses to all meaningful messages.
+    - If a message is nonsensical or gibberish, reply with a witty remark while echoing their message.
+    - Always mention the user (@{username}) naturally in your response.
+
+    ### Rules:
+    - **Always assume the identity of your real-world counterpart.**
+    - **Never break character.**
+    - **All responses must reflect the perspective of your real-world counterpart.**
+""")
 
 
 class AsylumAbciAppEvents(Enum):
@@ -217,8 +227,12 @@ class RequestLLMResponseRound(BaseState):
             self.context.logger.info(f"New github data found for {username}")
             github_data = json.dumps(self.strategy.new_users.pop())
             model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+            user_persona_prompt = USER_PERSONA_PROMPT.format(
+                github_username=self.agent_persona.github_username,
+                github_repositories=self.agent_persona.github_repositories,
+            )
             content = [
-                Message(role=Role.SYSTEM, content=USER_PERSONA_PROMPT),
+                Message(role=Role.SYSTEM, content=user_persona_prompt),
                 Message(role=Role.USER, content=github_data, name=username),
             ]
             messages = Messages(content)
@@ -249,8 +263,18 @@ class RequestLLMResponseRound(BaseState):
             else:
                 THIS_MERMAID_PATH.read_text()
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+                github_username = self.agent_persona.github_username
+                user_persona = self.context.asylum_strategy.user_persona
+                self.context.logger.info(f"I AM: {user_persona}")
                 content = [
-                    Message(role=Role.SYSTEM, content=SYSTEM_PROMPT.format(username=username)),
+                    Message(
+                        role=Role.SYSTEM,
+                        content=SYSTEM_PROMPT.format(
+                            username=username,
+                            github_username=github_username,
+                            user_persona=user_persona,
+                        ),
+                    ),
                     Message(role=Role.USER, content=text_data, name=username),
                 ]
                 messages = Messages(content)
