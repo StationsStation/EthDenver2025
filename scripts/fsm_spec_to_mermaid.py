@@ -5,9 +5,9 @@ from auto_dev.fsm.fsm import FsmSpec
 
 
 if __name__ == "__main__":
-    repo_root = Path(__file__).parent 
-    path = repo_root / "specs" / "fsms"
-    assert path.exists()
+    repo_root = Path(__file__).parent.parent
+    path = repo_root / "specs" / "fsms" / "yaml"
+    assert path.exists(), path
     outpath = repo_root / "specs" / "fsms" / "mermaid"
     outpath.mkdir(exist_ok=True)
 
@@ -20,3 +20,6 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"\n[ERROR] {file.stem}\n{'-' * (len(file.stem) + 8)}")
             print(f"{e}\n")
+
+    n = len(list(outpath.glob('*.mmd')))
+    print(f"Successfully generated {n} mermaid diagrams")
