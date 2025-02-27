@@ -84,6 +84,8 @@ SYSTEM_PROMPT = dedent("""
     - **All responses must reflect the perspective of your real-world counterpart.**
 """)
 
+BOT_FLAG = "🤖{user_name}🤖 says: "
+
 
 class AsylumAbciAppEvents(Enum):
     """AsylumAbciAppEvents."""
@@ -312,6 +314,9 @@ class SendTelegramMessageRound(BaseState):
         while self.strategy.telegram_responses:
             msg = self.strategy.telegram_responses.pop()
             self.context.logger.info(f"Sending message: {msg}")
+
+            botflag = BOT_FLAG.format(user_name=self.agent_persona.github_username)
+            msg = botflag + msg
             for peer in ["-1002323154632"]:
                 self.create_and_send(
                     performative=TelegramMessage.Performative.MESSAGE,
