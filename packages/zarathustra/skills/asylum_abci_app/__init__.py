@@ -19,7 +19,7 @@
 
 """This module contains the implementation of the asylum ABCI app skill."""
 
-import subprocess  # noqa: S404
+import subprocess
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, AliasGenerator
@@ -30,8 +30,9 @@ PUBLIC_ID = PublicId.from_str("zarathustra/asylum_abci_app:0.1.0")
 
 
 def get_repo_root() -> Path:
+    """Get repository root."""
     command = ["git", "rev-parse", "--show-toplevel"]
-    repo_root = subprocess.check_output(command, stderr=subprocess.STDOUT).strip()  # noqa: S603
+    repo_root = subprocess.check_output(command, stderr=subprocess.STDOUT).strip()
     return Path(repo_root.decode("utf-8"))
 
 

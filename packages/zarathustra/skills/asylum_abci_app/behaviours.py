@@ -31,6 +31,7 @@ from textwrap import dedent
 from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
+from packages.zarathustra.skills.asylum_abci_app import get_repo_root
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
 from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
 from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AgentPersona, AsylumStrategy
@@ -41,7 +42,7 @@ from packages.zarathustra.connections.openai_api.connection import (
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
 from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
-from packages.zarathustra.skills.asylum_abci_app import get_repo_root
+
 
 TIMEZONE_UTC = UTC
 
@@ -357,7 +358,7 @@ class CheckLocalStorageRound(BaseState):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
         user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
-        
+
         if not user_data.exists() or not self.strategy.user_persona:
             self._is_done = True
             self._event = AsylumAbciAppEvents.UPDATE_NEEDED
