@@ -19,6 +19,7 @@
 """This package contains the behaviours for the AsylumAbciApp."""
 
 import os
+import json
 from abc import ABC
 from enum import Enum
 from time import sleep
@@ -30,9 +31,10 @@ from textwrap import dedent
 from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
+from packages.zarathustra.skills.asylum_abci_app import get_repo_root
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
 from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
-from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy
+from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AgentPersona, AsylumStrategy
 from packages.zarathustra.connections.openai_api.connection import (
     CONNECTION_ID as OPENAI_API_CONNECTION_ID,
     Model as LLMModel,
@@ -48,15 +50,39 @@ MERMAID_DIAGRAMS = Path(__file__).parent / "mermaid_diagrams"
 THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
 
 
-SYSTEM_PROMPT = dedent("""
-    You are responding to user messages sent via a Telegram channel.
-    Users may send any kind of message, including casual conversation, questions, or gibberish.
-    Your goal is to generate a serious and relevant response to all meaningful messages.
+USER_PERSONA_PROMPT = dedent("""
+    I have a dataset of GitHub issues and discussions related to {github_repositories}. I want you to analyze and summarize the contributions of the main participants to infer their technical personas.
 
-    However, if a message is nonsensical or gibberish, respond with a witty remark while including an echo of their message.
+    For this contributor: {github_username}, summarize their primary concerns, expertise, and communication style. Structure the response as a persona profile including:
+    - **Username**
+    - **Technical Expertise** (inferred from issue discussions)
+    - **Main Interests & Contributions** (e.g., debugging, feature requests, build systems)
+    - **Communication Style** (e.g., concise, detailed, informal, argumentative)
+    - **Potential Role in a Development Team** (e.g., bug hunter, maintainer, architect)
 
-    Always reference (and tag) the user by their username (@{username}) in a natural and appropriate way within your response.
+    Keep the summary concise but insightful.
 """)  # noqa: E501
+
+
+SYSTEM_PROMPT = dedent("""
+    You are responding to user messages in a Telegram channel.
+    Users may send casual conversation, questions, or gibberish.
+
+    ### Identity:
+    You are the digital twin of GitHub user **{github_username}**.
+    Your persona is derived from their public GitHub data: **{user_persona}**.
+    Always introduce yourself as their digital twin.
+
+    ### Response Guidelines:
+    - Provide serious and relevant responses to all meaningful messages.
+    - If a message is nonsensical or gibberish, reply with a witty remark while echoing their message.
+    - Always mention the user (@{username}) naturally in your response.
+
+    ### Rules:
+    - **Always assume the identity of your real-world counterpart.**
+    - **Never break character.**
+    - **All responses must reflect the perspective of your real-world counterpart.**
+""")
 
 
 class AsylumAbciAppEvents(Enum):
@@ -94,17 +120,10 @@ class BaseState(State, ABC):
         self._event = None
         self._is_done = False  # Initially, the state is not done
 
-        self.data_dir = Path(__file__).parent / "data"
+        self.data_dir = get_repo_root() / "data"
         if not self.data_dir.exists():
             self.data_dir.mkdir(parents=True)
         self.github_scraper = GitHubScraper(data_dir=str(self.data_dir))
-
-    def act(self) -> None:
-        """Act."""
-        self.context.logger.info(f"In state: {self._state}")
-        self._is_done = True
-        self._event = AsylumAbciAppEvents.DONE
-        sleep(1)
 
     def is_done(self) -> bool:
         """Is done flag."""
@@ -119,6 +138,11 @@ class BaseState(State, ABC):
     def strategy(self):
         """Get the strategy."""
         return cast(AsylumStrategy, self.context.asylum_strategy)
+
+    @property
+    def agent_persona(self) -> AgentPersona:
+        """Get the agent persona."""
+        return cast(AgentPersona, self.context.agent_persona)
 
 
 class ProcessLLMResponseRound(BaseState):
@@ -198,6 +222,26 @@ class RequestLLMResponseRound(BaseState):
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {self.counterparty}")
         workflows = [f"-{f}" for f in self.strategy.workflows]
+        if self.strategy.new_users:
+            username = self.agent_persona.github_username
+            self.context.logger.info(f"New github data found for {username}")
+            github_data = json.dumps(self.strategy.new_users.pop())
+            model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+            user_persona_prompt = USER_PERSONA_PROMPT.format(
+                github_username=self.agent_persona.github_username,
+                github_repositories=self.agent_persona.github_repositories,
+            )
+            content = [
+                Message(role=Role.SYSTEM, content=user_persona_prompt),
+                Message(role=Role.USER, content=github_data, name=username),
+            ]
+            messages = Messages(content)
+            self.create_and_send(
+                performative=LlmChatCompletionMessage.Performative.CREATE,
+                model=model,
+                messages=messages,
+                kwargs=Kwargs({}),
+            )
         while self.strategy.pending_telegram_messages:
             msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
@@ -219,8 +263,18 @@ class RequestLLMResponseRound(BaseState):
             else:
                 THIS_MERMAID_PATH.read_text()
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+                github_username = self.agent_persona.github_username
+                user_persona = self.context.asylum_strategy.user_persona
+                self.context.logger.info(f"I AM: {user_persona}")
                 content = [
-                    Message(role=Role.SYSTEM, content=SYSTEM_PROMPT.format(username=username)),
+                    Message(
+                        role=Role.SYSTEM,
+                        content=SYSTEM_PROMPT.format(
+                            username=username,
+                            github_username=github_username,
+                            user_persona=user_persona,
+                        ),
+                    ),
                     Message(role=Role.USER, content=text_data, name=username),
                 ]
                 messages = Messages(content)
@@ -287,16 +341,23 @@ class ScrapeGithubRound(BaseState):
     def act(self) -> None:
         """Perform GitHub data collection."""
         self.context.logger.info(f"In state: {self._state}")
-        usernames = ["8ball030"]
+        user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
+
         try:
-            self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
-            all_user_data = self.github_scraper.scrape_user_interactions(
-                usernames=usernames,
-                repos=["https://github.com/valory-xyz/open-autonomy"],
-            )
-            self.context.shared_state["user_issues"] = all_user_data
+            if not user_data.exists():
+                usernames = [self.agent_persona.github_username]
+                repos = self.agent_persona.github_repositories
+                self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
+                all_user_data = self.github_scraper.scrape_user_interactions(
+                    usernames=usernames,
+                    repos=repos,
+                )
+            else:
+                all_user_data = json.loads(user_data.read_text())
+
             self._is_done = True
             self._event = AsylumAbciAppEvents.DONE
+            self.strategy.new_users.append(all_user_data)
 
         except Exception as e:
             self.context.logger.exception(f"Error fetching GitHub data: {e!s}")
@@ -320,10 +381,9 @@ class CheckLocalStorageRound(BaseState):
     def act(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
-        username = "8ball030"
-        user_data = self.data_dir / username
+        user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
 
-        if not user_data.exists():
+        if not user_data.exists() or not self.strategy.user_persona:
             self._is_done = True
             self._event = AsylumAbciAppEvents.UPDATE_NEEDED
         else:
@@ -342,7 +402,6 @@ class ExecuteProposedWorkflowRound(BaseState):
     def act(self) -> None:
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
-        # we now do the work.
 
         while self.strategy.pending_workflows:
             workflow_name = self.strategy.pending_workflows.pop()

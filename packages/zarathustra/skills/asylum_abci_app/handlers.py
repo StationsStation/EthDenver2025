@@ -108,7 +108,10 @@ class LlmChatCompletionHandler(Handler):
 
         llm_chat_completion = reconstitute(message)
         self.context.logger.debug(f"Reconstituted: {llm_chat_completion}")
-        self.strategy.llm_responses.append((LLMActions.REPLY, llm_chat_completion.choices[0].message.content))
+        text = llm_chat_completion.choices[0].message.content
+        if not self.context.asylum_strategy.user_persona:
+            self.context.asylum_strategy.user_persona = text
+        self.strategy.llm_responses.append((LLMActions.REPLY, text))
 
     @property
     def strategy(self):
