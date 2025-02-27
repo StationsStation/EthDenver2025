@@ -1,0 +1,46 @@
+alphabet_in:
+- DONE
+- NONE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: SamplingRound
+final_states:
+- FinishedScraperRound
+- FinishedWithoutScraping
+- FinishedWithoutEmbeddingUpdate
+label: ScraperAbciApp
+start_states:
+- SamplingRound
+- PublishRound
+states:
+- EmbeddingRound
+- FinishedScraperRound
+- FinishedWithoutEmbeddingUpdate
+- FinishedWithoutScraping
+- ProcessHtmlRound
+- PublishRound
+- SamplingRound
+- WebScrapeRound
+transition_func:
+    (EmbeddingRound, DONE): PublishRound
+    (EmbeddingRound, NONE): FinishedWithoutEmbeddingUpdate
+    (EmbeddingRound, NO_MAJORITY): EmbeddingRound
+    (EmbeddingRound, ROUND_TIMEOUT): EmbeddingRound
+    (ProcessHtmlRound, DONE): EmbeddingRound
+    (ProcessHtmlRound, NONE): FinishedWithoutEmbeddingUpdate
+    (ProcessHtmlRound, NO_MAJORITY): ProcessHtmlRound
+    (ProcessHtmlRound, ROUND_TIMEOUT): ProcessHtmlRound
+    (ProcessHtmlRound, EMPTY_TEXT_CHUNKS): PublishRound
+    (PublishRound, DONE): FinishedScraperRound
+    (PublishRound, NO_MAJORITY): PublishRound
+    (PublishRound, ROUND_TIMEOUT): PublishRound
+    (SamplingRound, DONE): WebScrapeRound
+    (SamplingRound, NONE): FinishedWithoutScraping
+    (SamplingRound, NO_MAJORITY): SamplingRound
+    (SamplingRound, ROUND_TIMEOUT): SamplingRound
+    (WebScrapeRound, DONE): ProcessHtmlRound
+    (WebScrapeRound, NO_MAJORITY): SearchEngineRound
+    (WebScrapeRound, ROUND_TIMEOUT): SearchEngineRound
+
+
+

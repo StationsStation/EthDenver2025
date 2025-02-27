@@ -1,0 +1,17 @@
+alphabet_in:
+  - DONE
+  - NO_MAJORITY
+  - ROUND_TIMEOUT
+default_start_state: PromptLlmRound
+final_states:
+  - FinishedHelloRound
+label: StockDataApiAbciApp
+start_states:
+  - PromptLlmRound
+states:
+  - PromptLlmRound
+  - FinishedPromptLlmRound
+transition_func:
+  (PromptLlmRound, DONE): FinishedPromptLlmRound
+  (PromptLlmRound, NO_MAJORITY): PromptLlmRound
+  (PromptLlmRound, ROUND_TIMEOUT): PromptLlmRound
