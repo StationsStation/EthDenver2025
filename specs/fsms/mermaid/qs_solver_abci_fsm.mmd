@@ -1,0 +1,34 @@
+graph TD
+  PostTransactionRound
+  SuccessfulExecutionRound
+  PrepareClaimTransactionsRound
+  PrepareNewSwapTransactionsRound
+  FinalisedSwapTransactionsRound
+  SubmitRFQRound
+  SelectQuotesRound
+  AwaitSupplierTransactionsRound
+  FinalisedClaimTransactionsRound
+  UnSuccessfulExecutionRound
+  FinalisedRefundTransactionsRound
+  PostTransactionRound
+  AwaitingOpportunityRound
+  PrepareRefundTransactionsRound
+  AwaitQuotesRound
+  NoOpportunityRound
+  AwaitQuotesRound -->|NO_QUOTES| NoOpportunityRound
+  AwaitQuotesRound -->|QUOTES| SelectQuotesRound
+  AwaitSupplierTransactionsRound -->|COUNTER_PARTY_TIMEOUT| PrepareRefundTransactionsRound
+  AwaitSupplierTransactionsRound -->|DONE| PrepareClaimTransactionsRound
+  AwaitingOpportunityRound -->|NOT_TRIGGERED| NoOpportunityRound
+  AwaitingOpportunityRound -->|TRIGGERED| SubmitRFQRound
+  PostTransactionRound -->|POST_CLAIM| SuccessfulExecutionRound
+  PostTransactionRound -->|POST_NEW_SWAP| AwaitSupplierTransactionsRound
+  PostTransactionRound -->|POST_REFUND| UnSuccessfulExecutionRound
+  PrepareClaimTransactionsRound -->|DONE| FinalisedClaimTransactionsRound
+  PrepareClaimTransactionsRound -->|FINALISED| SuccessfulExecutionRound
+  PrepareNewSwapTransactionsRound -->|DONE| FinalisedSwapTransactionsRound
+  PrepareNewSwapTransactionsRound -->|FINALISED| AwaitSupplierTransactionsRound
+  PrepareRefundTransactionsRound -->|DONE| FinalisedRefundTransactionsRound
+  PrepareRefundTransactionsRound -->|FINALISED| UnSuccessfulExecutionRound
+  SelectQuotesRound -->|ACCEPT_QUOTES| PrepareNewSwapTransactionsRound
+  SubmitRFQRound -->|DONE| AwaitQuotesRound

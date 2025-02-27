@@ -1,0 +1,12 @@
+graph TD
+  TaskPoolingRound
+  FinishedTaskExecutionWithErrorRound
+  FinishedTaskPoolingRound
+  FinishedWithoutTasksRound
+  TaskPoolingRound
+  TransactionPreparationRound
+  TaskPoolingRound -->|DONE| TransactionPreparationRound
+  TaskPoolingRound -->|NO_TASKS| FinishedWithoutTasksRound
+  TransactionPreparationRound -->|DONE| FinishedTaskPoolingRound
+  TransactionPreparationRound -->|ERROR| FinishedTaskExecutionWithErrorRound
+  TransactionPreparationRound -->|NO_MAJORITY| FinishedTaskExecutionWithErrorRound

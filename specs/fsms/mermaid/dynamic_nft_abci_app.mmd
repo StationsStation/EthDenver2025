@@ -1,0 +1,8 @@
+graph TD
+  NewTokensRound
+  FinishedNewTokensRound
+  NewTokensRound
+  NewTokensRound -->|CONTRACT_ERROR| NewTokensRound
+  NewTokensRound -->|DONE| FinishedNewTokensRound
+  NewTokensRound -->|NO_MAJORITY| NewTokensRound
+  NewTokensRound -->|ROUND_TIMEOUT| NewTokensRound

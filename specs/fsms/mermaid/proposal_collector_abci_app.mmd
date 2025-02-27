@@ -1,0 +1,18 @@
+graph TD
+  SynchronizeDelegationsRound
+  CollectActiveProposalsRound
+  FinishedProposalSelectionDoneRound
+  FinishedProposalSelectionVoteRound
+  SelectProposalRound
+  SynchronizeDelegationsRound
+  CollectActiveProposalsRound -->|API_ERROR| CollectActiveProposalsRound
+  CollectActiveProposalsRound -->|DONE| SelectProposalRound
+  CollectActiveProposalsRound -->|NO_MAJORITY| CollectActiveProposalsRound
+  CollectActiveProposalsRound -->|ROUND_TIMEOUT| CollectActiveProposalsRound
+  SelectProposalRound -->|NO_MAJORITY| SelectProposalRound
+  SelectProposalRound -->|NO_PROPOSAL| FinishedProposalSelectionDoneRound
+  SelectProposalRound -->|ROUND_TIMEOUT| SelectProposalRound
+  SelectProposalRound -->|VOTE| FinishedProposalSelectionVoteRound
+  SynchronizeDelegationsRound -->|DONE| CollectActiveProposalsRound
+  SynchronizeDelegationsRound -->|NO_MAJORITY| SynchronizeDelegationsRound
+  SynchronizeDelegationsRound -->|ROUND_TIMEOUT| SynchronizeDelegationsRound

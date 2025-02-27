@@ -1,0 +1,29 @@
+graph TD
+  InitialiseRound
+  PostTransactionRound
+  PrepareUpdateRound
+  PrepareUpdateTxSubmissionRound
+  InitialiseRound
+  CheckOutstandingLoansRound
+  PrepareLiquidationRound
+  PrepareLiquidationTxSubmissionRound
+  CheckForLoanRequestsRound
+  CheckAvailableFundsRound
+  CheckValueOfCollateralRound
+  PrepareLoanOfferRound
+  PrepareOfferTxSubmissionRound
+  FinishedRound
+  PostTransactionRound -->|DONE| PrepareUpdateRound
+  PrepareUpdateRound -->|DONE| PrepareUpdateTxSubmissionRound
+  PrepareUpdateRound -->|POST_UPDATE| CheckOutstandingLoansRound
+  CheckOutstandingLoansRound -->|DONE| CheckForLoanRequestsRound
+  CheckOutstandingLoansRound -->|LOAN_NOT_PAID| PrepareLiquidationRound
+  PrepareLiquidationRound -->|DONE| PrepareLiquidationTxSubmissionRound
+  CheckForLoanRequestsRound -->|ALREADY_OFFERED| FinishedRound
+  CheckForLoanRequestsRound -->|NO_LOANS_REQUESTS| FinishedRound
+  CheckForLoanRequestsRound -->|LOAN_REQUESTS_EXIST| CheckAvailableFundsRound
+  CheckAvailableFundsRound -->|SUFFICIENT_FUNDS| CheckValueOfCollateralRound
+  CheckAvailableFundsRound -->|INSUFFICIENT_FUNDS| FinishedRound
+  CheckValueOfCollateralRound -->|OFFERABLE_NFT| PrepareLoanOfferRound
+  CheckValueOfCollateralRound -->|WORTHLESS_NFT| FinishedRound
+  PrepareLoanOfferRound -->|DONE| PrepareOfferTxSubmissionRound

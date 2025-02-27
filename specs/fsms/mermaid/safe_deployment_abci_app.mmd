@@ -1,0 +1,21 @@
+graph TD
+  RandomnessSafeRound
+  DeploySafeRound
+  FinishedSafeRound
+  RandomnessSafeRound
+  SelectKeeperSafeRound
+  ValidateSafeRound
+  DeploySafeRound -->|DEPLOY_TIMEOUT| SelectKeeperSafeRound
+  DeploySafeRound -->|DONE| ValidateSafeRound
+  DeploySafeRound -->|FAILED| SelectKeeperSafeRound
+  RandomnessSafeRound -->|DONE| SelectKeeperSafeRound
+  RandomnessSafeRound -->|NO_MAJORITY| RandomnessSafeRound
+  RandomnessSafeRound -->|ROUND_TIMEOUT| RandomnessSafeRound
+  SelectKeeperSafeRound -->|DONE| DeploySafeRound
+  SelectKeeperSafeRound -->|NO_MAJORITY| RandomnessSafeRound
+  SelectKeeperSafeRound -->|ROUND_TIMEOUT| RandomnessSafeRound
+  ValidateSafeRound -->|DONE| FinishedSafeRound
+  ValidateSafeRound -->|NEGATIVE| RandomnessSafeRound
+  ValidateSafeRound -->|NONE| RandomnessSafeRound
+  ValidateSafeRound -->|NO_MAJORITY| RandomnessSafeRound
+  ValidateSafeRound -->|VALIDATE_TIMEOUT| RandomnessSafeRound

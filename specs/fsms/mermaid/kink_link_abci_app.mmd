@@ -1,0 +1,14 @@
+graph TD
+  MatchmakingRound
+  MatchmakingRound
+  FeedbackProcessingRound
+  PeerIDExchangeRound
+  TransactionSubmissionRound
+  RatingSystemUpdateRound
+  MatchmakingRound -->|NO_MATCHES| FeedbackProcessingRound
+  MatchmakingRound -->|MATCHES| PeerIDExchangeRound
+  PeerIDExchangeRound -->|NO_FEEDBACK| FeedbackProcessingRound
+  PeerIDExchangeRound -->|FEEDBACK| FeedbackProcessingRound
+  FeedbackProcessingRound -->|NO_FEEDBACK| TransactionSubmissionRound
+  FeedbackProcessingRound -->|FEEDBACK| RatingSystemUpdateRound
+  RatingSystemUpdateRound -->|DONE| TransactionSubmissionRound

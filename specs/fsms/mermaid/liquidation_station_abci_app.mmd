@@ -1,0 +1,23 @@
+graph TD
+  RegistrationRound
+  RegistrationRound
+  ResetAndPauseRound
+  CollectPositionsRound
+  CalculatePositionHealthRound
+  PrepareLiquidationTransactionsRound
+  SubmitPositionLiquidationTransactionsRound
+  RegistrationRound -->|DONE| CollectPositionsRound
+  CollectPositionsRound -->|DONE| CalculatePositionHealthRound
+  CollectPositionsRound -->|ROUND_TIMEOUT| ResetAndPauseRound
+  CollectPositionsRound -->|NO_MAJORITY| ResetAndPauseRound
+  CalculatePositionHealthRound -->|DONE| PrepareLiquidationTransactionsRound
+  CalculatePositionHealthRound -->|ROUND_TIMEOUT| ResetAndPauseRound
+  CalculatePositionHealthRound -->|NO_MAJORITY| ResetAndPauseRound
+  PrepareLiquidationTransactionsRound -->|DONE| SubmitPositionLiquidationTransactionsRound
+  PrepareLiquidationTransactionsRound -->|ROUND_TIMEOUT| ResetAndPauseRound
+  PrepareLiquidationTransactionsRound -->|NO_MAJORITY| ResetAndPauseRound
+  SubmitPositionLiquidationTransactionsRound -->|DONE| ResetAndPauseRound
+  SubmitPositionLiquidationTransactionsRound -->|NOT_TRIGGERED| ResetAndPauseRound
+  ResetAndPauseRound -->|DONE| CollectPositionsRound
+  ResetAndPauseRound -->|NO_MAJORITY| ResetAndPauseRound
+  ResetAndPauseRound -->|RESET_TIMEOUT| ResetAndPauseRound

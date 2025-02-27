@@ -1,0 +1,10 @@
+graph TD
+  CheckStopTradingRound
+  CheckStopTradingRound
+  FinishedCheckStopTradingRound
+  FinishedWithSkipTradingRound
+  CheckStopTradingRound -->|DONE| FinishedCheckStopTradingRound
+  CheckStopTradingRound -->|NONE| CheckStopTradingRound
+  CheckStopTradingRound -->|NO_MAJORITY| CheckStopTradingRound
+  CheckStopTradingRound -->|ROUND_TIMEOUT| CheckStopTradingRound
+  CheckStopTradingRound -->|SKIP_TRADING| FinishedWithSkipTradingRound

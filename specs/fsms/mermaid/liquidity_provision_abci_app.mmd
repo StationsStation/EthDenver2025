@@ -1,0 +1,10 @@
+graph TD
+  AllowListUpdateRound
+  AllowListUpdateRound
+  FinishedAllowlistTxPreparationRound
+  FinishedWithoutAllowlistTxRound
+  AllowListUpdateRound -->|DONE| FinishedAllowlistTxPreparationRound
+  AllowListUpdateRound -->|ERROR| AllowListUpdateRound
+  AllowListUpdateRound -->|NO_ACTION| FinishedWithoutAllowlistTxRound
+  AllowListUpdateRound -->|NO_MAJORITY| AllowListUpdateRound
+  AllowListUpdateRound -->|ROUND_TIMEOUT| AllowListUpdateRound
