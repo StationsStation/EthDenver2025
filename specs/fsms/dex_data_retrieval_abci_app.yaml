@@ -1,0 +1,26 @@
+alphabet_in:
+- DONE
+- FAILED
+default_start_state: FetchDexMarketsRound
+final_states:
+- FailedDexRound
+- RetrievedDexDataRound
+label: DexDataRetrievalAbciApp
+start_states:
+- FetchDexMarketsRound
+states:
+- FetchDexBalancesRound
+- FailedDexRound
+- RetrievedDexDataRound
+- FetchDexOrdersRound
+- FetchDexMarketsRound
+- FetchDexPositionsRound
+transition_func:
+  (FetchDexMarketsRound, DONE): FetchDexBalancesRound
+  (FetchDexMarketsRound, FAILED): FailedDexRound
+  (FetchDexBalancesRound, DONE): FetchDexPositionsRound
+  (FetchDexBalancesRound, FAILED): FailedDexRound
+  (FetchDexOrdersRound, DONE): RetrievedDexDataRound
+  (FetchDexOrdersRound, FAILED): FailedDexRound
+  (FetchDexPositionsRound, DONE): FetchDexOrdersRound
+  (FetchDexPositionsRound, FAILED): FailedDexRound

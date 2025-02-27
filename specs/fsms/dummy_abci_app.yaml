@@ -1,0 +1,19 @@
+alphabet_in:
+- DONE
+- NO_MAJORITY
+- TIMEOUT
+default_start_state: FirstRound
+final_states:
+- ErrorRound
+- FinalRound
+label: DummyAbciApp
+start_states:
+- FirstRound
+states:
+- FirstRound
+- FinalRound
+- ErrorRound
+transition_func:
+    (FirstRound, DONE): FinalRound
+    (FirstRound, NO_MAJORITY): ErrorRound
+    (FirstRound, TIMEOUT): ErrorRound
