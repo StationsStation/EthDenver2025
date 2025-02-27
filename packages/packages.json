@@ -2,12 +2,12 @@
     "dev": {
         "protocol/eightballer/chatroom/0.1.0": "bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy",
         "protocol/zarathustra/llm_chat_completion/1.0.0": "bafybeifdp2rwfar5vbs33p56dlin76v62p5fdvspwnpasraunp2wa7gxo4",
-        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeidkd2jwm6upndqpwpuzwtmjobzt4qe4pesndbrynvgrl65kcepc34",
+        "connection/eightballer/telegram_wrapper/0.1.0": "bafybeidtv75kxb3macpa6urchu4pxshnwcvhrq3xd62bjkdgecdnexg66q",
         "connection/zarathustra/openai_api/0.1.0": "bafybeihfzkq5mxzf54kgtbrlgrbwd5l2osixnur7e6iszumla3vbgoucue",
-        "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeifwobs4dconno6cepkki6igq66zxki2ztjqqbsb7gb77bi22n35ye",
-        "agent/eightballer/telegram_bot/0.1.0": "bafybeifdk5ze2bqe2vbhtwb5hmjo5nfvu4hjjy3neh6dd7wbqc7o7uetnu",
-        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeiao45m2dosrodgpjrl3tyk2ateo2ltqopqljcaxmyrrzf7ijukyjq",
-        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeiac6vs7ifwaub6qpxvr6qyki67x4434xpe3hrr3imxkt5n6s4iwzy"
+        "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeia3uug2lssorhtwi7rsmha42wypqwyefa5xgt4dvphi4yz5l3ofne",
+        "agent/eightballer/telegram_bot/0.1.0": "bafybeig75hd6j4ers65ahdzbqsfsmzzphhr4zfd7rkslqyd4ew4uadhtl4",
+        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeig3kukn5qcemkdbf3kbh3amnrrg3nrc5mrqjg4lkfuqsnju2d3zna",
+        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeidl6qbqdddrtbwb5ko4y6eenevrj7sn4scl2s52avwitwvg4cka5y"
     },
     "third_party": {
         "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",

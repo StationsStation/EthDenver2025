@@ -284,7 +284,6 @@ class RequestLLMResponseRound(BaseState):
                     messages=messages,
                     kwargs=Kwargs({}),
                 )
-
         # we need to request the llm here.
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
@@ -311,13 +310,14 @@ class SendTelegramMessageRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.telegram_responses:
-            text = self.strategy.telegram_responses.pop()
-            self.context.logger.info(f"Sending message: {text}")
-            self.create_and_send(
-                performative=TelegramMessage.Performative.MESSAGE,
-                chat_id="-4765622287",
-                text=text,
-            )
+            msg = self.strategy.telegram_responses.pop()
+            self.context.logger.info(f"Sending message: {msg}")
+            for peer in ["-1002323154632"]:
+                self.create_and_send(
+                    performative=TelegramMessage.Performative.MESSAGE,
+                    chat_id=peer,
+                    text=msg,
+                )
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
 
