@@ -6,10 +6,9 @@ aea_version: '>=1.0.0, <2.0.0'
 license: apache-2.0
 fingerprint:
   .env.example: bafybeigmgmwown66u7j5pqancojrc5ry2pwzmnlvqnwg2rfcjfi6irgplu
-  tests/__init__.py: bafybeicnqy6locbf7iaso22skucjclhw4ykitninog3gljhp5ngywd567y
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeiharsgeizyqhdd752cystfwkoy267j5qpmjvfmpfl4hstpkjt6hoe
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeiaolzibjdyacauel6snl5vpg4ofzl747sgkv3r3ndjy5cmrrz4boq
 number_of_agents: 1
 deployment:
   agent:

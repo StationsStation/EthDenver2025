@@ -195,7 +195,7 @@ class RequestLLMResponseRound(BaseState):
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
                 # we dummy an llm response for the reply tol here.
-                self.strategy.telegram_responses.append("I am a bot! replying to your message.")
+                self.strategy.telegram_responses.append("@daedalus_11_bot please work.")
 
         # we need to request the llm here.
         self._is_done = True
@@ -217,11 +217,12 @@ class SendTelegramMessageRound(BaseState):
         while self.strategy.telegram_responses:
             msg = self.strategy.telegram_responses.pop()
             self.context.logger.info(f"Sending message: {msg}")
-            self.create_and_send(
-                performative=TelegramMessage.Performative.MESSAGE,
-                chat_id="-4765622287",
-                text=msg,
-            )
+            for peer in ["-1002323154632"]:
+                self.create_and_send(
+                    performative=TelegramMessage.Performative.MESSAGE,
+                    chat_id=peer,
+                    text=msg,
+                )
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
 

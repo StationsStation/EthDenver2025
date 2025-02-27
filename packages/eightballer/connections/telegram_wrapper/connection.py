@@ -413,12 +413,18 @@ class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many
                     del context
                     response_envelope = None
                     self.logger.info(f"Received message: {update}")
-                    if update.message.chat.type == ChatType.GROUP:
+                    if not update.message:
+                        if update.channel_post:
+                            self.logger.info("Channel post message")
+                            response_envelope = self._from_channel_to_aea(update)
+                    elif update.message.chat.type == ChatType.GROUP:
                         self.logger.info("Group chat message")
                         response_envelope = self._from_group_to_aea(update)
                     elif update.message.chat.type == ChatType.PRIVATE:
                         self.logger.info("Private chat message")
                         response_envelope = self._from_tg_to_aea(update)
+                    else:
+                        self.logger.info("Unknown chat type")
                     if response_envelope:
                         await self._in_queue.put(response_envelope)
 
@@ -461,6 +467,24 @@ class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many
             text=update.message.text,
             from_user=str(update.message.from_user.id),
             timestamp=int(update.message.date.timestamp()),
+        )
+        return Envelope(
+            to=str(self.target_skill_id),
+            sender=str(self.connection_id),
+            message=msg,
+            protocol_specification_id=self.message_type.protocol_specification_id,
+        )
+
+    def _from_channel_to_aea(self, update: Update) -> TelegramMessage:
+        """Convert a telegram update to a TelegramMessage object."""
+
+        msg = TelegramMessage(
+            performative=TelegramMessage.Performative.MESSAGE,
+            chat_id=str(update.channel_post.chat.id),
+            id=update.channel_post.message_id,
+            text=update.channel_post.text,
+            from_user=str(update.channel_post.sender_chat.id),
+            timestamp=int(update.channel_post.date.timestamp()),
         )
         return Envelope(
             to=str(self.target_skill_id),
