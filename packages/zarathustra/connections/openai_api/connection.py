@@ -49,7 +49,7 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
 CONNECTION_ID = PublicId.from_str("zarathustra/openai_api:0.1.0")
 _default_logger = logging.getLogger("aea.packages.zarathustra.connections.openai_api")
 
-LLM_RESPONSE_TIMEOUT = 10
+LLM_RESPONSE_TIMEOUT = 30
 
 
 def get_repo_root() -> Path:

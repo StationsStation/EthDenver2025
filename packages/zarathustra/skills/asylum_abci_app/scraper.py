@@ -5,7 +5,6 @@ import json
 import time
 import logging
 from pathlib import Path
-from datetime import UTC, datetime
 
 import requests
 from rich import progress
@@ -50,8 +49,7 @@ class GitHubScraper:
         if not user_dir:
             return None
 
-        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
-        filename = f"data_{timestamp}.json"
+        filename = "repos.json"
         filepath = user_dir / filename
 
         with open(filepath, "w", encoding="utf-8") as f:
