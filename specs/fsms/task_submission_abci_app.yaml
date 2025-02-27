@@ -1,0 +1,25 @@
+alphabet_in:
+- DONE
+- ERROR
+- NO_MAJORITY
+- NO_TASKS
+default_start_state: TaskPoolingRound
+final_states:
+- FinishedTaskExecutionWithErrorRound
+- FinishedTaskPoolingRound
+- FinishedWithoutTasksRound
+label: TaskSubmissionAbciApp
+start_states:
+- TaskPoolingRound
+states:
+- FinishedTaskExecutionWithErrorRound
+- FinishedTaskPoolingRound
+- FinishedWithoutTasksRound
+- TaskPoolingRound
+- TransactionPreparationRound
+transition_func:
+    (TaskPoolingRound, DONE): TransactionPreparationRound
+    (TaskPoolingRound, NO_TASKS): FinishedWithoutTasksRound
+    (TransactionPreparationRound, DONE): FinishedTaskPoolingRound
+    (TransactionPreparationRound, ERROR): FinishedTaskExecutionWithErrorRound
+    (TransactionPreparationRound, NO_MAJORITY): FinishedTaskExecutionWithErrorRound

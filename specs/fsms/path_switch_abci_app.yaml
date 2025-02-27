@@ -1,0 +1,21 @@
+alphabet_in:
+- DONE_READ
+- DONE_SCORE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: PathSwitchRound
+final_states:
+- FinishedPathSwitchReadRound
+- FinishedPathSwitchScoreRound
+label: PathSwitchAbciApp
+start_states:
+- PathSwitchRound
+states:
+- FinishedPathSwitchReadRound
+- FinishedPathSwitchScoreRound
+- PathSwitchRound
+transition_func:
+    (PathSwitchRound, DONE_READ): FinishedPathSwitchReadRound
+    (PathSwitchRound, DONE_SCORE): FinishedPathSwitchScoreRound
+    (PathSwitchRound, NO_MAJORITY): PathSwitchRound
+    (PathSwitchRound, ROUND_TIMEOUT): PathSwitchRound
