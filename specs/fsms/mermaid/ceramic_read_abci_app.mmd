@@ -1,0 +1,8 @@
+graph TD
+  StreamReadRound
+  FinishedReadingRound
+  StreamReadRound
+  StreamReadRound -->|API_ERROR| StreamReadRound
+  StreamReadRound -->|DONE| FinishedReadingRound
+  StreamReadRound -->|NO_MAJORITY| StreamReadRound
+  StreamReadRound -->|ROUND_TIMEOUT| StreamReadRound

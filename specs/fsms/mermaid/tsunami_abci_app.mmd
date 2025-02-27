@@ -1,0 +1,11 @@
+graph TD
+  PrepareTweetsRound
+  FinishedPublishRound
+  PrepareTweetsRound
+  PublishTweetsRound
+  PrepareTweetsRound -->|DONE| PublishTweetsRound
+  PrepareTweetsRound -->|NO_MAJORITY| PrepareTweetsRound
+  PrepareTweetsRound -->|ROUND_TIMEOUT| PrepareTweetsRound
+  PublishTweetsRound -->|DONE| FinishedPublishRound
+  PublishTweetsRound -->|NO_MAJORITY| PublishTweetsRound
+  PublishTweetsRound -->|ROUND_TIMEOUT| PublishTweetsRound

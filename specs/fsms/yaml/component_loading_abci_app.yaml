@@ -1,0 +1,28 @@
+alphabet_in:
+  - DONE
+  - ERROR
+
+default_start_state: SetupRound
+
+final_states:
+  - DoneRound
+
+label: ComponentLoadingAbciApp
+
+start_states:
+  - SetupRound
+  - HealthcheckRound
+
+states:
+  - SetupRound
+  - HealthcheckRound
+  - DoneRound
+  - ErrorRound
+
+transition_func:
+  (SetupRound, DONE): HealthcheckRound
+  (SetupRound, ERROR): ErrorRound
+  (HealthcheckRound, DONE): DoneRound
+  (HealthcheckRound, ERROR): ErrorRound
+  (ErrorRound, DONE): SetupRound
+

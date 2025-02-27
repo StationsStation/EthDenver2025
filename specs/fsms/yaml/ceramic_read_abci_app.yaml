@@ -1,0 +1,19 @@
+alphabet_in:
+- API_ERROR
+- DONE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: StreamReadRound
+final_states:
+- FinishedReadingRound
+label: CeramicReadAbciApp
+start_states:
+- StreamReadRound
+states:
+- FinishedReadingRound
+- StreamReadRound
+transition_func:
+    (StreamReadRound, API_ERROR): StreamReadRound
+    (StreamReadRound, DONE): FinishedReadingRound
+    (StreamReadRound, NO_MAJORITY): StreamReadRound
+    (StreamReadRound, ROUND_TIMEOUT): StreamReadRound

@@ -1,0 +1,11 @@
+graph TD
+  SetupRound
+  SetupRound
+  HealthcheckRound
+  DoneRound
+  ErrorRound
+  SetupRound -->|DONE| HealthcheckRound
+  SetupRound -->|ERROR| ErrorRound
+  HealthcheckRound -->|DONE| DoneRound
+  HealthcheckRound -->|ERROR| ErrorRound
+  ErrorRound -->|DONE| SetupRound

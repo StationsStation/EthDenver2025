@@ -1,0 +1,9 @@
+graph TD
+  UpdateBetsRound
+  FailedMarketManagerRound
+  FinishedMarketManagerRound
+  UpdateBetsRound
+  UpdateBetsRound -->|DONE| FinishedMarketManagerRound
+  UpdateBetsRound -->|FETCH_ERROR| FailedMarketManagerRound
+  UpdateBetsRound -->|NO_MAJORITY| UpdateBetsRound
+  UpdateBetsRound -->|ROUND_TIMEOUT| UpdateBetsRound

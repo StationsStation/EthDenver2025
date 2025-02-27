@@ -1,0 +1,24 @@
+graph TD
+  SelectOrdersRound
+  FinishedWithOrdersRound
+  PlaceOrdersRound
+  RandomnessRound
+  SelectKeeperRound
+  SelectOrdersRound
+  VerifyExecutionRound
+  PlaceOrdersRound -->|DONE| VerifyExecutionRound
+  PlaceOrdersRound -->|ROUND_TIMEOUT| PlaceOrdersRound
+  RandomnessRound -->|DONE| SelectKeeperRound
+  RandomnessRound -->|NO_MAJORITY| RandomnessRound
+  RandomnessRound -->|ROUND_TIMEOUT| RandomnessRound
+  SelectKeeperRound -->|DONE| PlaceOrdersRound
+  SelectKeeperRound -->|NO_MAJORITY| RandomnessRound
+  SelectKeeperRound -->|ROUND_TIMEOUT| SelectKeeperRound
+  SelectOrdersRound -->|DONE| RandomnessRound
+  SelectOrdersRound -->|NO_ACTION| FinishedWithOrdersRound
+  SelectOrdersRound -->|NO_MAJORITY| SelectOrdersRound
+  SelectOrdersRound -->|ROUND_TIMEOUT| SelectOrdersRound
+  VerifyExecutionRound -->|BAD_SUBMISSION| RandomnessRound
+  VerifyExecutionRound -->|DONE| SelectOrdersRound
+  VerifyExecutionRound -->|NO_MAJORITY| PlaceOrdersRound
+  VerifyExecutionRound -->|ROUND_TIMEOUT| PlaceOrdersRound

@@ -1,0 +1,13 @@
+graph TD
+  EstablishVoteRound
+  EstablishVoteRound
+  FinishedTransactionPreparationRound
+  PrepareVoteTransactionRound
+  EstablishVoteRound -->|CONTRACT_ERROR| EstablishVoteRound
+  EstablishVoteRound -->|DONE| PrepareVoteTransactionRound
+  EstablishVoteRound -->|NO_MAJORITY| EstablishVoteRound
+  EstablishVoteRound -->|ROUND_TIMEOUT| EstablishVoteRound
+  PrepareVoteTransactionRound -->|CONTRACT_ERROR| PrepareVoteTransactionRound
+  PrepareVoteTransactionRound -->|DONE| FinishedTransactionPreparationRound
+  PrepareVoteTransactionRound -->|NO_MAJORITY| PrepareVoteTransactionRound
+  PrepareVoteTransactionRound -->|ROUND_TIMEOUT| PrepareVoteTransactionRound

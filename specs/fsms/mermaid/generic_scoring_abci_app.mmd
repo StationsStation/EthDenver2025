@@ -1,0 +1,7 @@
+graph TD
+  GenericScoringRound
+  FinishedGenericScoringRound
+  GenericScoringRound
+  GenericScoringRound -->|DONE| FinishedGenericScoringRound
+  GenericScoringRound -->|NO_MAJORITY| GenericScoringRound
+  GenericScoringRound -->|ROUND_TIMEOUT| GenericScoringRound

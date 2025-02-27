@@ -1,0 +1,21 @@
+alphabet_in:
+- DONE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: PrepareTweetsRound
+final_states:
+- FinishedPublishRound
+label: TsunamiAbciApp
+start_states:
+- PrepareTweetsRound
+states:
+- FinishedPublishRound
+- PrepareTweetsRound
+- PublishTweetsRound
+transition_func:
+    (PrepareTweetsRound, DONE): PublishTweetsRound
+    (PrepareTweetsRound, NO_MAJORITY): PrepareTweetsRound
+    (PrepareTweetsRound, ROUND_TIMEOUT): PrepareTweetsRound
+    (PublishTweetsRound, DONE): FinishedPublishRound
+    (PublishTweetsRound, NO_MAJORITY): PublishTweetsRound
+    (PublishTweetsRound, ROUND_TIMEOUT): PublishTweetsRound

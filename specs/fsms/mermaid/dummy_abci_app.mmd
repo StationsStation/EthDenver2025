@@ -1,0 +1,8 @@
+graph TD
+  FirstRound
+  FirstRound
+  FinalRound
+  ErrorRound
+  FirstRound -->|DONE| FinalRound
+  FirstRound -->|NO_MAJORITY| ErrorRound
+  FirstRound -->|TIMEOUT| ErrorRound

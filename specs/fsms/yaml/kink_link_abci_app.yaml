@@ -1,0 +1,26 @@
+alphabet_in:
+- NO_MATCHES
+- MATCHES
+- NO_FEEDBACK
+- FEEDBACK
+- DONE
+default_start_state: MatchmakingRound
+final_states:
+- TransactionSubmissionRound
+label: KinkLinkAbciApp
+start_states:
+- MatchmakingRound
+states:
+- MatchmakingRound
+- FeedbackProcessingRound
+- PeerIDExchangeRound
+- TransactionSubmissionRound
+- RatingSystemUpdateRound
+transition_func:
+  (MatchmakingRound, NO_MATCHES): FeedbackProcessingRound
+  (MatchmakingRound, MATCHES): PeerIDExchangeRound
+  (PeerIDExchangeRound, NO_FEEDBACK): FeedbackProcessingRound
+  (PeerIDExchangeRound, FEEDBACK): FeedbackProcessingRound
+  (FeedbackProcessingRound, NO_FEEDBACK): TransactionSubmissionRound
+  (FeedbackProcessingRound, FEEDBACK): RatingSystemUpdateRound
+  (RatingSystemUpdateRound, DONE): TransactionSubmissionRound

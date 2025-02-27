@@ -1,0 +1,7 @@
+graph TD
+  PromptLlmRound
+  PromptLlmRound
+  FinishedPromptLlmRound
+  PromptLlmRound -->|DONE| FinishedPromptLlmRound
+  PromptLlmRound -->|NO_MAJORITY| PromptLlmRound
+  PromptLlmRound -->|ROUND_TIMEOUT| PromptLlmRound

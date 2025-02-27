@@ -1,0 +1,19 @@
+alphabet_in:
+- CONTRACT_ERROR
+- DONE
+- NO_MAJORITY
+- ROUND_TIMEOUT
+default_start_state: NewTokensRound
+final_states:
+- FinishedNewTokensRound
+label: DynamicNFTAbciApp
+start_states:
+- NewTokensRound
+states:
+- FinishedNewTokensRound
+- NewTokensRound
+transition_func:
+    (NewTokensRound, CONTRACT_ERROR): NewTokensRound
+    (NewTokensRound, DONE): FinishedNewTokensRound
+    (NewTokensRound, NO_MAJORITY): NewTokensRound
+    (NewTokensRound, ROUND_TIMEOUT): NewTokensRound

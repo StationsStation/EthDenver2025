@@ -1,0 +1,47 @@
+alphabet_in:
+- POST_CLAIM
+- POST_REFUND
+- RFQ_EXPIRED
+- POST_NEW_SWAP
+- FINALISED
+- QUOTE_ACCEPTED
+- DONE
+default_start_state: PostTransactionRound
+final_states:
+- FinalisedRefundTransactionsRound
+- SuccessfulExecutionRound
+- FinalisedClaimTransactionsRound
+- FinalisedSupplyTransactionsRound
+- UnSuccessfulExecutionRound
+label: QSExecutorAbciApp
+start_states:
+- PostTransactionRound
+- CollectExchangeDataRound
+states:
+- AwaitBuyerTransactionsRound
+- PrepareRefundTransactionsRound
+- SuccessfulExecutionRound
+- FinalisedClaimTransactionsRound
+- PrepareClaimTransactionsRound
+- FinalisedRefundTransactionsRound
+- PostTransactionRound
+- FinalisedSupplyTransactionsRound
+- UnSuccessfulExecutionRound
+- CollectExchangeDataRound
+- PrepareSupplyTransactionRound
+- AwaitRFQsRound
+transition_func:
+  (AwaitBuyerTransactionsRound, DONE): PrepareClaimTransactionsRound
+  (AwaitBuyerTransactionsRound, RFQ_EXPIRED): PrepareRefundTransactionsRound
+  (AwaitRFQsRound, QUOTE_ACCEPTED): PrepareSupplyTransactionRound
+  (CollectExchangeDataRound, DONE): AwaitRFQsRound
+  (PostTransactionRound, POST_CLAIM): SuccessfulExecutionRound
+  (PostTransactionRound, POST_NEW_SWAP): AwaitBuyerTransactionsRound
+  (PostTransactionRound, POST_REFUND): UnSuccessfulExecutionRound
+  (PrepareClaimTransactionsRound, DONE): FinalisedClaimTransactionsRound
+  (PrepareClaimTransactionsRound, FINALISED): SuccessfulExecutionRound
+  (PrepareRefundTransactionsRound, DONE): FinalisedRefundTransactionsRound
+  (PrepareRefundTransactionsRound, FINALISED): UnSuccessfulExecutionRound
+  (PrepareSupplyTransactionRound, DONE): FinalisedSupplyTransactionsRound
+  (PrepareSupplyTransactionRound, FINALISED): AwaitBuyerTransactionsRound
+

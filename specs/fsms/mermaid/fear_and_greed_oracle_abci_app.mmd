@@ -1,0 +1,17 @@
+graph TD
+  ObservationRound
+  EstimationRound
+  FinishedDataCollectionRound
+  ObservationRound
+  OutlierDetectionRound
+  EstimationRound -->|DONE| OutlierDetectionRound
+  EstimationRound -->|NO_ACTION| ObservationRound
+  EstimationRound -->|NO_MAJORITY| ObservationRound
+  EstimationRound -->|ROUND_TIMEOUT| ObservationRound
+  ObservationRound -->|DONE| EstimationRound
+  ObservationRound -->|NO_ACTION| ObservationRound
+  ObservationRound -->|NO_MAJORITY| ObservationRound
+  ObservationRound -->|ROUND_TIMEOUT| ObservationRound
+  OutlierDetectionRound -->|DONE| FinishedDataCollectionRound
+  OutlierDetectionRound -->|NO_ACTION| ObservationRound
+  OutlierDetectionRound -->|NO_MAJORITY| ObservationRound

@@ -1,0 +1,58 @@
+alphabet_in:
+- PUT_EXPIRED
+- PUT_EXERCISED
+- CALL_EXPIRED
+- CALL_EXERCISED
+- UNDER_ALLOCATED
+- SELL_PUT_OPTION
+- SELL_CALL_OPTION
+- SWAP_FROM_USDC_TO_ETH
+- SWAP_FROM_ETH_TO_USDC
+- DONE
+- NOT_DONE
+- ERROR
+default_start_state: CollectDataRound
+final_states:
+- SellPutOptionRound
+- SellCallOptionRound
+- SwapFromUSDCtoETHRound
+- SwapFromETHtoUSDCRound
+label: FlowchartToFSMAbciApp
+start_states:
+- CollectDataRound
+states:
+- CollectDataRound
+- AnalyseDataRound
+- MultiplexerRound
+- PutExpiredRound
+- PutExercisedRound
+- CallExpiredRound
+- CallExercisedRound
+- UnderAllocatedRound
+- SellCallOptionRound
+- SellPutOptionRound
+- SwapFromUSDCtoETHRound
+- SwapFromETHtoUSDCRound
+transition_func:
+    (CollectDataRound, DONE): AnalyseDataRound
+    (AnalyseDataRound, DONE): MultiplexerRound
+    (MultiplexerRound, NOT_DONE): CollectDataRound
+    (MultiplexerRound, ERROR): CollectDataRound
+
+    (MultiplexerRound, PUT_EXPIRED): PutExpiredRound
+    (MultiplexerRound, PUT_EXERCISED): PutExercisedRound
+    (MultiplexerRound, CALL_EXPIRED): CallExpiredRound
+    (MultiplexerRound, CALL_EXERCISED): CallExercisedRound
+    (MultiplexerRound, UNDER_ALLOCATED): UnderAllocatedRound
+    (MultiplexerRound, SELL_PUT_OPTION): SellPutOptionRound
+    (MultiplexerRound, SELL_CALL_OPTION): SellCallOptionRound
+
+
+    (PutExpiredRound, SELL_PUT_OPTION): SellPutOptionRound
+    (CallExpiredRound, SELL_CALL_OPTION): SellCallOptionRound
+
+    (PutExercisedRound, SWAP_FROM_USDC_TO_ETH): SwapFromUSDCtoETHRound
+    (CallExercisedRound, SWAP_FROM_ETH_TO_USDC): SwapFromETHtoUSDCRound
+
+    (UnderAllocatedRound, SELL_PUT_OPTION): SellPutOptionRound
+    (UnderAllocatedRound, SELL_CALL_OPTION): SellCallOptionRound

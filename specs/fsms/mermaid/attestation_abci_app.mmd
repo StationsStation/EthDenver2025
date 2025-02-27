@@ -1,0 +1,14 @@
+graph TD
+  PostTxnRound
+  StartAttestationRound
+  CollectDataRound
+  FailedAttestationRound
+  PrepareAttestationTxnRound
+  CheckNextAgentRound
+  PostTxnRound
+  CheckNextAgentRound -->|DONE| PrepareAttestationTxnRound
+  CollectDataRound -->|DONE| CheckNextAgentRound
+  PostTxnRound -->|DONE| CheckNextAgentRound
+  PostTxnRound -->|FAILED_TXN| FailedAttestationRound
+  StartAttestationRound -->|DONE| CollectDataRound
+  StartAttestationRound -->|FAILED| FailedAttestationRound
