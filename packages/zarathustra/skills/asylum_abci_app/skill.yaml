@@ -68,7 +68,11 @@ models:
       role: null
       github_username: null
       github_repositories: null
+      channel_id: 123
+      sponsor: valory
+      bounty_index: 0
     class_name: AgentPersona
-dependencies: {}
+dependencies:
+  pydantic: {}
 is_abstract: false
 customs: []

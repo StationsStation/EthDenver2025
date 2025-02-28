@@ -22,7 +22,7 @@ protocols:
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- zarathustra/asylum_abci_app:0.1.0:bafybeiea7vxe6bcsbgkn3oxdo2p52laagdbxpgzglbdhg3nka4nkbthnqa
+- zarathustra/asylum_abci_app:0.1.0:bafybeibmt3htivqdhfpdofcns7z33l6vksubrcjn6ohqagyye3mhszugfq
 customs: []
 default_ledger: ethereum
 required_ledgers:
@@ -62,7 +62,7 @@ public_id: eightballer/http_server:0.1.0:bafybeicp3ubkonolxjgnwgqmaz624qduwzzz74
 type: connection
 config:
   host: 0.0.0.0
-  port: ${int}
+  port: ${int:8888}
   target_skill_id: zarathustra/asylum_abci_app:0.1.0
 ---
 public_id: zarathustra/openai_api:0.1.0
@@ -83,6 +83,9 @@ models:
   agent_persona:
     args:
       role: developer
-      github_username: ${str}
+      github_username: ${str:8ball030}
       github_repositories:
       - https://github.com/valory-xyz/open-autonomy
+      channel_id: ${int:123}
+      sponsor: ${str:valory}
+      bounty_index: ${int:0}

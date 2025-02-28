@@ -8,26 +8,30 @@ fingerprint:
   .env.example: bafybeigmgmwown66u7j5pqancojrc5ry2pwzmnlvqnwg2rfcjfi6irgplu
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeicl7mjppfgokawgnyoankhbwnbwdbycehr5sd5kj2scri6s4jotee
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeic6hxqrbp4jzcp7v5djrlhxv7f3smxgwmexpurwfa4ufqqmuso6dm
 number_of_agents: 1
 deployment:
   agent:
     ports: {}
-    volumes: {}
+    volumes:
+      0:
+        ../data: /data
 ---
 public_id: eightballer/http_server:0.1.0:bafybeicp3ubkonolxjgnwgqmaz624qduwzzz74fbjizu77lyvnpo77uv7u
 type: connection
-config:
-  host: 0.0.0.0
-  port: 8888
-  target_skill_id: zarathustra/asylum_abci_app:0.1.0
+0:
+  config:
+    host: 0.0.0.0
+    port: 8888
+    target_skill_id: zarathustra/asylum_abci_app:0.1.0
 ---
 public_id: zarathustra/asylum_abci_app:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
 type: skill
-models:
-  agent_persona:
-    args:
-      role: developer
-      github_username: ${str:8ball030}
-      github_repositories:
-      - https://github.com/valory-xyz/open-autonomy
+0:
+  models:
+    agent_persona:
+      args:
+        role: developer
+        github_username: ${str:8ball030}
+        github_repositories:
+        - https://github.com/valory-xyz/open-autonomy
