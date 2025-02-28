@@ -55,6 +55,10 @@ class TelegramHandler(Handler):
         """Implement the reaction to an envelope."""
 
         telegram_msg = cast(TelegramMessage, message)
+        if telegram_msg.performative == TelegramMessage.Performative.ERROR:
+            self.context.logger.error(f"Received error message={telegram_msg}")
+            return
+
         if telegram_msg.performative == TelegramMessage.Performative.MESSAGE_SENT:
             self.context.logger.debug(f"received telegram message={telegram_msg}")
             return
@@ -67,6 +71,7 @@ class TelegramHandler(Handler):
 
         self.context.logger.info(f"received telegram message={telegram_msg.from_user}, content={telegram_msg.text}")
         self.strategy.pending_telegram_messages.append(telegram_msg)
+        self.strategy.current_telegram_thread.append(telegram_msg)
 
     @property
     def strategy(self):
