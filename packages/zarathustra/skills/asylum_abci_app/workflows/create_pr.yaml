@@ -22,8 +22,10 @@ tasks:
     name: push_changes
     description: Push changes to git
     command: git push --set-upstream origin ${task.0.client.stdout}
+    continue_on_error: true
 
   - id: '4'
     name: create_pull_request
     description: Create a pull request on github in the main branch
     command: gh pr create --base main --head ${task.0.client.stdout} --title auto_dev:auto-pr --fill
+    continue_on_error: true
