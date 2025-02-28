@@ -10,13 +10,14 @@ fingerprint:
   tests/__init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeie4nrmrcm62rbbzhrnbmrzaptim4nhgpwtma45ggs4wp6mgew4a64
-number_of_agents: 1
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeig3dl3mv23rijtshetcqqs22cwrrhux5tbzfxixea4tgkvwvcwp24
+number_of_agents: 4
 deployment:
   agent:
     ports: {}
     volumes:
       ../../data: /data
+      ../../output: /output
 ---
 public_id: zarathustra/asylum_abci_app:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
 type: skill
@@ -37,9 +38,10 @@ type: skill
     agent_persona:
       args:
         role: developer
-        github_username: dvilelaf
+        github_username: aliserag
         github_repositories:
-        - https://github.com/valory-xyz/open-autonomy
+        - https://github.com/onflow/fcl-js
+        - https://github.com/onflow/flow-cli
         github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
     asylum_strategy:
       args:
@@ -49,9 +51,10 @@ type: skill
     agent_persona:
       args:
         role: developer
-        github_username: null
+        github_username: jribbink
         github_repositories:
-        - https://github.com/valory-xyz/open-autonomy
+        - https://github.com/onflow/fcl-js
+        - https://github.com/onflow/flow-cli
         github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
     asylum_strategy:
       args:
@@ -61,9 +64,10 @@ type: skill
     agent_persona:
       args:
         role: developer
-        github_username: null
+        github_username: seanrobb
         github_repositories:
-        - https://github.com/valory-xyz/open-autonomy
+        - https://github.com/onflow/fcl-js
+        - https://github.com/onflow/flow-cli
         github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
     asylum_strategy:
       args:
