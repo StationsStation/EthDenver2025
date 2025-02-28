@@ -417,12 +417,12 @@ class TelegramWrapperAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many
                         if update.channel_post:
                             self.logger.info("Channel post message")
                             response_envelope = self._from_channel_to_aea(update)
-                    # elif "new_chat_participant" in update.message.api_kwargs:
-                    #     # NOTE: this is also a ChatType.GROUP
-                    #     username = update.message.api_kwargs.get("username")
-                    #     is_bot = update.message.api_kwargs.get("is_bot")
-                    #     self.logger.info(f"New chat participant: {username} (is bot? {is_bot})")
-                    #     return
+                    elif "new_chat_participant" in update.message.api_kwargs:
+                        # NOTE: this is also a ChatType.GROUP
+                        username = update.message.api_kwargs.get("username")
+                        is_bot = update.message.api_kwargs.get("is_bot")
+                        self.logger.info(f"New chat participant: {username} (is bot? {is_bot})")
+                        return
                     elif update.message.chat.type == ChatType.GROUP:
                         self.logger.info("Group chat message")
                         response_envelope = self._from_group_to_aea(update)

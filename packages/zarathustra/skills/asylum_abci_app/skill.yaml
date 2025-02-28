@@ -8,13 +8,13 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeidpaoyquzetbgtclividyjmfooe4rvq4ilegugnk55j2e7nisa7ey
-  behaviours.py: bafybeicad3zforc4nlxft2omrh6wnaodxcbuswp5rrmmbskmnpcfzjnuga
+  behaviours.py: bafybeibwi7qokcaho5pmn3kpt6qsudmg5mirbqdfnumpxseftlmlrzf2vm
   dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeibnxwfzbejd2holosojiyygoulw2477hs5j2kqioiawunfplz6cwi
+  handlers.py: bafybeic7qw5upeqzst2unbnfyuzo2uk2czaf3csic6viimudx7zy7l3acy
   mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
   scraper.py: bafybeiaip4j5krhj6xd47bs5bu7jtlddy2swxtxonn5lnmqgamhro6pqda
-  strategy.py: bafybeigr5hptalbx5gtzbcjf4tua2tnkrtcd4cpnhjzamjiitbxsx6jxoy
+  strategy.py: bafybeib7dwjossjzvsrn2ryocxk4vvrgqmwyjt2hwhw3yq2nqkjxpifg7i
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
@@ -24,7 +24,7 @@ fingerprint:
 fingerprint_ignore_patterns: []
 connections:
 - zarathustra/openai_api:0.1.0:bafybeihfzkq5mxzf54kgtbrlgrbwd5l2osixnur7e6iszumla3vbgoucue
-- eightballer/telegram_wrapper:0.1.0:bafybeidtv75kxb3macpa6urchu4pxshnwcvhrq3xd62bjkdgecdnexg66q
+- eightballer/telegram_wrapper:0.1.0:bafybeib2sm5p4wtnerutf3y4wzzkk2hhzbl5tf3z5crk3xxyangxngsqjm
 contracts: []
 protocols:
 - eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy

@@ -18,18 +18,18 @@
 
 """This package contains the behaviours for the AsylumAbciApp."""
 
-import re
 import os
+import re
 import json
+import functools
 from abc import ABC
 from enum import Enum
 from time import sleep
 from typing import Any, cast
 from pathlib import Path
-import functools
-from itertools import islice
 from datetime import UTC, datetime
 from textwrap import dedent
+from itertools import islice
 
 from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
@@ -45,7 +45,7 @@ from packages.zarathustra.connections.openai_api.connection import (
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
 from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
-from packages.zarathustra.skills.asylum_abci_app import get_repo_root
+
 
 TIMEZONE_UTC = UTC
 TELEGRAM_MSG_CHAR_LIMIT = 4_096
@@ -53,8 +53,10 @@ MERMAID_DIAGRAMS = get_repo_root() / "specs" / "fsms" / "mermaid"
 BOUNTRY_REGEX_PATTERN = r"(?m)^\d PRIZE"
 SPONSOR_BOUNTY_DATA = get_repo_root() / "ethdenver-prizes.txt"
 
+
 @functools.lru_cache
 def create_one_shot_examples(logger, n_examples: int = 10) -> str:
+    """Create one shot training examples of Mermaid diagrams for FSMs."""
     example_data = []
     for i, file in enumerate(islice(MERMAID_DIAGRAMS.glob("*"), n_examples)):
         example_data.append(f"{i}. {file.stem}\n{file.read_text()}")
@@ -65,6 +67,7 @@ def create_one_shot_examples(logger, n_examples: int = 10) -> str:
 
 @functools.lru_cache
 def get_bounty_info() -> list[str]:
+    """Get sponsor bounty data."""
     content = SPONSOR_BOUNTY_DATA.read_text()
     return re.split(BOUNTRY_REGEX_PATTERN, content)
 
@@ -119,7 +122,7 @@ SYSTEM_PROMPT = dedent("""
     - **Never break character.**
     - **All responses must reflect the perspective of your real-world counterpart.**
     - Ensure the FSM diagram is under {telegram_msg_char_limit} characters so it fits within Telegram's message limit. If needed, simplify state names or remove unnecessary transitions while keeping the happy path intact.
-""")
+""")  # noqa: E501
 
 
 class AsylumAbciAppEvents(Enum):
@@ -254,7 +257,7 @@ class RequestLLMResponseRound(BaseState):
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND
 
-    def act(self) -> None:
+    def act(self) -> None:  # noqa: PLR0914
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {self.counterparty}")
@@ -284,7 +287,7 @@ class RequestLLMResponseRound(BaseState):
             text_data = msg.text
             username = msg.from_user
             recent_chat_history = self.strategy.current_telegram_thread
-            last_ten_messages = "\n\n".join(msg.text for msg in recent_chat_history)
+            "\n\n".join(msg.text for msg in recent_chat_history)
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -356,7 +359,9 @@ class SendTelegramMessageRound(BaseState):
             msg = self.strategy.telegram_responses.pop()
             if (msg_len := len(msg)) > TELEGRAM_MSG_CHAR_LIMIT:
                 msg = msg[:TELEGRAM_MSG_CHAR_LIMIT]
-                self.context.logger.warning(f"Shortened Telegram Message from {msg_len} to {TELEGRAM_MSG_CHAR_LIMIT} chars")
+                self.context.logger.warning(
+                    f"Shortened Telegram Message from {msg_len} to {TELEGRAM_MSG_CHAR_LIMIT} chars"
+                )
             self.context.logger.info(f"Sending message: {msg}")
             for peer in ["-1002323154632"]:
                 self.create_and_send(
