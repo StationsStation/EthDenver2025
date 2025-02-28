@@ -16,7 +16,7 @@ keys.json
 /agent/
 /service/
 !/data/sponsor_config.yaml
-
+/asylum_abci_app/
 
 packages/eightballer/protocols/default
 packages/eightballer/protocols/http
