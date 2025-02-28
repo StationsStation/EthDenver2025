@@ -12,9 +12,10 @@
 *private_key*
 keys.json
 
-data/
-agent/
-service/
+/data/*
+/agent/
+/service/
+!/data/sponsor_config.yaml
 
 
 packages/eightballer/protocols/default
