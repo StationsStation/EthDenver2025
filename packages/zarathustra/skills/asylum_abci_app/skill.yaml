@@ -8,7 +8,7 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
-  behaviours.py: bafybeifkn64v646yro2nxzwx7ahw2yv5zh4qypmc6ehl4as2zo4jtqiyam
+  behaviours.py: bafybeid3kodgjefwqnxqexwck4lw6i6xhhwpiyf2g7y3kucjgqbb56a7oa
   dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
   handlers.py: bafybeic7qw5upeqzst2unbnfyuzo2uk2czaf3csic6viimudx7zy7l3acy
@@ -19,8 +19,9 @@ fingerprint:
   tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
   tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
-  workflows/create_new_repo.yaml: bafybeibj6khjibpeytajwobclrj4je3eblsa6awkqrgd4exjgnyee2c3nu
-  workflows/create_pr.yaml: bafybeienntz3b66xa4pllaqq2pimmwzavwa7dqjloyzo2gdp5cdzpuvnga
+  workflows/create_from_fsm.yaml: bafybeie7ircicapvvxqe3a5jvkg6eqwvwvb6lapeoqdnc3jcg7xnektx44
+  workflows/create_new_repo.yaml: bafybeiabzjntklunn34qwlstuabvnzkfonosdfbpb2y675vzzgtvw7n4ji
+  workflows/create_pr.yaml: bafybeic4ka22fiy3gv452av5n3533w7wqixd2mnui57e3ov6byqj6z3c5i
   workflows/lint_repo.yaml: bafybeidlu7npvevtouki5se3v5bwgsyjxq36zk2hyxwgf5snrhsraysym4
 fingerprint_ignore_patterns: []
 connections:

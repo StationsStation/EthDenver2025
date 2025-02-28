@@ -15,3 +15,9 @@ tasks:
     command: adev lint -p packages/zarathustra/skills/asylum_abci_app
     working_dir: ".."
     stream: true
+
+  - id: '3'
+    name: commit_changes
+    description: Commit changes to git
+    command: make hashes
+    working_dir: ".."

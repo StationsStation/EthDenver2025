@@ -483,7 +483,7 @@ class ExecuteProposedWorkflowRound(BaseState):
                 for task in workflow.tasks:
                     result_str += dedent(
                         # we can do that so much better!
-                        f"""\n- {"✅" if task.is_done else "❌"} Task({task.id}): {task.name}"""
+                        f"""\n- {"✅" if not task.is_failed else "❌"} Task({task.id}): {task.name}"""
                     )
 
                 self.strategy.telegram_responses.append(result_str)
