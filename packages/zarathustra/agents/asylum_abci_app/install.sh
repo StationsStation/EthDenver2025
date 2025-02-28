@@ -1,2 +1,2 @@
 #! /usr/env bash
-pip install pydantic
+sudo apt-get install git -y
