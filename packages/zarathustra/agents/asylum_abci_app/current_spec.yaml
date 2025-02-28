@@ -1,0 +1,35 @@
+alphabet_in:
+- ERROR
+- REPLY
+- UPDATE_NEEDED
+- WORK
+- NEW_MESSAGES
+- TIMEOUT
+- DONE
+default_start_state: CheckLocalStorageRound
+final_states: []
+label: AsymlumAbciApp
+start_states:
+- CheckLocalStorageRound
+states:
+- ProcessLLMResponseRound
+- CheckTelegramQueueRound
+- RequestLLMResponseRound
+- SendTelegramMessageRound
+- ScrapeGithubRound
+- WaitBeforeRetryRound
+- CheckLocalStorageRound
+- ExecuteProposedWorkflowRound
+transition_func:
+  (CheckLocalStorageRound, DONE): CheckTelegramQueueRound
+  (CheckLocalStorageRound, UPDATE_NEEDED): ScrapeGithubRound
+  (CheckTelegramQueueRound, NEW_MESSAGES): RequestLLMResponseRound
+  (CheckTelegramQueueRound, TIMEOUT): RequestLLMResponseRound
+  (ExecuteProposedWorkflowRound, DONE): CheckLocalStorageRound
+  (ProcessLLMResponseRound, REPLY): SendTelegramMessageRound
+  (ProcessLLMResponseRound, WORK): ExecuteProposedWorkflowRound
+  (RequestLLMResponseRound, DONE): ProcessLLMResponseRound
+  (RequestLLMResponseRound, ERROR): WaitBeforeRetryRound
+  (ScrapeGithubRound, DONE): RequestLLMResponseRound
+  (SendTelegramMessageRound, DONE): CheckLocalStorageRound
+  (WaitBeforeRetryRound, DONE): CheckLocalStorageRound
