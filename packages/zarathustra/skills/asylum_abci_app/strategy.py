@@ -25,13 +25,14 @@ class AsylumStrategy(Model):
     """This class models the AdvancedDataRequest skill."""
 
     user_persona: str
+    data_dir: str
     new_users: deque[dict] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_telegram_messages: deque[ChatroomMessage] = deque(maxlen=MAX_QUEUE_LENGTH)
     current_telegram_thread: deque[ChatroomMessage] = deque(maxlen=MESSAGE_HISTORY_SIZE)
     llm_responses: deque[tuple[LLMActions, str]] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_workflows: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
     telegram_responses: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
-    data_dir: str
+    from_config: bool = False
 
     workflows = {
         "create_new_repo": "create_new_repo.yaml",

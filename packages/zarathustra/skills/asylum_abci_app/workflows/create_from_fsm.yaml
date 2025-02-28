@@ -5,7 +5,9 @@ kwargs:
   new_author: agent_asylum
   new_agent: agent_2
   new_skill: simple_fsm_2
-  fsm_spec_path: auto_dev/data/fsm/samples/fsm_specification.yaml
+  fsm_spec_path: ../asylum_abci_app/fsm_spec.yaml
+  sponsor: flow
+  bounty: 12
 tasks:
 
   - id: '0'
@@ -13,6 +15,7 @@ tasks:
     description: Check that the packages registry is up to date.
     command: autonomy packages init
     continue_on_error: true
+    working_dir: "../output/${kwargs.sponsor}/bounty_${kwargs.bounty_id}"
 
   - id: '1'
     name: create_new_agent
