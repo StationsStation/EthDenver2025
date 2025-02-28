@@ -3,10 +3,23 @@ name: create_new_repo
 description: A workflow to create a new repository for hackathon project. Adds the new repo to the agent-asylum organisation on github. Additionally, the workflow adds the repository to submodules of the current repository.
 kwargs:
   organisation: agent-asylum
-  repo_name: new_repo
+  repo_name: new_repo_3
 tasks:
+  - id: '0'
+    name: create_directory
+    description: Create a directory for the new repository
+    command: mkdir ${kwargs.organisation} -p
+    working_dir: "../output"
+    stream: False
+  
   - id: '1'
     name: create_repo
     description: Create a new repository locally
-    command: adev repo scaffold -n output/${kwargs.organisation}/${kwargs.repo_name}
+    command: adev repo scaffold ${kwargs.repo_name}
+    working_dir: "../output/${kwargs.organisation}"
     stream: False
+
+  - id: '2'
+    name: create_remote_repo
+    description: Create a new repository on github
+    command: adev repo create-remote --user ${kwargs.organisation} --repo ${kwargs.repo_name}
