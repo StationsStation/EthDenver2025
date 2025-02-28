@@ -1,6 +1,5 @@
 """GitHub issue fetching functionality."""
 
-import os
 import json
 import time
 import logging
@@ -20,7 +19,7 @@ class GitHubScraper:
 
     def __init__(self, gh_pat: str | None = None, data_dir: str | None = None):
         """Initialize the scraper with GitHub PAT and settings."""
-        self.gh_pat = gh_pat or os.getenv("GITHUB_PAT")
+        self.gh_pat = gh_pat
         if not self.gh_pat:
             msg = "GitHub PAT not found. Make sure GITHUB_PAT is set in environment or .env file"
             raise ValueError(msg)

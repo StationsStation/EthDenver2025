@@ -2,12 +2,11 @@
 
 from enum import Enum
 from typing import Any
+from pathlib import Path
 from collections import deque
 
-from pydantic import conlist
 from aea.skills.base import Model
 
-from packages.zarathustra.skills.asylum_abci_app import PydanticModel
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage
 
 
@@ -32,6 +31,7 @@ class AsylumStrategy(Model):
     llm_responses: deque[tuple[LLMActions, str]] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_workflows: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
     telegram_responses: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
+    data_dir: str
 
     workflows = {
         "create_new_repo": "create_new_repo.yaml",
@@ -40,20 +40,31 @@ class AsylumStrategy(Model):
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize dialogues."""
+        self.data_dir = Path(kwargs.pop("data_dir", "data"))
         self.user_persona = ""
-
         Model.__init__(self, **kwargs)
 
 
-class AgentPersona(Model, PydanticModel):
+class AgentPersona(Model):
     """AgentPersona."""
 
     github_username: str
     role: str
-    github_repositories: conlist(str, min_length=1)
+    github_repositories: list[str]
+    github_pat: str
+    sponsor: str
+    bounty: int
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize agent persona."""
-        pydantic_kwargs = {k: kwargs.pop(k) for k in self.__fields__}
-        PydanticModel.__init__(self, **pydantic_kwargs)
+        for key, value in self.__annotations__.items():
+            if key in kwargs:
+                value = kwargs[key]
+                if not value:
+                    msg = f"Missing required parameter: {key} of type {value}"
+                    raise ValueError(msg)
+                setattr(self, key, kwargs[key])
+                continue
+            msg = f"Missing required parameter: {key} of type {value}"
+            raise ValueError(msg)
         Model.__init__(self, **kwargs)
