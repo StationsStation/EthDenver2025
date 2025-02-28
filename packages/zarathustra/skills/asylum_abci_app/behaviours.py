@@ -25,6 +25,8 @@ from enum import Enum
 from time import sleep
 from typing import Any, cast
 from pathlib import Path
+import functools
+from itertools import islice
 from datetime import UTC, datetime
 from textwrap import dedent
 
@@ -42,12 +44,21 @@ from packages.zarathustra.connections.openai_api.connection import (
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
 from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
-
+from packages.zarathustra.skills.asylum_abci_app import get_repo_root
 
 TIMEZONE_UTC = UTC
 
-MERMAID_DIAGRAMS = Path(__file__).parent / "mermaid_diagrams"
-THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
+MERMAID_DIAGRAMS = get_repo_root() / "specs" / "fsms" / "mermaid"
+
+
+@functools.lru_cache
+def create_one_shot_examples(logger, n_examples: int = 10) -> str:
+    example_data = []
+    for i, file in enumerate(islice(MERMAID_DIAGRAMS.glob("*"), n_examples)):
+        example_data.append(f"{i}. {file.stem}\n{file.read_text()}")
+    example_data = "\n\n".join(example_data)
+    logger.info(f"FSM Example Data: {example_data}")
+    return example_data
 
 
 USER_PERSONA_PROMPT = dedent("""
@@ -78,10 +89,21 @@ SYSTEM_PROMPT = dedent("""
     - If a message is nonsensical or gibberish, reply with a witty remark while echoing their message.
     - Always mention the user (@{username}) naturally in your response.
 
+    ### FSM Generation Guidelines:
+    When asked to design a Finite State Machine (FSM) for an application:
+    1. The FSM must always have a **happy path** leading to completion.
+    2. All happy path transitions must use **DONE** events.
+    3. Non-happy paths should account for failure, retries, or alternate flows.
+    4. Generate a valid **Mermaid diagram** representing the FSM.
+
+    ### Example FSMs:
+    {mermaid_diagram_examples}
+
     ### Rules:
     - **Always assume the identity of your real-world counterpart.**
     - **Never break character.**
     - **All responses must reflect the perspective of your real-world counterpart.**
+    - Ensure the FSM diagram is under 4,000 characters so it fits within Telegram's message limit. If needed, simplify state names or remove unnecessary transitions while keeping the happy path intact.
 """)
 
 
@@ -246,6 +268,8 @@ class RequestLLMResponseRound(BaseState):
             msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
             username = msg.from_user
+            recent_chat_history = self.strategy.current_telegram_thread
+            last_ten_messages = "\n\n".join(msg.text for msg in recent_chat_history)
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -261,7 +285,7 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
-                THIS_MERMAID_PATH.read_text()
+                mermaid_diagram_examples = create_one_shot_examples(self.context.logger)
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
                 user_persona = self.context.asylum_strategy.user_persona
@@ -273,6 +297,7 @@ class RequestLLMResponseRound(BaseState):
                             username=username,
                             github_username=github_username,
                             user_persona=user_persona,
+                            mermaid_diagram_examples=mermaid_diagram_examples,
                         ),
                     ),
                     Message(role=Role.USER, content=text_data, name=username),
