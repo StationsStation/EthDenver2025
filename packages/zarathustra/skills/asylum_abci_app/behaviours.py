@@ -432,10 +432,7 @@ class CheckLocalStorageRound(BaseState):
     def act(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
-        if self.strategy.from_config:
-            self.act_from_config()
-        else:
-            self.act_from_persona
+        self.act_from_persona()
 
     def act_from_persona(self):
         """Do the act."""
