@@ -7,14 +7,16 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
-  __init__.py: bafybeidpaoyquzetbgtclividyjmfooe4rvq4ilegugnk55j2e7nisa7ey
-  behaviours.py: bafybeibwi7qokcaho5pmn3kpt6qsudmg5mirbqdfnumpxseftlmlrzf2vm
+  __init__.py: bafybeib75iny5xnndewty7ua7m46unbsmvtkfphnlw7eizhuoewu3bcgjm
+  behaviours.py: bafybeicxhsw5kqqpoihnwiwqo5wfghk4b6vbqgp5mrrgbnxy5clg4fm6iy
+  behaviours.py.bak: bafybeiht5qlsbyalhnecdkuovc5pyhpgqwlugq3t6isrcnurcjtbacaegy
   dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
   handlers.py: bafybeic7qw5upeqzst2unbnfyuzo2uk2czaf3csic6viimudx7zy7l3acy
   mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
-  scraper.py: bafybeiaip4j5krhj6xd47bs5bu7jtlddy2swxtxonn5lnmqgamhro6pqda
-  strategy.py: bafybeib7dwjossjzvsrn2ryocxk4vvrgqmwyjt2hwhw3yq2nqkjxpifg7i
+  scraper.py: bafybeicwpc7xjhzuaplexfi5kmw2usv4cap3egjkxvqmyu2owyoaco3wm4
+  skill.yaml.bak: bafybeibcbisqpcmka6x2dbcucohupjlsyvgyjaail5bituxd722xn7odmm
+  strategy.py: bafybeicqt5x5nhfymraaqu47uwvpnu3zlzdztgnf7cjlpjt2txirokf37y
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
@@ -68,7 +70,10 @@ models:
       role: null
       github_username: null
       github_repositories: null
+      github_pat: null
     class_name: AgentPersona
-dependencies: {}
+dependencies:
+  pydantic: {}
+  autonomy-dev: {}
 is_abstract: false
 customs: []

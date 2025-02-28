@@ -163,7 +163,7 @@ class BaseState(State, ABC):
         self.data_dir = get_repo_root() / "data"
         if not self.data_dir.exists():
             self.data_dir.mkdir(parents=True)
-        self.github_scraper = GitHubScraper(data_dir=str(self.data_dir))
+        self.github_scraper = GitHubScraper(gh_pat=self.strategy.github_pat, data_dir=str(self.data_dir))
 
     def is_done(self) -> bool:
         """Is done flag."""

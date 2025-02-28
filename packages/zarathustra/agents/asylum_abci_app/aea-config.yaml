@@ -5,6 +5,8 @@ license: Apache-2.0
 description: ''
 aea_version: '>=1.55.0, <2.0.0'
 fingerprint:
+  install.sh: bafybeiboi5q654qnftkltuafcffpfpargibsqawp6uf6s7664onumypwya
+  tests/__init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
   tests/test_agent.py: bafybeib5bc55nvmuemamyb6ikkq6j4dl6yqq7bwtrtkgig2za3glxyekaq
 fingerprint_ignore_patterns: []
 connections:
@@ -22,7 +24,7 @@ protocols:
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- zarathustra/asylum_abci_app:0.1.0:bafybeihen73qnxkppgl2en2uyjjgnw4yvmsjjy4yirm3byku43qx5dm5xq
+- zarathustra/asylum_abci_app:0.1.0:bafybeiebcsocwgcrwjnkniroi6zq34ylknb4u7yqvhzokqd7lilbanwepi
 customs: []
 default_ledger: ethereum
 required_ledgers:
@@ -86,3 +88,4 @@ models:
       github_username: 8ball030
       github_repositories:
       - https://github.com/valory-xyz/open-autonomy
+      github_pat: ${str:ghp_1z2z3z4z5z6z7z8z9z0z}
