@@ -8,5 +8,5 @@ tasks:
   - id: '1'
     name: create_repo
     description: Create a new repository locally
-    command: echo hello
+    command: adev repo scaffold -n output/${kwargs.organisation}/${kwargs.repo_name}
     stream: False
