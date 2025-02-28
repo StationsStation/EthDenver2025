@@ -2,7 +2,7 @@ id: '1'
 name: workflow_create_new_agent_from_fsm
 description: A workflow to create a new agent from a finite state machine
 kwargs:
-  new_author: 
+  new_author: agent_asylum
   new_agent: agent_2
   new_skill: simple_fsm_2
   fsm_spec_path: auto_dev/data/fsm/samples/fsm_specification.yaml
@@ -37,11 +37,6 @@ tasks:
     command: adev publish ${kwargs.new_author}/${kwargs.new_agent}
     working_dir: ${kwargs.new_agent}
 
-  - id: '5'
-    name: Test the agent
-    description: Run the agent tests.
-    command: adev -v test -p packages/${kwargs.new_author}/agents/${kwargs.new_agent}
-
   - id: '6'
     name: Cleanup
     description: Clean up the agent.
@@ -52,4 +47,9 @@ tasks:
     description: Create a service from the agent.
     command: adev convert agent-to-service ${kwargs.new_author}/${kwargs.new_agent} ${kwargs.new_author}/${kwargs.new_agent}
   
+  - id: '8'
+    name: Generate gitignore
+    description: Ignore all third party files.
+    command: adev deps generate-gitignore
+    working_dir: ${kwargs.new_agent}
 
