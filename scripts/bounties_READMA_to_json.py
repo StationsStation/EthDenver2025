@@ -31,6 +31,10 @@ def parse_manually_curated_md_to_json() -> None:
         else: 
             assert in_sponsor_header_section
 
+    n_sponsors = len(sponsors)
+    n_bounties = sum(len(v) for k, v in sponsors.items())
+    print(f"Found {n_sponsors} sponsors, with a combined {n_bounties} bounties")
+
     json_data = json.dumps(sponsors, indent=4)
     outpath = path.parent /  "sponsor_bounties.json"
     outpath.write_text(json_data)
