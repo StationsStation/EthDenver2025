@@ -1,0 +1,53 @@
+id: '2'
+name: lint_and_fmt_workflow
+description: A workflow to lint and format code
+tasks:
+  - id: '0'
+    name: get_branch
+    description: get the current branch
+    command: git branch --show-current
+
+  - id: '1'
+    name: abort_if_main_or_master
+    description: Abort if the current branch is main or master
+    conditions: 
+    - '"${task.0.client.stdout}" == "main" or "${task.0.client.stdout}" == "master"'
+    command: exit 1
+
+  - id: '2'
+    name: lint_code
+    description: Lint the codebase
+    command: poetry run adev -v -n 0 lint -p . -co
+
+  - id: '3'
+    name: format_code
+    description: Format the codebase
+    command: poetry run adev -n 0 fmt -p . -co
+  
+  - id: '4'
+    name: Generate docs
+    description: Generate documentation
+    command: poetry run python scripts/generate_command_docs.py
+    stream: False
+  
+  - id: '5'
+    name: add_changes
+    description: Add changes to git 
+    command: git add auto_dev docs scripts tests
+
+  - id: '6'
+    name: commit_changes
+    description: Commit changes to git
+    command: git commit -m auto_dev:lint-and-format-code
+
+  - id: '7'
+    name: push_changes
+    description: Push changes to git
+    command: git push origin ${task.0.client.stdout}
+    pause_after: 5
+
+  - id: '9'
+    name: create_pull_request
+    description: Create a pull request on github in the main branch
+    command: gh pr create --base main --head ${task.0.client.stdout} --title auto_dev:lint-and-format-code --fill
+    pause_after: 5

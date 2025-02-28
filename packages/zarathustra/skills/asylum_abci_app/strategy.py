@@ -1,8 +1,8 @@
 """This package contains a scaffold of a model."""
 
 from enum import Enum
-from pathlib import Path
 from typing import Any
+from pathlib import Path
 from collections import deque
 
 from aea.skills.base import Model
@@ -40,7 +40,7 @@ class AsylumStrategy(Model):
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize dialogues."""
-        self.data_dir= Path(kwargs.pop("data_dir", "data"))
+        self.data_dir = Path(kwargs.pop("data_dir", "data"))
         self.user_persona = ""
         Model.__init__(self, **kwargs)
 
@@ -52,6 +52,8 @@ class AgentPersona(Model):
     role: str
     github_repositories: list[str]
     github_pat: str
+    sponsor: str
+    bounty: int
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize agent persona."""
@@ -59,8 +61,10 @@ class AgentPersona(Model):
             if key in kwargs:
                 value = kwargs[key]
                 if not value:
-                    raise ValueError(f"Missing required parameter: {key} of type {value}")
+                    msg = f"Missing required parameter: {key} of type {value}"
+                    raise ValueError(msg)
                 setattr(self, key, kwargs[key])
                 continue
-            raise ValueError(f"Missing required parameter: {key} of type {value}")
+            msg = f"Missing required parameter: {key} of type {value}"
+            raise ValueError(msg)
         Model.__init__(self, **kwargs)
