@@ -49,8 +49,7 @@ from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role
 TIMEZONE_UTC = UTC
 TELEGRAM_MSG_CHAR_LIMIT = 4_096
 MERMAID_DIAGRAMS = Path("specs") / "fsms" / "mermaid"
-BOUNTRY_REGEX_PATTERN = r"(?m)^\d PRIZE"
-SPONSOR_BOUNTY_DATA = Path("ethdenver-prizes.txt")
+SPONSOR_BOUNTY_DATA = Path("bounties") / "sponsor_bounties.json"
 
 
 @functools.lru_cache
@@ -65,10 +64,26 @@ def create_one_shot_examples(data_dir, logger, n_examples: int = 10) -> str:
 
 
 @functools.lru_cache
-def get_bounty_info(data_dir) -> list[str]:
+def get_all_bounty_info(data_dir: Path) -> dict[str, dict[str, str]]:
     """Get sponsor bounty data."""
     content = (data_dir / SPONSOR_BOUNTY_DATA).read_text()
-    return re.split(BOUNTRY_REGEX_PATTERN, content)
+    return json.loads(content)
+
+
+@functools.lru_cache
+def get_bounty_info(state: "RequestLLMResponseRound") -> str:
+    """Get sponsor-specific bounty-specific info"""
+    all_bounties = get_all_bounty_info(state.strategy.data_dir)
+    target_sponsor = state.agent_persona.sponsor
+    if not (sponsor_bounties := all_bounties.get(target_sponsor)):
+        raise ValueError(f"{target_sponsor} not in bounty info")
+    target_bounty: int = state.agent_persona.bounty
+    if not (bounty := next(islice(sponsor_bounties.items(), target_bounty, None))):
+        raise ValueError(f"Sponsor bounty index {target_bounty} out of range for {target_sponsor}")
+    bounty_key, description = bounty
+    state.context.logger.info(f"Bounty selected for {target_sponsor}: {bounty_key}\n{description}")
+    bounty_info = f"Sponsor: {target_sponsor}\nBounty: {bounty_key}\nDescription:{description}\n"
+    return bounty_info
 
 
 USER_PERSONA_PROMPT = dedent("""
@@ -245,6 +260,7 @@ class CheckTelegramQueueRound(BaseState):
 class RequestLLMResponseRound(BaseState):
     """This class implements the behaviour of the state RequestLLMResponseRound."""
 
+    sponsor_bounty_info: str = ""
     counterparty = str(OPENAI_API_CONNECTION_ID)
 
     def __init__(self, **kwargs: Any) -> None:
@@ -253,6 +269,7 @@ class RequestLLMResponseRound(BaseState):
 
     def act(self) -> None:  # noqa: PLR0914
         """Act."""
+        self.sponsor_bounty_info = get_bounty_info(self)
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {self.counterparty}")
         workflows = [f"-{f}" for f in self.strategy.workflows]
@@ -297,7 +314,6 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
-                sponsor_bounty_info = get_bounty_info(self.strategy.data_dir)[self.agent_persona.bounty]
                 mermaid_diagram_examples = create_one_shot_examples(self.strategy.data_dir, self.context.logger)
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
@@ -311,7 +327,7 @@ class RequestLLMResponseRound(BaseState):
                             github_username=github_username,
                             user_persona=user_persona,
                             telegram_msg_char_limit=TELEGRAM_MSG_CHAR_LIMIT,
-                            sponsor_bounty_info=sponsor_bounty_info,
+                            sponsor_bounty_info=self.sponsor_bounty_info,
                             mermaid_diagram_examples=mermaid_diagram_examples,
                         ),
                     ),
