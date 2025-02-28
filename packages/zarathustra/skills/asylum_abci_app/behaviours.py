@@ -19,7 +19,9 @@
 """This package contains the behaviours for the AsylumAbciApp."""
 
 import os
+import re
 import json
+import functools
 from abc import ABC
 from enum import Enum
 from time import sleep
@@ -27,6 +29,7 @@ from typing import Any, cast
 from pathlib import Path
 from datetime import UTC, datetime
 from textwrap import dedent
+from itertools import islice
 
 from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
@@ -45,9 +48,28 @@ from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role
 
 
 TIMEZONE_UTC = UTC
+TELEGRAM_MSG_CHAR_LIMIT = 4_096
+MERMAID_DIAGRAMS = get_repo_root() / "specs" / "fsms" / "mermaid"
+BOUNTRY_REGEX_PATTERN = r"(?m)^\d PRIZE"
+SPONSOR_BOUNTY_DATA = get_repo_root() / "ethdenver-prizes.txt"
 
-MERMAID_DIAGRAMS = Path(__file__).parent / "mermaid_diagrams"
-THIS_MERMAID_PATH = MERMAID_DIAGRAMS / "asylum_abci_app.mmd"
+
+@functools.lru_cache
+def create_one_shot_examples(logger, n_examples: int = 10) -> str:
+    """Create one shot training examples of Mermaid diagrams for FSMs."""
+    example_data = []
+    for i, file in enumerate(islice(MERMAID_DIAGRAMS.glob("*"), n_examples)):
+        example_data.append(f"{i}. {file.stem}\n{file.read_text()}")
+    example_data = "\n\n".join(example_data)
+    logger.info(f"FSM Example Data: {example_data}")
+    return example_data
+
+
+@functools.lru_cache
+def get_bounty_info() -> list[str]:
+    """Get sponsor bounty data."""
+    content = SPONSOR_BOUNTY_DATA.read_text()
+    return re.split(BOUNTRY_REGEX_PATTERN, content)
 
 
 USER_PERSONA_PROMPT = dedent("""
@@ -78,11 +100,29 @@ SYSTEM_PROMPT = dedent("""
     - If a message is nonsensical or gibberish, reply with a witty remark while echoing their message.
     - Always mention the user (@{username}) naturally in your response.
 
+    ### FSM Generation Guidelines:
+    When asked to design a Finite State Machine (FSM) for an application:
+    1. The FSM must always have a **happy path** leading to completion.
+    2. All happy path transitions must use **DONE** events.
+    3. Non-happy paths should account for failure, retries, or alternate flows.
+    4. Generate a valid **Mermaid diagram** representing the FSM.
+
+    ### Example FSMs:
+    {mermaid_diagram_examples}
+
+    ### Bounty Instructions:
+    This FSM is being designed as part of a **Web3 hackathon**. The hackathon focuses on decentralized technologies, smart contracts, blockchain automation, and autonomous agents.
+    The FSM **must align with the requirements** of the specific bounty. Review the bounty description carefully and ensure all **states, transitions, and logic** reflect its needs.
+
+    ### Bounty Details:
+    {sponsor_bounty_info}
+
     ### Rules:
     - **Always assume the identity of your real-world counterpart.**
     - **Never break character.**
     - **All responses must reflect the perspective of your real-world counterpart.**
-""")
+    - Ensure the FSM diagram is under {telegram_msg_char_limit} characters so it fits within Telegram's message limit. If needed, simplify state names or remove unnecessary transitions while keeping the happy path intact.
+""")  # noqa: E501
 
 
 class AsylumAbciAppEvents(Enum):
@@ -217,7 +257,7 @@ class RequestLLMResponseRound(BaseState):
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND
 
-    def act(self) -> None:
+    def act(self) -> None:  # noqa: PLR0914
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {self.counterparty}")
@@ -246,6 +286,8 @@ class RequestLLMResponseRound(BaseState):
             msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
             username = msg.from_user
+            recent_chat_history = self.strategy.current_telegram_thread
+            "\n\n".join(msg.text for msg in recent_chat_history)
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -261,7 +303,8 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
-                THIS_MERMAID_PATH.read_text()
+                sponsor_bounty_info = get_bounty_info()[12]
+                mermaid_diagram_examples = create_one_shot_examples(self.context.logger)
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
                 user_persona = self.context.asylum_strategy.user_persona
@@ -273,6 +316,9 @@ class RequestLLMResponseRound(BaseState):
                             username=username,
                             github_username=github_username,
                             user_persona=user_persona,
+                            telegram_msg_char_limit=TELEGRAM_MSG_CHAR_LIMIT,
+                            sponsor_bounty_info=sponsor_bounty_info,
+                            mermaid_diagram_examples=mermaid_diagram_examples,
                         ),
                     ),
                     Message(role=Role.USER, content=text_data, name=username),
@@ -311,6 +357,11 @@ class SendTelegramMessageRound(BaseState):
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.telegram_responses:
             msg = self.strategy.telegram_responses.pop()
+            if (msg_len := len(msg)) > TELEGRAM_MSG_CHAR_LIMIT:
+                msg = msg[:TELEGRAM_MSG_CHAR_LIMIT]
+                self.context.logger.warning(
+                    f"Shortened Telegram Message from {msg_len} to {TELEGRAM_MSG_CHAR_LIMIT} chars"
+                )
             self.context.logger.info(f"Sending message: {msg}")
             for peer in ["-1002323154632"]:
                 self.create_and_send(

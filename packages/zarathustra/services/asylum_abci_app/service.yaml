@@ -8,7 +8,7 @@ fingerprint:
   .env.example: bafybeigmgmwown66u7j5pqancojrc5ry2pwzmnlvqnwg2rfcjfi6irgplu
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeig3kukn5qcemkdbf3kbh3amnrrg3nrc5mrqjg4lkfuqsnju2d3zna
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeidfclbogip57ymyyzezaojx3r4qles5uyiojjk3ueo7afhhq6msuu
 number_of_agents: 1
 deployment:
   agent:
