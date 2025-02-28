@@ -24,7 +24,7 @@ protocols:
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- zarathustra/asylum_abci_app:0.1.0:bafybeiebcsocwgcrwjnkniroi6zq34ylknb4u7yqvhzokqd7lilbanwepi
+- zarathustra/asylum_abci_app:0.1.0:bafybeid3sswmdbxvdzswyka3aga7zjs36mtq5a2hnfu6ungbr2s5q72gzi
 customs: []
 default_ledger: ethereum
 required_ledgers:
@@ -77,7 +77,7 @@ public_id: eightballer/telegram_wrapper:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fe
 type: connection
 config:
   target_skill_id: zarathustra/asylum_abci_app:0.1.0
-  token: ${TELEGRAM_TOKEN:str:123}
+  token: ${CONNECTION_TELEGRAM_WRAPPER_CONFIG_TOKEN:str:121}
 ---
 public_id: zarathustra/asylum_abci_app:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
 type: skill
@@ -85,7 +85,10 @@ models:
   agent_persona:
     args:
       role: developer
-      github_username: 8ball030
+      github_username: ${SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_USERNAME:str:8ball030}
       github_repositories:
       - https://github.com/valory-xyz/open-autonomy
-      github_pat: ${str:ghp_1z2z3z4z5z6z7z8z9z0z}
+      github_pat: ${SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
+  asylum_strategy:
+    args:
+      data_dir: ${str:../data}

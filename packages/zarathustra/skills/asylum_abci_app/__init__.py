@@ -27,12 +27,3 @@ from aea.configurations.base import PublicId
 PUBLIC_ID = PublicId.from_str("zarathustra/asylum_abci_app:0.1.0")
 
 
-def get_repo_root() -> Path:
-    """Get repository root."""
-
-    return Path(__file__).parent.parent.parent.parent
-
-
-def snake_to_kebab(text: str) -> str:
-    """Snake to kebab-case."""
-    return text.replace("_", "-")

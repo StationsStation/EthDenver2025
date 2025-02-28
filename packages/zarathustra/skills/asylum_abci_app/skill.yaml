@@ -7,8 +7,8 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
-  __init__.py: bafybeib75iny5xnndewty7ua7m46unbsmvtkfphnlw7eizhuoewu3bcgjm
-  behaviours.py: bafybeicxhsw5kqqpoihnwiwqo5wfghk4b6vbqgp5mrrgbnxy5clg4fm6iy
+  __init__.py: bafybeiftuqbwwynaltg77awwhmjevaddg33ppy65j52cxtkd4bu4t3f62e
+  behaviours.py: bafybeidskyjo4ijd7dd4xgblnzq5zkczozrbkvggmqdm5jtxqibobxkxli
   behaviours.py.bak: bafybeiht5qlsbyalhnecdkuovc5pyhpgqwlugq3t6isrcnurcjtbacaegy
   dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
@@ -16,7 +16,7 @@ fingerprint:
   mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
   scraper.py: bafybeicwpc7xjhzuaplexfi5kmw2usv4cap3egjkxvqmyu2owyoaco3wm4
   skill.yaml.bak: bafybeibcbisqpcmka6x2dbcucohupjlsyvgyjaail5bituxd722xn7odmm
-  strategy.py: bafybeicqt5x5nhfymraaqu47uwvpnu3zlzdztgnf7cjlpjt2txirokf37y
+  strategy.py: bafybeidje7crifli644s46bii4mxuc3axmy7u57bloxvn4xvu5kmz2cqvu
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
@@ -63,14 +63,17 @@ models:
     args: {}
     class_name: LlmChatCompletionDialogues
   asylum_strategy:
-    args: {}
+    args:
+      data_dir: data
     class_name: AsylumStrategy
   agent_persona:
     args:
       role: null
-      github_username: null
-      github_repositories: null
+      github_username: 8ball030
+      github_repositories: []
       github_pat: null
+      sponsor: valory
+      bounty: 12
     class_name: AgentPersona
 dependencies:
   pydantic: {}
