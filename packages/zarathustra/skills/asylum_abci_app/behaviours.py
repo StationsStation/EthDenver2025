@@ -34,7 +34,6 @@ from itertools import islice
 from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
-from packages.zarathustra.skills.asylum_abci_app import get_repo_root
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
 from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
 from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AgentPersona, AsylumStrategy
@@ -49,16 +48,16 @@ from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role
 
 TIMEZONE_UTC = UTC
 TELEGRAM_MSG_CHAR_LIMIT = 4_096
-MERMAID_DIAGRAMS = get_repo_root() / "specs" / "fsms" / "mermaid"
+MERMAID_DIAGRAMS = Path("specs") / "fsms" / "mermaid"
 BOUNTRY_REGEX_PATTERN = r"(?m)^\d PRIZE"
-SPONSOR_BOUNTY_DATA = get_repo_root() / "ethdenver-prizes.txt"
+SPONSOR_BOUNTY_DATA = Path("ethdenver-prizes.txt")
 
 
 @functools.lru_cache
-def create_one_shot_examples(logger, n_examples: int = 10) -> str:
+def create_one_shot_examples(data_dir, logger, n_examples: int = 10) -> str:
     """Create one shot training examples of Mermaid diagrams for FSMs."""
     example_data = []
-    for i, file in enumerate(islice(MERMAID_DIAGRAMS.glob("*"), n_examples)):
+    for i, file in enumerate(islice(Path(data_dir / MERMAID_DIAGRAMS).glob("*"), n_examples)):
         example_data.append(f"{i}. {file.stem}\n{file.read_text()}")
     example_data = "\n\n".join(example_data)
     logger.info(f"FSM Example Data: {example_data}")
@@ -66,9 +65,9 @@ def create_one_shot_examples(logger, n_examples: int = 10) -> str:
 
 
 @functools.lru_cache
-def get_bounty_info() -> list[str]:
+def get_bounty_info(data_dir) -> list[str]:
     """Get sponsor bounty data."""
-    content = SPONSOR_BOUNTY_DATA.read_text()
+    content = (data_dir / SPONSOR_BOUNTY_DATA).read_text()
     return re.split(BOUNTRY_REGEX_PATTERN, content)
 
 
@@ -159,11 +158,6 @@ class BaseState(State, ABC):
         super().__init__(**kwargs)
         self._event = None
         self._is_done = False  # Initially, the state is not done
-
-        self.data_dir = get_repo_root() / "data"
-        if not self.data_dir.exists():
-            self.data_dir.mkdir(parents=True)
-        self.github_scraper = GitHubScraper(data_dir=str(self.data_dir))
 
     def is_done(self) -> bool:
         """Is done flag."""
@@ -303,8 +297,8 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
-                sponsor_bounty_info = get_bounty_info()[12]
-                mermaid_diagram_examples = create_one_shot_examples(self.context.logger)
+                sponsor_bounty_info = get_bounty_info(self.strategy.data_dir)[self.agent_persona.bounty]
+                mermaid_diagram_examples = create_one_shot_examples(self.strategy.data_dir, self.context.logger)
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
                 user_persona = self.context.asylum_strategy.user_persona
@@ -356,6 +350,7 @@ class SendTelegramMessageRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.telegram_responses:
+            bot_flag = f"🤖{self.context.agent_persona.github_username}🤖 says: "
             msg = self.strategy.telegram_responses.pop()
             if (msg_len := len(msg)) > TELEGRAM_MSG_CHAR_LIMIT:
                 msg = msg[:TELEGRAM_MSG_CHAR_LIMIT]
@@ -367,7 +362,7 @@ class SendTelegramMessageRound(BaseState):
                 self.create_and_send(
                     performative=TelegramMessage.Performative.MESSAGE,
                     chat_id=peer,
-                    text=msg,
+                    text=bot_flag + msg,
                 )
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
@@ -392,14 +387,18 @@ class ScrapeGithubRound(BaseState):
     def act(self) -> None:
         """Perform GitHub data collection."""
         self.context.logger.info(f"In state: {self._state}")
-        user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
+        data_dir = Path(self.strategy.data_dir)
+        if not data_dir.exists():
+            data_dir.mkdir(parents=True)
+        github_scraper = GitHubScraper(gh_pat=self.agent_persona.github_pat, data_dir=self.strategy.data_dir)
+        user_data = Path(self.strategy.data_dir) / self.agent_persona.github_username / "repos.json"
 
         try:
             if not user_data.exists():
                 usernames = [self.agent_persona.github_username]
                 repos = self.agent_persona.github_repositories
                 self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
-                all_user_data = self.github_scraper.scrape_user_interactions(
+                all_user_data = github_scraper.scrape_user_interactions(
                     usernames=usernames,
                     repos=repos,
                 )
@@ -432,7 +431,7 @@ class CheckLocalStorageRound(BaseState):
     def act(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
-        user_data = self.data_dir / self.agent_persona.github_username / "repos.json"
+        user_data = Path(self.strategy.data_dir) / self.agent_persona.github_username / "repos.json"
 
         if not user_data.exists() or not self.strategy.user_persona:
             self._is_done = True
@@ -577,7 +576,12 @@ class AsylumAbciAppFsmBehaviour(FSMBehaviour):
 
     def act(self) -> None:
         """Implement the act."""
-        super().act()
+        try:
+            super().act()
+        except Exception as e:
+            self.context.logger.exception(f"Error in AsylumAbciApp FSM: {e!s}")
+            self.context.logger.exception("Terminating AsylumAbciApp FSM.")
+            self.terminate()
         if self.current is None:
             self.context.logger.info("No state to act on.")
             self.terminate()

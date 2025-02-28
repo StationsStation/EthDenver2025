@@ -6,18 +6,52 @@ aea_version: '>=1.0.0, <2.0.0'
 license: apache-2.0
 fingerprint:
   .env.example: bafybeigmgmwown66u7j5pqancojrc5ry2pwzmnlvqnwg2rfcjfi6irgplu
+  __init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
+  tests/__init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeidfclbogip57ymyyzezaojx3r4qles5uyiojjk3ueo7afhhq6msuu
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeig2rrih4bn7mz5cemsljw6oylwvye7pkdhyxmzvvdeozi2a34kqw4
 number_of_agents: 1
 deployment:
   agent:
     ports: {}
-    volumes: {}
+    volumes:
+      ../../data: /data
 ---
-public_id: eightballer/http_server:0.1.0:bafybeicp3ubkonolxjgnwgqmaz624qduwzzz74fbjizu77lyvnpo77uv7u
+public_id: zarathustra/asylum_abci_app:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
+type: skill
+0:
+  models:
+    agent_persona:
+      args:
+        role: developer
+        github_username: 8ball030
+        github_repositories:
+        - https://github.com/valory-xyz/open-autonomy
+        github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
+    asylum_strategy:
+      args:
+        data_dir: /data
+1:
+  models:
+    agent_persona:
+      args:
+        role: developer
+        github_username: 8ball030
+        github_repositories:
+        - https://github.com/valory-xyz/open-autonomy
+        github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
+    asylum_strategy:
+      args:
+        data_dir: /data
+---
+public_id: eightballer/telegram_wrapper:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
 type: connection
-config:
-  host: 0.0.0.0
-  port: 8888
-  target_skill_id: zarathustra/asylum_abci_app:0.1.0
+0:
+  config:
+    target_skill_id: zarathustra/asylum_abci_app:0.1.0
+    token: ${TELEGRAM_TOKEN_1:str:1234}
+1:
+  config:
+    target_skill_id: zarathustra/asylum_abci_app:0.1.0
+    token: ${TELEGRAM_TOKEN_2:str:1235}
