@@ -72,8 +72,8 @@ models:
       github_username: 8ball030
       github_repositories: []
       github_pat: null
-      sponsor: valory
-      bounty: 12
+      sponsor: Olas
+      bounty: 0
     class_name: AgentPersona
 dependencies:
   pydantic: {}
