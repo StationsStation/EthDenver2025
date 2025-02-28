@@ -12,7 +12,8 @@
 *private_key*
 keys.json
 
-data/
+data/*
+!data/bounties/
 agent/
 service/
 /asylum_abci_app/
