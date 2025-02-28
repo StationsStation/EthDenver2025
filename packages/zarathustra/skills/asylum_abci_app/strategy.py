@@ -11,6 +11,7 @@ from packages.zarathustra.skills.asylum_abci_app import PydanticModel
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage
 
 
+MESSAGE_HISTORY_SIZE = 10
 MAX_QUEUE_LENGTH = 1_000
 
 
@@ -27,6 +28,7 @@ class AsylumStrategy(Model):
     user_persona: str
     new_users: deque[dict] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_telegram_messages: deque[ChatroomMessage] = deque(maxlen=MAX_QUEUE_LENGTH)
+    current_telegram_thread: deque[ChatroomMessage] = deque(maxlen=MESSAGE_HISTORY_SIZE)
     llm_responses: deque[tuple[LLMActions, str]] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_workflows: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
     telegram_responses: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
