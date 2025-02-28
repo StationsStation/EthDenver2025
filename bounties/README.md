@@ -1209,7 +1209,7 @@ HyperEVM Utilization: The dApp must demonstrably leverage the unique features an
 🎨 UI/UX Design Requirements
 User-Friendly dApp: Design an intuitive interface for navigating and using DeFi
 services.
--** Efficiency: **Prioritize efficiency in user flows. Enable one-click or minimal interaction for key DeFi actions like wallet management, and trading on HyperEVM.
+-** Efficiency: **Prioritize efficiency in user flows. Enable one-click or minimal interaction for key DeFi actions like wallet management, and trading on HyperEVM.**
 
 -** Data Visualization:** Include clear and informative dashboards or views for transaction history, performance metrics, or other relevant data.
 
@@ -1304,7 +1304,7 @@ Social or Trading Impact – Effectiveness in creating meaningful engagement or 
 **UX and Accessibility – Ease of onboarding and clarity of the AI-driven features and agent interactions.
 5. Documentation & Demo **– Quality of code, clarity of README, and effectiveness of video or live demo
 🌎 Impact on the organization
-This bounty will demonstrate Okto’s ability to support AI-powered applications and automate complex on-chain functionalities through delegated access. It will showcase the Okto SDK as a powerful tool for building real-world, user-centric applications that leverage the power of both AI and Web3.
+This bounty will demonstrate Okto’s ability to support AI-powered applications and automate complex on-chain functionalities through delegated access. It will showcase the Okto SDK as a powerful tool for building real-world, user-centric applications that leverage the power of both AI and Web3.**
 
 📚 Resources
 Okto SDK Builder's Guide: https://sustaining-pigment-5a3.notion.site/Developer-Resources-1900527461008079b345dc3dd9302ef6
@@ -1317,7 +1317,7 @@ Entry-gating communities based on NFTs or interests.
 💼 Recruitment Opportunities
 Okto is always on the lookout for exceptional talent to join our growing ecosystem. Winners may pitch for Okto Grants or explore roles with us. Stay updated about opportunities by joining our Developer Discord and contributing to the Okto ecosystem!
 
-### $5,000: AI Agent - Prize(s)
+$5,000: AI Agent - Prize(s)
 
 3 PRIZE
 
@@ -1382,12 +1382,12 @@ OP Labs will be working closely with application developers experimenting with I
 Resource Links: https://console.optimism.io/getting-started
 
 👀 Some example use cases
-Use Case: A trader wants to profit from price differences of the same token (e.g., ETH or SuperchainERC20 stablecoins) between DEX pools on ChainA and **ChainB. **
+Use Case: A trader wants to profit from price differences of the same token (e.g., ETH or SuperchainERC20 stablecoins) between DEX pools on ChainA and **ChainB.**
 
 Use Case: During volatile market conditions, token prices fluctuate rapidly between chains.
 Use Case: A trader wants to minimize gas fees and ensure arbitrage profits are net positive.
 
-### $5,000: SuperArbitrage: Leveraging the Superchain for profitable arbitrage. - Prize(s)
+$5,000: SuperArbitrage: Leveraging the Superchain for profitable arbitrage. - Prize(s)
 
 2 PRIZE
 
@@ -1455,7 +1455,7 @@ Use Case: A trader wants to swap ETH for a SuperchainERC20 token, such as USDs, 
 They initiate a swap on ChainA, and the protocol discovers better liquidity or pricing on ChainB.
 The protocol executes the swap on ChainB and transfers the tokens back to ChainA, optimizing both price and efficiency.
 
-### $5,000: SwapSmart with Superchain Interop - Prize(s)
+$5,000: SwapSmart with Superchain Interop - Prize(s)
 
 2 PRIZE
 
@@ -1508,7 +1508,7 @@ Resource Links: https://console.optimism.io/getting-started
 👀 Some example use cases
 Interop Devnets enable unique applications, a new way of thinking through whats possible with your application.
 
-### $5,000: Superchain flash loan - Prize(s)
+$5,000: Superchain flash loan - Prize(s)
 
 4 PRIZE
 
@@ -1587,7 +1587,7 @@ The user locks collateral (e.g., SuperchainERC20 stables) on their preferred cha
 Once voting ends, the app uses Superchain Interop to query the results from both ChainA and ChainB.
 The correct outcome is resolved, and payouts are distributed to winning users on their preferred chain.
 
-### $5,000: CrossPredict: Focused on cross-chain prediction. - Prize(s)
+$5,000: CrossPredict: Focused on cross-chain prediction. - Prize(s)
 
 2 PRIZE
 
@@ -1728,7 +1728,7 @@ The next killer telegram game.
 💼 Recruitment Opportunities
 Check out https://flow.com/careers for the latest job opportunities and postings.
 
-### $15,000: Most Killer App - Prize(s)
+$15,000: Most Killer App - Prize(s)
 
 3 PRIZE
 
@@ -4103,7 +4103,7 @@ It is a security bug competition/bounty for the DEX.
 💼 Recruitment Opportunities
 We are seeking talented Solidity engineers and Web3 front-end developers, with opportunities available for both remote and NYC-based roles.
 
-### $100,000: Total Bounty
+$100,000: Total Bounty
 
 
 
@@ -4920,9 +4920,9 @@ Meaningful Open Source Contribution,Early Stage Startup,Launch MVP on Testnet or
 
 🏆 Winner Breakdown
 
-### $3500 for first place
+$3500 for first place
 
-### $1500 for second
+$1500 for second
 
 📝 Requirements
 Participants must build a working blockchain-powered gaming application on Wire Network that leverages our Universal Transaction Layer. This can range from an NFT-based collectible game to a fully on-chain interactive experience. The solution should demonstrate the unique advantages of Wire’s cross-chain interoperability, scalability, or distinctive features like the Wire Name Service for player identities. Projects must deliver both technical excellence and a clear, engaging gameplay loop that showcases real value to users.
@@ -4969,9 +4969,9 @@ Meaningful Open Source Contribution,Early Stage Startup,Launch MVP on Testnet or
 
 🏆 Winner Breakdown
 
-### $3500 for first place
+$3500 for first place
 
-### $1500 for second
+$1500 for second
 
 📝 Requirements
 Participants must create a fully functional AI-driven agent or system that operates on Wire Network, demonstrating the agent’s ability to make autonomous decisions and execute actions on-chain. The solution could highlight how Wire’s gas-free transactions enable more frequent or nuanced operations, while also showcasing real utility for end-users. Submissions should include well-tested smart contracts, integration with AI or machine learning models, and clear documentation explaining how the agent learns, decides, and executes tasks within the Wire ecosystem.
@@ -5009,7 +5009,7 @@ $5,000: AI Agents - Prize(s)
 Feature Usage,Launch MVP on Testnet or Mainnet,Early Stage Startup,Meaningful Open Source Contribution
 
 💰 Prize Amount
-5000.0
+%5,000.0
 
 🥇 Number of Projects Awarded
 2.0
@@ -5354,9 +5354,9 @@ Feature Usage,Launch MVP on Testnet or Mainnet
 
 🏆 Winner Breakdown
 
-### $2,000 - For the best app
+$2,000 - For the best app
 
-### $1,000 - For three runners up
+$1,000 - For three runners up
 
 If we get less than four projects, or they're not meeting our criteria, the prize money might change. If no project meets our criteria enough to win, we'll explain why.
 
@@ -6132,11 +6132,10 @@ We are not sure what our total bounty prize money is, but our breakdown will be 
 
 Example Winner breakdown (if bounty $5,000):
 
-### $2,500
+$2,500
+$1,500
+$1,000
 
-### $1,500
-
-### $1,000
 📝 Requirements
 A working AI Agent or AI Agent plugin that allows a user of the agent to interact with the Euler protocol solely via actions taken by the agent. Primarily we're looking for basic interactions such as supplying into a specified vault, but a project that goes above and beyond would allow the agent to have some ownership over optimizing deposits, borrows, and yield amounts. An example to something similar would be BrahmaFi + Morpho agent as mentioned in this tweet - https://x.com/brahmafi/status/1881387071774048390?s=46
 
