@@ -31,7 +31,7 @@ class AsylumStrategy(Model):
     llm_responses: deque[tuple[LLMActions, str]] = deque(maxlen=MAX_QUEUE_LENGTH)
     pending_workflows: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
     telegram_responses: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
-    data_dir: str
+    data_dir: Path
 
     workflows = {
         "create_new_repo": "create_new_repo.yaml",
@@ -58,14 +58,8 @@ class AgentPersona(Model):
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize agent persona."""
-        for key, value in self.__annotations__.items():
-            if key in kwargs:
-                value = kwargs[key]
-                if not value:
-                    msg = f"Missing required parameter: {key} of type {value}"
-                    raise ValueError(msg)
-                setattr(self, key, kwargs[key])
-                continue
-            msg = f"Missing required parameter: {key} of type {value}"
-            raise ValueError(msg)
+        for key, anno in self.__annotations__.items():
+            if (value := kwargs.get(key)) is None:
+                raise ValueError(f"Missing required parameter: {key} of type {anno}")
+            setattr(self, key, value)
         Model.__init__(self, **kwargs)
