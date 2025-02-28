@@ -3,6 +3,10 @@ name: lint_and_fmt_workflow
 description: A workflow to lint and format code
 tasks:
   
+  - id: '0'
+    name: get_branch
+    description: get the current branch
+    command: git branch --show-current
   - id: '1'
     name: add_changes
     description: Add changes to git 
