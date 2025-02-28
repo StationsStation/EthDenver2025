@@ -457,29 +457,33 @@ class ExecuteProposedWorkflowRound(BaseState):
             workflow_name = self.strategy.pending_workflows.pop()
             workflow_path = Path(__file__).parent / "workflows" / self.strategy.workflows[workflow_name]
             try:
+                os.environ["GITHUB_PAT"] = self.agent_persona.github_pat
                 workflow = Workflow.from_file(workflow_path)
                 self.wf_manager.add_workflow(workflow)
-                self.wf_manager.run_workflow(workflow.id, display_process=False)
+                self.wf_manager.run_workflow(workflow.id, display_process=False, exit_on_failure=False)
                 self.context.logger.info(f"There are {len(self.strategy.llm_responses)} responses.")
 
             except Exception as e:
                 self.context.logger.exception(f"Error: {e}")
             finally:
+                # as we are sending to the user, we make this very very pretty using emjis and all.
                 result_str = dedent(f"""
-                Workflow id: {workflow.id}
-                Workflow name: {workflow.name}
-
+                {self.agent_persona.github_username} has successfully executed the workflow: {workflow_name} 🎉🎉🎉
+                ---
+                Workflow id:    {workflow.id}
+                Workflow name:  {workflow.name}
+                Workflow success: {"✅" if not workflow.is_success else "❌"}
+                ---
                 Total Tasks: {len(workflow.tasks)}
                 Completed Tasks: {len([f for f in workflow.tasks if f.is_done])}
                 Failed Tasks: {len([f for f in workflow.tasks if f.is_failed])}
                 Successful Tasks: {len([f for f in workflow.tasks if not f.is_failed])}
-
-                Workflow status: {workflow.is_done}
-                Workflow is success: {workflow.is_success}
+                ---
                 """)
                 for task in workflow.tasks:
                     result_str += dedent(
-                        f"""- Task({task.id}): {task.name}: {task.is_done} - Success: {task.is_failed}"""
+                        # we can do that so much better!
+                        f"""\n- {"✅" if task.is_done else "❌"} Task({task.id}): {task.name}"""
                     )
 
                 self.strategy.telegram_responses.append(result_str)
