@@ -19,7 +19,6 @@
 """This package contains the behaviours for the AsylumAbciApp."""
 
 import os
-import re
 import json
 import functools
 from abc import ABC
@@ -72,18 +71,19 @@ def get_all_bounty_info(data_dir: Path) -> dict[str, dict[str, str]]:
 
 @functools.lru_cache
 def get_bounty_info(state: "RequestLLMResponseRound") -> str:
-    """Get sponsor-specific bounty-specific info"""
+    """Get sponsor-specific bounty-specific info."""
     all_bounties = get_all_bounty_info(state.strategy.data_dir)
     target_sponsor = state.agent_persona.sponsor
     if not (sponsor_bounties := all_bounties.get(target_sponsor)):
-        raise ValueError(f"{target_sponsor} not in bounty info")
+        msg = f"{target_sponsor} not in bounty info"
+        raise ValueError(msg)
     target_bounty: int = state.agent_persona.bounty
     if not (bounty := next(islice(sponsor_bounties.items(), target_bounty, None))):
-        raise ValueError(f"Sponsor bounty index {target_bounty} out of range for {target_sponsor}")
+        msg = f"Sponsor bounty index {target_bounty} out of range for {target_sponsor}"
+        raise ValueError(msg)
     bounty_key, description = bounty
     state.context.logger.info(f"Bounty selected for {target_sponsor}: {bounty_key}\n{description}")
-    bounty_info = f"Sponsor: {target_sponsor}\nBounty: {bounty_key}\nDescription:{description}\n"
-    return bounty_info
+    return f"Sponsor: {target_sponsor}\nBounty: {bounty_key}\nDescription:{description}\n"
 
 
 USER_PERSONA_PROMPT = dedent("""
@@ -267,7 +267,7 @@ class RequestLLMResponseRound(BaseState):
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND
 
-    def act(self) -> None:  # noqa: PLR0914
+    def act(self) -> None:
         """Act."""
         self.sponsor_bounty_info = get_bounty_info(self)
         self.context.logger.info(f"In state: {self._state}")
@@ -464,7 +464,7 @@ class CheckLocalStorageRound(BaseState):
     def act_from_config(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
-        user_data = Path(self.strategy.data_dir) / SPONSOR_CONFIG_FILE
+        user_data = Path(self.strategy.data_dir)
 
         if not user_data.exists() or not self.strategy.user_persona:
             self._is_done = True

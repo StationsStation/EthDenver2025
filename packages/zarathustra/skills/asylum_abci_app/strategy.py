@@ -62,6 +62,7 @@ class AgentPersona(Model):
         """Initialize agent persona."""
         for key, anno in self.__annotations__.items():
             if (value := kwargs.get(key)) is None:
-                raise ValueError(f"Missing required parameter: {key} of type {anno}")
+                msg = f"Missing required parameter: {key} of type {anno}"
+                raise ValueError(msg)
             setattr(self, key, value)
         Model.__init__(self, **kwargs)
