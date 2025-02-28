@@ -47,7 +47,7 @@ from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role
 from packages.zarathustra.skills.asylum_abci_app import get_repo_root
 
 TIMEZONE_UTC = UTC
-
+TELEGRAM_MSG_CHAR_LIMIT = 4_096
 MERMAID_DIAGRAMS = get_repo_root() / "specs" / "fsms" / "mermaid"
 
 
@@ -103,7 +103,7 @@ SYSTEM_PROMPT = dedent("""
     - **Always assume the identity of your real-world counterpart.**
     - **Never break character.**
     - **All responses must reflect the perspective of your real-world counterpart.**
-    - Ensure the FSM diagram is under 4,000 characters so it fits within Telegram's message limit. If needed, simplify state names or remove unnecessary transitions while keeping the happy path intact.
+    - Ensure the FSM diagram is under {telegram_msg_char_limit} characters so it fits within Telegram's message limit. If needed, simplify state names or remove unnecessary transitions while keeping the happy path intact.
 """)
 
 
@@ -297,6 +297,7 @@ class RequestLLMResponseRound(BaseState):
                             username=username,
                             github_username=github_username,
                             user_persona=user_persona,
+                            telegram_msg_char_limit=TELEGRAM_MSG_CHAR_LIMIT,
                             mermaid_diagram_examples=mermaid_diagram_examples,
                         ),
                     ),
@@ -336,6 +337,9 @@ class SendTelegramMessageRound(BaseState):
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.telegram_responses:
             msg = self.strategy.telegram_responses.pop()
+            if (msg_len := len(msg)) > TELEGRAM_MSG_CHAR_LIMIT:
+                msg = msg[:TELEGRAM_MSG_CHAR_LIMIT]
+                self.context.logger.warning(f"Shortened Telegram Message from {msg_len} to {TELEGRAM_MSG_CHAR_LIMIT} chars")
             self.context.logger.info(f"Sending message: {msg}")
             for peer in ["-1002323154632"]:
                 self.create_and_send(
