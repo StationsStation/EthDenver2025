@@ -7,6 +7,7 @@ tasks:
     name: add_changes
     description: Add changes to git 
     command: git add packages
+    working_dir: ".."
 
   - id: '2'
     name: commit_changes

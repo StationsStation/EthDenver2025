@@ -36,6 +36,7 @@ class AsylumStrategy(Model):
     workflows = {
         "create_new_repo": "create_new_repo.yaml",
         "lint": "lint_repo.yaml",
+        "create_pr": "create_pr.yaml",
     }
 
     def __init__(self, **kwargs: Any) -> None:

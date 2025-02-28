@@ -285,7 +285,7 @@ class RequestLLMResponseRound(BaseState):
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
-                Hi there! I am a bot. I can help you with the following workflows;
+                Hi there! I am virtual {self.agent_persona.github_username} I can help you with the following workflows;
                 {workflows}
                 """)
                 response = response.format(workflows="\n".join(workflows))
