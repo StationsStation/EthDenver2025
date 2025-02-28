@@ -18,6 +18,7 @@
 
 """This package contains the behaviours for the AsylumAbciApp."""
 
+import re
 import os
 import json
 from abc import ABC
@@ -49,7 +50,8 @@ from packages.zarathustra.skills.asylum_abci_app import get_repo_root
 TIMEZONE_UTC = UTC
 TELEGRAM_MSG_CHAR_LIMIT = 4_096
 MERMAID_DIAGRAMS = get_repo_root() / "specs" / "fsms" / "mermaid"
-
+BOUNTRY_REGEX_PATTERN = r"(?m)^\d PRIZE"
+SPONSOR_BOUNTY_DATA = get_repo_root() / "ethdenver-prizes.txt"
 
 @functools.lru_cache
 def create_one_shot_examples(logger, n_examples: int = 10) -> str:
@@ -59,6 +61,12 @@ def create_one_shot_examples(logger, n_examples: int = 10) -> str:
     example_data = "\n\n".join(example_data)
     logger.info(f"FSM Example Data: {example_data}")
     return example_data
+
+
+@functools.lru_cache
+def get_bounty_info() -> list[str]:
+    content = SPONSOR_BOUNTY_DATA.read_text()
+    return re.split(BOUNTRY_REGEX_PATTERN, content)
 
 
 USER_PERSONA_PROMPT = dedent("""
@@ -98,6 +106,13 @@ SYSTEM_PROMPT = dedent("""
 
     ### Example FSMs:
     {mermaid_diagram_examples}
+
+    ### Bounty Instructions:
+    This FSM is being designed as part of a **Web3 hackathon**. The hackathon focuses on decentralized technologies, smart contracts, blockchain automation, and autonomous agents.
+    The FSM **must align with the requirements** of the specific bounty. Review the bounty description carefully and ensure all **states, transitions, and logic** reflect its needs.
+
+    ### Bounty Details:
+    {sponsor_bounty_info}
 
     ### Rules:
     - **Always assume the identity of your real-world counterpart.**
@@ -285,6 +300,7 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
+                sponsor_bounty_info = get_bounty_info()[12]
                 mermaid_diagram_examples = create_one_shot_examples(self.context.logger)
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
@@ -298,6 +314,7 @@ class RequestLLMResponseRound(BaseState):
                             github_username=github_username,
                             user_persona=user_persona,
                             telegram_msg_char_limit=TELEGRAM_MSG_CHAR_LIMIT,
+                            sponsor_bounty_info=sponsor_bounty_info,
                             mermaid_diagram_examples=mermaid_diagram_examples,
                         ),
                     ),
