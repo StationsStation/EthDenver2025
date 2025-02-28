@@ -12,10 +12,11 @@
 *private_key*
 keys.json
 
-data/*
-!data/bounties/
-agent/
-service/
+/data/*
+!/data/sponsor_config.yaml
+!/data/bounties/
+/agent/
+/service/
 /asylum_abci_app/
 
 packages/eightballer/protocols/default

@@ -447,7 +447,24 @@ class CheckLocalStorageRound(BaseState):
     def act(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
+        self.act_from_persona()
+
+    def act_from_persona(self):
+        """Do the act."""
+        self.context.logger.info(f"In state: {self._state}")
         user_data = Path(self.strategy.data_dir) / self.agent_persona.github_username / "repos.json"
+
+        if not user_data.exists() or not self.strategy.user_persona:
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.UPDATE_NEEDED
+        else:
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.DONE
+
+    def act_from_config(self):
+        """Do the act."""
+        self.context.logger.info(f"In state: {self._state}")
+        user_data = Path(self.strategy.data_dir) / SPONSOR_CONFIG_FILE
 
         if not user_data.exists() or not self.strategy.user_persona:
             self._is_done = True
