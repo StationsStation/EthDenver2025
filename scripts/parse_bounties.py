@@ -9,7 +9,7 @@ RAW_SPONSOR_BOUNTY_DATA_FILE = "ethdenver-prizes.txt"
 
 def get_bounty_info() -> None:
     """Parse raw scrape into raw markdown. Requires manual curation."""
-    repo_root = Path(__file__).parent.parent
+    repo_root = Path(__file__).parent.parent / "bounties"
     path = repo_root / RAW_SPONSOR_BOUNTY_DATA_FILE
     assert path.exists(), path
     content = path.read_text()
