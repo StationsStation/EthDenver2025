@@ -1,0 +1,56 @@
+# {project_name}
+
+**Authors:** {authors}
+
+## Overview  
+This repository contains the **Finite State Machine (FSM) specification**.
+The FSM is visually represented below using a Mermaid diagram.
+
+### **FSM Flowchart**
+```mermaid
+{mermaid_diagram}
+```
+
+## Recent Agent Conversation
+
+Below is a snippet of the last few messages exchanged, providing context for the FSM development:
+
+{agent_conversation}
+
+## Commands
+
+Here are common commands you might need while working with the project:
+
+### Formatting
+
+```shell
+make fmt
+```
+
+### Linting
+
+```shell
+make lint
+```
+
+### Testing
+
+```shell
+make test
+```
+
+### Locking
+
+```shell
+make hashes
+```
+
+### all
+
+```shell
+make all
+```
+
+## License
+
+This project is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
