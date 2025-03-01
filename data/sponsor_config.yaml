@@ -6,7 +6,27 @@ flow:
   repos:
   - https://github.com/onflow/fcl-js
   - https://github.com/onflow/flow-cli
-
+hedera:
+  devs:
+    - lbaird
+    - tinker-michaelj
+    - shemnon
+    - rbair23
+  repos:
+  - https://github.com/hiero-ledger/hiero-consensus-node
+  - https://github.com/hiero-ledger/hiero-block-node
+  - https://github.com/hiero-ledger/hiero-sdk-python
+  - https://github.com/tinker-michaelj/hedera-sdk-js
+  - https://github.com/hashgraph/hedera-smart-contracts
+internet_computer:
+  devs:
+  - kristoferlund
+  - ericswanson-dfinity
+  repos:
+  - https://github.com/kristoferlund/send_file_to_eth_demo
+  - https://github.com/kristoferlund/ic-eliza-eth-wallet-agent
+  - https://github.com/dfinity/dfxvm
+  - https://github.com/dfinity/sdk
 taraxa:
   devs:
   - VargaElod23
@@ -26,28 +46,7 @@ story:
   repos:
   - https://github.com/piplabs/story
   - https://github.com/storyprotocol/protocol-core-v1
-hedera:
-  devs:
-    - lbaird
-    - tinker-michaelj
-    - shemnon
-    - rbair23
-  repos:
-  - https://github.com/hiero-ledger/hiero-consensus-node
-  - https://github.com/hiero-ledger/hiero-block-node
-  - https://github.com/hiero-ledger/hiero-sdk-python
-  - https://github.com/tinker-michaelj/hedera-sdk-js
-  - https://github.com/hashgraph/hedera-smart-contracts
 
-icp:
-  devs:
-  - kristoferlund
-  - ericswanson-dfinity
-  repos:
-  - https://github.com/kristoferlund/send_file_to_eth_demo
-  - https://github.com/kristoferlund/ic-eliza-eth-wallet-agent
-  - https://github.com/dfinity/dfxvm
-  - https://github.com/dfinity/sdk
 optimism:
   devs:
   - karlfloersch
