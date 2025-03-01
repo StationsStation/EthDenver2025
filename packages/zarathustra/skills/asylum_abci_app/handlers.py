@@ -133,9 +133,7 @@ class LlmChatCompletionHandler(Handler):
                 mermaid: str = fsm_spec.to_mermaid().strip()
                 fsm_spec: str = fsm_spec.to_string().strip()
                 out_path = (
-                    self.context.asylum_strategy.data_dir
-                    / sponsor.replace(" ", "_").lower()
-                    / f"bounty_{bounty}"
+                    self.context.asylum_strategy.data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
                 )
                 out_path.mkdir(exist_ok=True, parents=True)
                 fsm_out_path = out_path / "fsm_specification.yaml"
