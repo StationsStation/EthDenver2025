@@ -139,7 +139,7 @@ class LlmChatCompletionHandler(Handler):
                 mermaid: str = fsm_spec.to_mermaid().strip()
                 fsm_spec: str = fsm_spec.to_string().strip()
                 out_path = (
-                    self.context.asylum_strategy.data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
+                    self.context.asylum_strategy.output_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
                 )
                 out_path.mkdir(exist_ok=True, parents=True)
                 fsm_out_path = out_path / "fsm_specification.yaml"
@@ -148,6 +148,7 @@ class LlmChatCompletionHandler(Handler):
                 mermaid_out_path.write_text(mermaid)
                 emoji = secrets.choice("😎😁😍🫡🦾")
                 text += f"\n\nI verified the Mermaid diagram, and it constitutes a valid FSM! {emoji}"
+                self.context.logger.info(f"FSM spec saved to {fsm_out_path} and diagram to {mermaid_out_path}")
             except Exception as e:  # noqa: BLE001
                 emoji = secrets.choice("😅😓😕🙈😇😞😒😤😱😨😩🙏🦾")
                 text += (

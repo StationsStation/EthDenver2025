@@ -34,7 +34,8 @@ from contextlib import chdir
 from git import Repo
 from aea.skills.behaviours import State, FSMBehaviour
 from auto_dev.commands.repo import scaffold_new_repo, create_github_repo
-from auto_dev.workflow_manager import Workflow, WorkflowManager
+from aea.configurations.base import PublicId
+from auto_dev.workflow_manager import Task, Workflow, WorkflowManager
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
 from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
@@ -481,7 +482,70 @@ class CheckLocalStorageRound(BaseState):
     def act(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
+
+        sponsor = self.agent_persona.sponsor.lower().replace(" ", "_")
+        bounty = str(self.agent_persona.bounty)
+        out_path = self.context.asylum_strategy.output_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
+        fsm_out_path = out_path / "fsm_specification.yaml"
+        agent_dir = out_path / "packages" / "agent_asylum"
+        if fsm_out_path.exists() and not agent_dir.exists():
+            self.context.logger.info(f"FSM specification exists for {sponsor} bounty {bounty}!")
+            self._run_scaffold_workflow(out_path, sponsor, bounty)
+            self._is_done = True
+            self._event = AsylumAbciAppEvents.DONE
+            return
         self.act_from_persona()
+
+    def _run_scaffold_workflow(self, out_path: Path, sponsor: str, bounty: str):
+        """We run the scaffold workflow."""
+        with chdir(str(out_path)):
+            self.context.logger.info(f"Running scaffold workflow for {out_path}")
+            workflow_name = "create_from_fsm"
+            workflow_path = Path(__file__).parent / "workflows" / self.strategy.workflows[workflow_name]
+            wf = Workflow.from_file(workflow_path)
+            new_public_id = PublicId.from_str(f"agent_asylum/{sponsor}_{bounty}")
+            kwargs = {
+                "new_author": new_public_id.author,
+                "new_agent": new_public_id.name,
+                "new_skill": new_public_id.name,
+                "sponsor": sponsor,
+                "bounty": bounty,
+            }
+            wf.kwargs.update(kwargs)
+            wf_manager = WorkflowManager()
+            wf_manager.add_workflow(wf)
+            wf_manager.run_workflow(wf.id, exit_on_failure=False, display_process=False)
+
+            repo = Repo(".")
+            # We create a branch for the new FSM
+            branch_name = f"feature/{sponsor}_{bounty}@{datetime.now(tz=TIMEZONE_UTC).strftime('%Y%m%d%H%M%S')}"
+            repo.git.checkout("-b", branch_name)
+            repo.git.add(".")
+
+            commit_msg = f"Add FSM for {sponsor} bounty {bounty}"
+            repo.git.commit("-m", commit_msg)
+            repo.git.push("origin", branch_name)
+            self.context.logger.info(f"Pushed branch {branch_name} to origin")
+            # We now execute a pr into main
+            title = f"Add FSM for {sponsor} bounty {bounty} at {datetime.now(tz=UTC).strftime('%Y%m%d%H%M%S')}"
+
+            body = f"""
+            This PR adds the FSM for {sponsor} bounty {bounty}.
+            Scaffolded using the create_from_fsm workflow.
+            Please give the repo some love!
+            """
+
+            task = Task(
+                command=f"gh pr create --title '{title}' --body '{body}' --base main --head {branch_name}",
+            ).work()
+            if task.is_failed:
+                error_msg = f"Failed to create PR for {sponsor} bounty {bounty}"
+                self.context.logger.error(error_msg)
+                self.strategy.llm_responses.append((LLMActions.REPLY, error_msg))
+            else:
+                success_msg = f"PR created successfully for {sponsor} bounty {bounty}. "
+                self.context.logger.info(f"PR created successfully for {sponsor} bounty {bounty}")
+                self.strategy.llm_responses.append((LLMActions.REPLY, success_msg))
 
     def act_from_persona(self):
         """Do the act."""
@@ -546,7 +610,7 @@ class CheckLocalStorageRound(BaseState):
                     Repo {repo_name} created successfully! 🎉🎉🎉
                     You can find it at: {response.get("html_url")}
                     """
-                    self.strategy.llm_responses.append(msg)
+                    self.strategy.llm_responses.append((LLMActions.REPLY, msg))
 
 
 class ExecuteProposedWorkflowRound(BaseState):

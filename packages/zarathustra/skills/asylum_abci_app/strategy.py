@@ -40,6 +40,7 @@ class AsylumStrategy(Model):
         "create_new_repo": "create_new_repo.yaml",
         "lint": "lint_repo.yaml",
         "create_pr": "create_pr.yaml",
+        "create_from_fsm": "create_from_fsm.yaml",
     }
 
     def __init__(self, **kwargs: Any) -> None:
