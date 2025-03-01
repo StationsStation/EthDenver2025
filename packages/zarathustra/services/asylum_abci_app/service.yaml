@@ -39,10 +39,8 @@ type: skill
     agent_persona:
       args:
         role: developer
-        github_username: aliserag
-        github_repositories:
-        - https://github.com/onflow/fcl-js
-        - https://github.com/onflow/flow-cli
+        github_username: ${DEV_NAME_1:str:8ball030}
+        github_repositories: ${DEV_REPOS_1:list:["https://github.com/valory-xyz/open-autonomy"]}
         github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
         sponsor: ${SPONSOR:str:flow}
         bounty: ${BOUNTY:int:0}
@@ -55,10 +53,8 @@ type: skill
     agent_persona:
       args:
         role: developer
-        github_username: jribbink
-        github_repositories:
-        - https://github.com/onflow/fcl-js
-        - https://github.com/onflow/flow-cli
+        github_username: ${DEV_NAME_2:str:8ball030}
+        github_repositories: ${DEV_REPOS_2:list:["https://github.com/valory-xyz/open-autonomy"]}
         github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
         sponsor: ${SPONSOR:str:flow}
         bounty: ${BOUNTY:int:0}
@@ -70,10 +66,8 @@ type: skill
     agent_persona:
       args:
         role: developer
-        github_username: seanrobb
-        github_repositories:
-        - https://github.com/onflow/fcl-js
-        - https://github.com/onflow/flow-cli
+        github_username: ${DEV_NAME_2:str:8ball030}
+        github_repositories: ${DEV_REPOS_2:list:["https://github.com/valory-xyz/open-autonomy"]}
         github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
         sponsor: ${SPONSOR:str:flow}
         bounty: ${BOUNTY:int:0}
