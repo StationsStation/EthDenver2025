@@ -23,6 +23,7 @@ import re
 import json
 import secrets
 from typing import cast
+from pathlib import Path
 
 from aea.skills.base import Handler
 from auto_dev.fsm.fsm import FsmSpec
@@ -50,12 +51,38 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
 )
 
 
+BOT_PATTERN = re.compile(r"(🤖.*?🤖)")
 MERMAID_PATTERN = re.compile(r"```mermaid\s*([\s\S]+?)\s*```")
 
 
 def chunk_text(text: str, max_chars: int = TELEGRAM_MSG_CHAR_LIMIT):
     """Splits `text` into chunks of at most `max_chars`."""
     return (text[i : i + max_chars] for i in range(0, len(text), max_chars))
+
+
+def create_readme(context, mermaid: str, out_path: Path):
+    data_dir = context.asylum_strategy.data_dir
+    template_file = data_dir / "README.md.template"
+    content = template_file.read_text()
+    # TODO: get_bounty_info
+    authors = set()
+    messages = []
+    for text in context.asylum_strategy.chat_history:
+        if (bot_match := BOT_PATTERN.search(text)):
+            authors.add(bot_match.group(1))
+            messages.append(text)
+        else:
+            authors.add("Human")
+            messages.append(f"Human agent says:\n{text}")
+    agent_conversation = "\n\n".join(f"{i}. {msg}" for i, msg in enumerate(messages))
+    formatted_readme = content.format(
+        project_name="TODO",
+        authors=", ".join(authors),
+        mermaid_diagram=mermaid,
+        agent_conversation=agent_conversation,
+    )
+    out_file = out_path / template_file.stem
+    out_file.write_text(formatted_readme)
 
 
 class TelegramHandler(Handler):
@@ -83,7 +110,7 @@ class TelegramHandler(Handler):
 
         self.context.logger.info(f"received telegram message={telegram_msg.from_user}, content={telegram_msg.text}")
         self.strategy.pending_telegram_messages.append(telegram_msg)
-        self.strategy.current_telegram_thread.append(telegram_msg)
+        self.strategy.chat_history.append(telegram_msg.text)
 
     @property
     def strategy(self):
@@ -130,6 +157,7 @@ class LlmChatCompletionHandler(Handler):
             self.context.asylum_strategy.user_persona = text
 
         if mermaid_match := MERMAID_PATTERN.search(text):
+            data_dir = self.context.asylum_strategy.data_dir
             sponsor = self.context.agent_persona.sponsor
             bounty = self.context.agent_persona.bounty
             try:
@@ -138,12 +166,11 @@ class LlmChatCompletionHandler(Handler):
                 fsm_spec.label = f"{sponsor.replace(' ', '')}{bounty}AbciApp"
                 mermaid: str = fsm_spec.to_mermaid().strip()
                 fsm_spec: str = fsm_spec.to_string().strip()
-                out_path = (
-                    self.context.asylum_strategy.data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
-                )
+                out_path = data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
                 out_path.mkdir(exist_ok=True, parents=True)
                 fsm_out_path = out_path / "fsm_specification.yaml"
                 mermaid_out_path = out_path / "diagram.mmd"
+                create_readme(self.context, mermaid, out_path)
                 fsm_out_path.write_text(fsm_spec)
                 mermaid_out_path.write_text(mermaid)
                 emoji = secrets.choice("😎😁😍🫡🦾")
@@ -155,6 +182,8 @@ class LlmChatCompletionHandler(Handler):
                     f"Let's iterate until it is valid! {emoji}"
                 )
 
+        bot_flag = f"🤖{self.context.agent_persona.github_username}🤖 says: "
+        self.context.asylum_strategy.chat_history.append(bot_flag + "\n" + text)
         for chunk in chunk_text(text):
             self.strategy.llm_responses.append((LLMActions.REPLY, chunk))
 
