@@ -19,7 +19,7 @@ fingerprint:
   tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
   tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
-  workflows/create_from_fsm.yaml: bafybeidoevq4rlnqrbeyjwgavrtu65vro3qf472b3y2tuedzbns5ivxxxe
+  workflows/create_from_fsm.yaml: bafybeigsdx6ap2dgtkuyexfm2ejyozdbnacyanceu7qtdowyagkla3jodq
   workflows/create_new_repo.yaml: bafybeiepswiusslvve7zfts5b5ka5xfps6rew6uajp7lzxbrisiqbpnks4
   workflows/create_pr.yaml: bafybeic4ka22fiy3gv452av5n3533w7wqixd2mnui57e3ov6byqj6z3c5i
   workflows/lint_repo.yaml: bafybeia6wjum3mo475l5msz2qieicpgdysx2dnom3itdfvrd5bk5pmccqa

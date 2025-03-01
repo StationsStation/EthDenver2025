@@ -55,7 +55,6 @@ def create_envs_from_bounties(bounty_id: int, sponsor: str):
 
     total_bounties = 0
     print(f"Total Sponsors: {len(bounties)}")
-    personalied_envs = []
     for sponsor, bounties in bounties.items():
         breakpoint()
         for bounty in bounties:
