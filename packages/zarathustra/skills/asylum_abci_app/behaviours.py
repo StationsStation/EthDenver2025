@@ -46,7 +46,7 @@ from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role
 
 
 TIMEZONE_UTC = UTC
-TELEGRAM_MSG_CHAR_LIMIT = 4_096
+TELEGRAM_MSG_CHAR_LIMIT = 4_000
 MERMAID_DIAGRAMS = Path("specs") / "fsms" / "mermaid"
 SPONSOR_BOUNTY_DATA = Path("bounties") / "sponsor_bounties.json"
 
@@ -328,8 +328,7 @@ class RequestLLMResponseRound(BaseState):
             msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
             username = msg.from_user
-            recent_chat_history = self.strategy.current_telegram_thread
-            "\n\n".join(msg.text for msg in recent_chat_history)
+            # We could retrieve chat history and add to prompt
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -397,7 +396,6 @@ class SendTelegramMessageRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.telegram_responses:
-            bot_flag = f"🤖{self.context.agent_persona.github_username}🤖 says: "
             msg = self.strategy.telegram_responses.pop()
             if (msg_len := len(msg)) > TELEGRAM_MSG_CHAR_LIMIT:
                 msg = msg[:TELEGRAM_MSG_CHAR_LIMIT]
@@ -409,7 +407,7 @@ class SendTelegramMessageRound(BaseState):
                 self.create_and_send(
                     performative=TelegramMessage.Performative.MESSAGE,
                     chat_id=peer,
-                    text=bot_flag + msg,
+                    text=msg,
                 )
         self._is_done = True
         self._event = AsylumAbciAppEvents.DONE
@@ -549,7 +547,8 @@ class ExecuteProposedWorkflowRound(BaseState):
                         # we can do that so much better!
                         f"""\n{"✅" if not task.is_failed else "❌"} Task({task.id}): {task.name}"""
                     )
-
+                bot_flag = f"🤖{self.context.agent_persona.github_username}🤖 says: "
+                result_str = bot_flag + "\n" + result_str
                 self.strategy.telegram_responses.append(result_str)
 
                 self._is_done = True
