@@ -1,5 +1,11 @@
 <img src="agent_asylum_logo.png" width="1000">
 
+> **Powered by:**
+> - [Open-Autonomy](https://docs.olas.network/open-autonomy/)
+> - [Autonomy Dev](https://8ball030.github.io/auto_dev/)
+
+---
+
 You’re drowning in tasks, distractions, and ideas you don’t have time to build. What if you had a **digital twin**—not just a chatbot, not just an assistant, but an **actual extension of yourself**?
 
 A system that **works like you, thinks like you (but faster), and collaborates with other agents to get things done.**
@@ -67,6 +73,10 @@ Decentralization isn’t about removing people from the equation. **It’s about
 
 And with agents by our side, **human autonomy is more potent than ever**.
 
+### Generated Projects
+
+Explore the projects built by our digital doppelgängers during ETHDenver 2025 #BUIDLathon [here](output).
+
 ---
 
 ## **Getting Started**
@@ -75,10 +85,11 @@ And with agents by our side, **human autonomy is more potent than ever**.
 
 - [git version 2.48.1](https://git-scm.com/downloads)
 - [GNU Make 4.4.1](https://www.gnu.org/software/make/)
+- [Poetry 3.11](https://www.python.org/)
 - [Poetry 2.1.1](https://python-poetry.org/)
 - [Docker 27.5.1](https://www.docker.com/)
 
-### Installation and Setup for Development
+### Installation and Running the Agent Asylum
 
 If you're looking to contribute or develop with `agent_asylum`, get the source code and set up the environment:
 
@@ -104,22 +115,43 @@ And make sure the correct environmental variables are set:
 - `AKASH_API_KEY`: obtainable via [Akash](https://akash.network/)
 - `SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_PAT`: Your github token
 - `SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_USERNAME`: Your github username
+- `SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_REPOSITORIES`: List of github URLs referencing relevant projects
+- `SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_SPONSOR`: One of the sponsors listed in the [sponsor_bounties.json](data/bounties/sponsor_bounties.json)
+- `SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_BOUNTY`: index of the bounty for that sponsor you're targetting
 - `CONNECTION_TELEGRAM_WRAPPER_CONFIG_TOKEN`: Telegram bot token (via [@Botfather](https://core.telegram.org/bots/features#botfather))
 
-Then, you should be all ready to fire up
+Then, you should be all ready to fire up 🦾🤖.
 
 ```shell
-adev run dev zarathustra/asylum_abci_app:0.1.0 --force
+adev run dev zarathustra/asylum_abci_app:0.1.0
 ```
 
-When running a single agent, Tendermint can be disabled:
+The `--force` flag provides a convenient way to restart from scratch in any subsequent runs. When running a single agent, Tendermint can be also disabled:
 
 ```shell
 adev run dev zarathustra/asylum_abci_app:0.1.0 --force --no-use-tendermint
 ```
 
+For a multi-agent setup there is [a script provided](scripts/create_envs_from_bounties.py) to help you setup the `.env` file.
 
-## Commands
+In case you did not use the `--no-use-tendermint`, be aware that a docker container running Tendermint has been spun up, which you want to stop once you're done playing around in the Agent Asylum for the day.
+
+### Environment Variables
+
+In case of issues with the environmental variable loading, exporting them directly appears to offer the simplest solution at this time.
+
+For those working with `bash`/`zsh`:
+
+```bash
+export $(grep -v '^#' .env | xargs)
+```
+
+For non-posix compliant `fish` users:
+```fish
+while read -l line; if string match -qr '^[^#]*=' -- $line; set -gx (string split -m1 '=' $line); end; end < .env
+```
+
+## Commands for Development
 
 Here are common commands you might need while working with the project:
 

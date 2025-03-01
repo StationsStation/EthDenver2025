@@ -22,7 +22,7 @@ open-aea = "==1.64.0"
 open-aea-cli-ipfs = "==1.64.0"
 open-aea-test-autonomy = "==0.19.4"
 open-autonomy = "==0.19.4"
-autonomy-dev = {version = "==0.2.140", extras = ["all"]}
+autonomy-dev = {version = "==0.2.141", extras = ["all"]}
 python-telegram-bot = "<=21"
 rich = "^13.9.4"
 openai = "^1.64.0"
