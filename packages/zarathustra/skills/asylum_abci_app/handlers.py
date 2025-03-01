@@ -60,6 +60,7 @@ def chunk_text(text: str, max_chars: int = TELEGRAM_MSG_CHAR_LIMIT):
 
 
 def create_readme(context, mermaid: str, fsm_spec, out_path: Path):
+    """Create README.md for newly created project repository."""
     data_dir = context.asylum_strategy.data_dir
     template_file = data_dir / "README.md.template"
     content = template_file.read_text()
@@ -68,7 +69,7 @@ def create_readme(context, mermaid: str, fsm_spec, out_path: Path):
     authors = set()
     messages = []
     for text in context.asylum_strategy.chat_history:
-        if (bot_match := BOT_PATTERN.search(text)):
+        if bot_match := BOT_PATTERN.search(text):
             authors.add(bot_match.group(1))
             messages.append(text)
         else:
@@ -130,7 +131,7 @@ class LlmChatCompletionHandler(Handler):
 
     SUPPORTED_PROTOCOL = LlmChatCompletionMessage.protocol_id
 
-    def handle(self, message: Message) -> None:
+    def handle(self, message: Message) -> None:  # noqa: PLR0914
         """Implement the reaction to an envelope."""
 
         llm_chat_completion_msg = cast(LlmChatCompletionMessage, message)
