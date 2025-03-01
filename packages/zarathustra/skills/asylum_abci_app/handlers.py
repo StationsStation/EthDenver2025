@@ -19,10 +19,13 @@
 
 """This module contains the handler for the 'metrics' skill."""
 
+import re
 import json
+import secrets
 from typing import cast
 
 from aea.skills.base import Handler
+from auto_dev.fsm.fsm import FsmSpec
 from aea.protocols.base import Message
 
 from packages.eightballer.protocols.default import DefaultMessage
@@ -44,6 +47,9 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
     LlmChatCompletionDialogues,
 )
+
+
+MERMAID_PATTERN = re.compile(r"```mermaid\s*([\s\S]+?)\s*```")
 
 
 class TelegramHandler(Handler):
@@ -116,6 +122,33 @@ class LlmChatCompletionHandler(Handler):
         text = llm_chat_completion.choices[0].message.content
         if not self.context.asylum_strategy.user_persona:
             self.context.asylum_strategy.user_persona = text
+
+        if mermaid_match := MERMAID_PATTERN.search(text):
+            sponsor = self.context.agent_persona.sponsor
+            bounty = self.context.agent_persona.bounty
+            try:
+                fsm_spec = FsmSpec.from_mermaid(mermaid_match.group(1))
+                fsm_spec.validate()
+                fsm_spec.label = f"{sponsor.replace(' ', '')}{bounty}AbciApp"
+                mermaid: str = fsm_spec.to_mermaid().strip()
+                fsm_spec: str = fsm_spec.to_string().strip()
+                out_path = (
+                    self.context.asylum_strategy.data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
+                )
+                out_path.mkdir(exist_ok=True, parents=True)
+                fsm_out_path = out_path / "fsm_specification.yaml"
+                mermaid_out_path = out_path / "diagram.mmd"
+                fsm_out_path.write_text(fsm_spec)
+                mermaid_out_path.write_text(mermaid)
+                emoji = secrets.choice("😎😁😍🫡🦾")
+                text += f"\n\nI verified the Mermaid diagram, and it constitutes a valid FSM! {emoji}"
+            except Exception as e:  # noqa: BLE001
+                emoji = secrets.choice("😅😓😕🙈😇😞😒😤😱😨😩🙏🦾")
+                text += (
+                    f"\n\nSadly, the FSM spec verification failed 😞\nError: {e}\n"
+                    f"Let's iterate until it is valid! {emoji}"
+                )
+
         self.strategy.llm_responses.append((LLMActions.REPLY, text))
 
     @property

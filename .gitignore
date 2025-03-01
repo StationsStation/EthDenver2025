@@ -15,6 +15,7 @@ keys.json
 /data/*
 !/data/sponsor_config.yaml
 !/data/bounties/
+!/data/specs/
 /agent/
 /service/
 /asylum_abci_app/
