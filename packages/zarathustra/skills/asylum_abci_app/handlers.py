@@ -128,6 +128,7 @@ class LlmChatCompletionHandler(Handler):
             bounty = self.context.agent_persona.bounty
             try:
                 fsm_spec = FsmSpec.from_mermaid(mermaid_match.group(1))
+                fsm_spec.validate()
                 fsm_spec.label = f"{sponsor.replace(' ', '')}{bounty}AbciApp"
                 mermaid: str = fsm_spec.to_mermaid().strip()
                 fsm_spec: str = fsm_spec.to_string().strip()
