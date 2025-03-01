@@ -405,7 +405,9 @@ class SendTelegramMessageRound(BaseState):
         """Act."""
         self.context.logger.info(f"In state: {self._state}")
         while self.strategy.telegram_responses:
-            msg = self.strategy.telegram_responses.pop()
+            bot_flag = f"🤖{self.context.agent_persona.github_username}🤖 says: "
+            msg = bot_flag + self.strategy.telegram_responses.pop()
+
             if (msg_len := len(msg)) > TELEGRAM_MSG_CHAR_LIMIT:
                 msg = msg[:TELEGRAM_MSG_CHAR_LIMIT]
                 self.context.logger.warning(
@@ -491,7 +493,8 @@ class CheckLocalStorageRound(BaseState):
         out_path = self.context.asylum_strategy.output_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
         fsm_out_path = out_path / "fsm_specification.yaml"
         agent_dir = out_path / "packages" / "agent_asylum"
-        if fsm_out_path.exists() and not agent_dir.exists():
+
+        if fsm_out_path.exists() and not agent_dir.exists() and self.agent_persona.github_username == "8ball030":
             self.context.logger.info(f"FSM specification exists for {sponsor} bounty {bounty}!")
             self._run_scaffold_workflow(out_path, sponsor, bounty)
             self._is_done = True
