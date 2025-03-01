@@ -25,7 +25,7 @@ protocols:
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- zarathustra/asylum_abci_app:0.1.0:bafybeibtaqbamaexzjlchbgcrahcqjksibju64ccoltibezpvudgjcrvoq
+- zarathustra/asylum_abci_app:0.1.0:bafybeihfwedzborupx2yqfac4k5mptrh2tu5q7jfozcrgbt77c5zzssk7q
 customs: []
 default_ledger: ethereum
 required_ledgers:
@@ -86,9 +86,12 @@ models:
   agent_persona:
     args:
       role: developer
-      github_username: ${SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_USERNAME:str:dvilelaf}
+      github_username: ${SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_USERNAME:str:8ball030}
       github_repositories: ${SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_REPOSITORIES:list:["https://github.com/valory-xyz/open-autonomy"]}
       github_pat: ${SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
+      sponsor: ${SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_SPONSOR:str:Flow}
+      bounty: ${SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_BOUNTY:int:0}
   asylum_strategy:
     args:
       data_dir: ${str:../data}
+      output_dir: ${str:../output}
