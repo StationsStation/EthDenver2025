@@ -106,6 +106,8 @@ def create_envs_from_bounties(bounty_id: int, sponsor_id: str, dev_index: int):
 
     if not gitmodules.exists():
         gitmodules.write_text("")
+
+    commands = []
     for sponsor, dev_data in data.items():
         selected_devs, repos = lookup_devs_for_project(sponsor, data)
         print(f"Sponsor: {sponsor}")
@@ -147,6 +149,9 @@ def create_envs_from_bounties(bounty_id: int, sponsor_id: str, dev_index: int):
         path_ = Path("output") / sponsor / f"bounty_{bounty_id}"
         if not path_.exists():
             continue
+
+        url = f"https://github.com/agent-asylum/{sponsor}_bounty_{bounty_id}.git"
+        commmand = f"git submodule add {url} output/flow/bounty_0"
         result = dedent(f"""
         [submodule "output/{sponsor}/bounty_{bounty_id}"]
         path = output/{sponsor}/bounty_{bounty_id}
