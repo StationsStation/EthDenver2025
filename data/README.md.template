@@ -2,6 +2,8 @@
 
 **Authors:** {authors}
 
+{sponsor_bounty}
+
 ## Overview  
 This repository contains the **Finite State Machine (FSM) specification**.
 The FSM is visually represented below using a Mermaid diagram.
