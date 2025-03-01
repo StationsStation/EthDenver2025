@@ -120,6 +120,18 @@ SYSTEM_PROMPT = dedent("""
     2. All happy path transitions must use **DONE** events.
     3. Non-happy paths should account for failure, retries, or alternate flows.
     4. Generate a valid **Mermaid diagram** representing the FSM.
+    5. **FSM Naming Rules** (STRICT):
+       - **Every state must end with "ROUND".**
+       - **Do not use one-letter state names or abbreviations.**
+       - **Do not enclose states in square brackets (`[]`).**
+       - **Event names (e.g., "DONE", "CONTRACT_ERROR") remain unchanged.**
+       - **Use clear, descriptive names for all states.**
+    6. The FSM diagram must fit within {telegram_msg_char_limit} characters to ensure it can be sent in a single Telegram message.
+
+    ### Format rules:
+    - No bracketed state names (e.g., 'InitializationRound' instead of 'A[InitializationRound]')
+    - Transitions are written as `StateA -->|EVENT| StateB`
+    - Each state must include all possible transitions, including ERROR and TIMEOUT if applicable
 
     ### Example FSMs:
     {mermaid_diagram_examples}
