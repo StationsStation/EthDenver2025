@@ -29,8 +29,11 @@ from pathlib import Path
 from datetime import UTC, datetime
 from textwrap import dedent
 from itertools import islice
+from contextlib import chdir
 
+from git import Repo
 from aea.skills.behaviours import State, FSMBehaviour
+from auto_dev.commands.repo import scaffold_new_repo, create_github_repo
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
@@ -121,11 +124,11 @@ SYSTEM_PROMPT = dedent("""
     3. Non-happy paths should account for failure, retries, or alternate flows.
     4. Generate a valid **Mermaid diagram** representing the FSM.
     5. **FSM Naming Rules** (STRICT):
-       - **Every state must end with "ROUND".**
+       - **Every state must end with "Round".**
        - **Do not use one-letter state names or abbreviations.**
        - **Do not enclose states in square brackets (`[]`).**
-       - **Event names (e.g., "DONE", "CONTRACT_ERROR") remain unchanged.**
-       - **Use clear, descriptive names for all states.**
+       - **Event names (e.g., "DONE", "ERROR", "TIMEOUT", "RETRY", "MAX_RETRIES").**
+       - **Use clear, descriptive names for all states and events.**
     6. The FSM diagram must fit within {telegram_msg_char_limit} characters to ensure it can be sent in a single Telegram message.
 
     ### Format rules:
@@ -133,8 +136,27 @@ SYSTEM_PROMPT = dedent("""
     - Transitions are written as `StateA -->|EVENT| StateB`
     - Each state must include all possible transitions, including ERROR and TIMEOUT if applicable
 
-    ### Example FSMs:
+    ### Example FSMs (CORRECT FORMATTING):
     {mermaid_diagram_examples}
+
+    ### Incorrect FSM Examples (NEVER DO THIS):
+    ```mermaid
+    graph TD
+        A[InitializationRound] -->|DONE| B[AgentSetupRound]  # ❌ INCORRECT BRACKETS
+        B -->|DONE| C[StakingContractIntegrationRound]
+    ```
+
+    ```mermaid
+    graph TD
+        InitializationRound -->|DONE|> AgentSetupRound  # ❌ INCORRECT ">|" NOTATION
+        AgentSetupRound -->|DONE|> StakingContractIntegrationRound
+    ```
+
+    ```mermaid
+    graph TD
+        A -->|DONE| B  # ❌ INCORRECT: STATES MUST HAVE FULL DESCRIPTIVE NAMES
+        B -->|ERROR| C
+    ```
 
     ### Bounty Instructions:
     This FSM is being designed as part of a **Web3 hackathon**. The hackathon focuses on decentralized technologies, smart contracts, blockchain automation, and autonomous agents.
@@ -472,6 +494,59 @@ class CheckLocalStorageRound(BaseState):
         else:
             self._is_done = True
             self._event = AsylumAbciAppEvents.DONE
+
+        # non-optimal implmentation as atm only 8baller has write access.
+        if self.agent_persona.github_username != "8ball030":
+            return
+
+        # we check if the repo is there if not, we execute the workflow for it.
+        bounty = str(self.agent_persona.bounty)
+        repo_name = "bounty_" + bounty
+        sponsor_name = self.agent_persona.sponsor.lower().replace(" ", "_")
+        expected_path = Path(self.strategy.output_dir) / sponsor_name / repo_name
+        if not expected_path.exists():
+            # we need to execute the workflow for the user.
+            if not Path(self.strategy.output_dir / sponsor_name).exists():
+                Path(self.strategy.output_dir / sponsor_name).mkdir(parents=True)
+
+            with chdir(self.strategy.output_dir / sponsor_name):
+                self.context.logger.info(f"Creating new repo: {repo_name}")
+                scaffold_new_repo(
+                    logger=self.context.logger,
+                    name=repo_name,
+                    type_of_repo="autonomy",
+                    force=True,
+                    auto_approve=True,
+                    install=False,
+                    initial_commit=True,
+                    verbose=False,
+                )
+
+                self.context.logger.info(f"Creating new repo: {repo_name} on GitHub")
+
+                self.context.logger.info(f"Repo {repo_name} created successfully! 🎉🎉🎉")
+                response = create_github_repo(
+                    repo_name=f"{sponsor_name}_{repo_name}",
+                    token=self.agent_persona.github_pat,
+                    user="agent-asylum",
+                    private=False,
+                    is_org=True,
+                )
+                self.context.logger.info(f"Response: {response}")
+
+                repo = Repo(repo_name)
+                token = self.agent_persona.github_pat
+                remote_url = f"https://{token}@github.com/agent-asylum/{sponsor_name}_bounty_{bounty}.git"
+                repo.create_remote("origin", remote_url)
+                repo.git.branch("-M", "main")
+                repo.git.push("--set-upstream", "origin", "main")
+
+                if response.get("status") == 201:
+                    msg = f"""
+                    Repo {repo_name} created successfully! 🎉🎉🎉
+                    You can find it at: {response.get("html_url")}
+                    """
+                    self.strategy.llm_responses.append(msg)
 
 
 class ExecuteProposedWorkflowRound(BaseState):

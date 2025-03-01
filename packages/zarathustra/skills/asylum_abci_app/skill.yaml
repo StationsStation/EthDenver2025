@@ -8,13 +8,13 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeigf7tuopkucp4km6oyhhwvrk4ci7xybywmitfvcac4cf5drrja5kq
-  behaviours.py: bafybeibxcejkxklnwvzqj2z2f4rejurmbzjkigb7jhfcaro5em5leshhb4
+  behaviours.py: bafybeia74z5fry47ufi6gtfcih5iet4ss7gydlsz4rfq2m6x4e7nr427ca
   dialogues.py: bafybeiem64ayfuh5bk3uus7ucfoak6yo4xzs54wvlpeuxk527gktsr774m
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeickjdllicc576jmwmygjlz7kl2h5gz3escourth47qqrmjxcjxiiu
+  handlers.py: bafybeigcuwkf5ck55l2g6wopj6jrmyyx5dznyzbmgljo3mgw4bqrzeqnk4
   mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
   scraper.py: bafybeie3zlmueo7cewl5d5xvgwclpunhqr57yqfei62rqpdbu6tlqs4igi
-  strategy.py: bafybeida4pqh2bjfqx5bmv7tbpo42gaa6nmctopa7w4lyajjpkiu5iquwu
+  strategy.py: bafybeiddtagmctd3hrcixp6h6jztbu43kt5r3icscqilinv4obzoh4oniu
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
@@ -65,6 +65,7 @@ models:
   asylum_strategy:
     args:
       data_dir: data
+      output_dir: ${str:../output}
     class_name: AsylumStrategy
   agent_persona:
     args:
