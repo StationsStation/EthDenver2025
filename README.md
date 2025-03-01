@@ -1,5 +1,11 @@
 <img src="agent_asylum_logo.png" width="1000">
 
+> **Powered by:**
+> - [Open-Autonomy](https://docs.olas.network/open-autonomy/)
+> - [Autonomy Dev](https://8ball030.github.io/auto_dev/)
+
+---
+
 You’re drowning in tasks, distractions, and ideas you don’t have time to build. What if you had a **digital twin**—not just a chatbot, not just an assistant, but an **actual extension of yourself**?
 
 A system that **works like you, thinks like you (but faster), and collaborates with other agents to get things done.**

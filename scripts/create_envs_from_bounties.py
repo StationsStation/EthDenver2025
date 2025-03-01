@@ -58,11 +58,8 @@ DEFAULT_DEVS = [
 ]
 
 
-
 def lookup_devs_for_project(project_name: str , data):
     """Lookup the developers for a given project."""
-    # Lookup the developers for a given project
-    # We can use the default developers for now
 
     if not data:
         raise ValueError(f"Project {project_name} not found in sponsor_config.yaml")
@@ -90,10 +87,6 @@ def lookup_devs_for_project(project_name: str , data):
 @click.option("--dev_index", type=int, required=False, default=0)
 def create_envs_from_bounties(bounty_id: int, sponsor_id: str, dev_index: int):
     """Create environments from the bounties in the datastore."""
-    # Create environments from the bounties in the datastore
-    # we first read the bounties from the datastore
-
-
 
     sponsor_dev_config = PERSONALISATION_DIR.read_text()
     data = yaml.safe_load(sponsor_dev_config)
@@ -140,4 +133,3 @@ def create_envs_from_bounties(bounty_id: int, sponsor_id: str, dev_index: int):
 
 if __name__ == "__main__":
     create_envs_from_bounties()
-
