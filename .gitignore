@@ -16,6 +16,7 @@ keys.json
 !/data/sponsor_config.yaml
 !/data/bounties/
 !/data/specs/
+!/data/README.md.template
 /agent/
 /service/
 /asylum_abci_app/
