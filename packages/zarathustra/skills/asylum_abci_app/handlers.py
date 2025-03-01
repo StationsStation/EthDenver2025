@@ -159,7 +159,7 @@ class LlmChatCompletionHandler(Handler):
             self.context.asylum_strategy.user_persona = text
 
         if mermaid_match := MERMAID_PATTERN.search(text):
-            data_dir = self.context.asylum_strategy.data_dir
+            data_dir = self.context.asylum_strategy.output_dir
             sponsor = self.context.agent_persona.sponsor
             bounty = self.context.agent_persona.bounty
             try:
