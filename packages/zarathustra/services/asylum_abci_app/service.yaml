@@ -10,7 +10,7 @@ fingerprint:
   tests/__init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeieyxzh4inh24detwum3tbc3skwlfdvhosgm7wy4zr547czpnsbvji
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeibls4hfmily6zowo4aciquzvuydvtg6j3xj2iw2tuszi67truq6y4
 number_of_agents: 4
 deployment:
   agent:
@@ -26,9 +26,8 @@ type: skill
     agent_persona:
       args:
         role: developer
-        github_username: 8ball030
-        github_repositories:
-        - https://github.com/valory-xyz/open-autonomy
+        github_username: ${DEV_NAME_0:str:8ball030}
+        github_repositories: ${DEV_REPOS_0:list:["https://github.com/valory-xyz/open-autonomy"]}
         github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
     asylum_strategy:
       args:

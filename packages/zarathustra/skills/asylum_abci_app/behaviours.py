@@ -473,18 +473,6 @@ class CheckLocalStorageRound(BaseState):
             self._is_done = True
             self._event = AsylumAbciAppEvents.DONE
 
-    def act_from_config(self):
-        """Do the act."""
-        self.context.logger.info(f"In state: {self._state}")
-        user_data = Path(self.strategy.data_dir)
-
-        if not user_data.exists() or not self.strategy.user_persona:
-            self._is_done = True
-            self._event = AsylumAbciAppEvents.UPDATE_NEEDED
-        else:
-            self._is_done = True
-            self._event = AsylumAbciAppEvents.DONE
-
 
 class ExecuteProposedWorkflowRound(BaseState):
     """This class implements the behaviour of the state ExecuteProposedWorkflowRound."""
