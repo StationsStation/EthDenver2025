@@ -33,6 +33,7 @@ class AsylumStrategy(Model):
     pending_workflows: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
     telegram_responses: deque[str] = deque(maxlen=MAX_QUEUE_LENGTH)
     data_dir: Path
+    output_dir: Path
     from_config: bool = False
 
     workflows = {
@@ -44,6 +45,7 @@ class AsylumStrategy(Model):
     def __init__(self, **kwargs: Any) -> None:
         """Initialize dialogues."""
         self.data_dir = Path(kwargs.pop("data_dir", "data"))
+        self.output_dir = Path(kwargs.pop("output_dir", "output"))
         self.user_persona = ""
         Model.__init__(self, **kwargs)
 
