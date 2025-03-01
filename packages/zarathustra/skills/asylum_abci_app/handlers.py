@@ -21,10 +21,11 @@
 
 import re
 import json
-import random
+import secrets
 from typing import cast
 
 from aea.skills.base import Handler
+from auto_dev.fsm.fsm import FsmSpec
 from aea.protocols.base import Message
 
 from packages.eightballer.protocols.default import DefaultMessage
@@ -46,10 +47,9 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
     LlmChatCompletionDialogues,
 )
-from auto_dev.fsm.fsm import FsmSpec
 
 
-MERMAID_PATTERN = re.compile(r'```mermaid\s+([\s\S]+?)\s+```')
+MERMAID_PATTERN = re.compile(r"```mermaid\s*([\s\S]+?)\s*```")
 
 
 class TelegramHandler(Handler):
@@ -123,7 +123,7 @@ class LlmChatCompletionHandler(Handler):
         if not self.context.asylum_strategy.user_persona:
             self.context.asylum_strategy.user_persona = text
 
-        if (mermaid_match := MERMAID_PATTERN.search(text)):
+        if mermaid_match := MERMAID_PATTERN.search(text):
             try:
                 fsm_spec = FsmSpec.from_mermaid(mermaid_match.group(1))
                 mermaid: str = fsm_spec.to_mermaid().strip()
@@ -138,11 +138,14 @@ class LlmChatCompletionHandler(Handler):
                 mermaid_out_path = out_path / "diagram.mmd"
                 fsm_out_path.write_text(fsm_spec)
                 mermaid_out_path.write_text(mermaid)
-                emoji = random.choice("😎😁😍🫡🦾")
+                emoji = secrets.choice("😎😁😍🫡🦾")
                 text += f"\n\nI verified the Mermaid diagram, and it constitutes a valid FSM! {emoji}"
-            except Exception as e:
-                emoji = random.choice("😅😓😕🙈😇😞😒😤😱😨😩🙏🦾")
-                text += f"\n\nSadly, the FSM spec verification failed 😞\nError: {e}\nLet's iterate until it is valid! {emoji}"
+            except Exception as e:  # noqa: BLE001
+                emoji = secrets.choice("😅😓😕🙈😇😞😒😤😱😨😩🙏🦾")
+                text += (
+                    f"\n\nSadly, the FSM spec verification failed 😞\nError: {e}\n"
+                    f"Let's iterate until it is valid! {emoji}"
+                )
 
         self.strategy.llm_responses.append((LLMActions.REPLY, text))
 
