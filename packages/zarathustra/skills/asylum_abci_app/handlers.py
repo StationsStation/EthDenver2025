@@ -47,9 +47,15 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
     LlmChatCompletionDialogues,
 )
+from packages.zarathustra.skills.asylum_abci_app.behaviours import TELEGRAM_MSG_CHAR_LIMIT
 
 
 MERMAID_PATTERN = re.compile(r"```mermaid\s*([\s\S]+?)\s*```")
+
+
+def chunk_text(text: str, max_chars: int = TELEGRAM_MSG_CHAR_LIMIT):
+    """Splits `text` into chunks of at most `max_chars`."""
+    return (text[i : i + max_chars] for i in range(0, len(text), max_chars))
 
 
 class TelegramHandler(Handler):
@@ -149,7 +155,8 @@ class LlmChatCompletionHandler(Handler):
                     f"Let's iterate until it is valid! {emoji}"
                 )
 
-        self.strategy.llm_responses.append((LLMActions.REPLY, text))
+        for chunk in chunk_text(text):
+            self.strategy.llm_responses.append((LLMActions.REPLY, chunk))
 
     @property
     def strategy(self):
