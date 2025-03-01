@@ -121,11 +121,11 @@ SYSTEM_PROMPT = dedent("""
     3. Non-happy paths should account for failure, retries, or alternate flows.
     4. Generate a valid **Mermaid diagram** representing the FSM.
     5. **FSM Naming Rules** (STRICT):
-       - **Every state must end with "ROUND".**
+       - **Every state must end with "Round".**
        - **Do not use one-letter state names or abbreviations.**
        - **Do not enclose states in square brackets (`[]`).**
-       - **Event names (e.g., "DONE", "CONTRACT_ERROR") remain unchanged.**
-       - **Use clear, descriptive names for all states.**
+       - **Event names (e.g., "DONE", "ERROR", "TIMEOUT", "RETRY", "MAX_RETRIES").**
+       - **Use clear, descriptive names for all states and events.**
     6. The FSM diagram must fit within {telegram_msg_char_limit} characters to ensure it can be sent in a single Telegram message.
 
     ### Format rules:
@@ -133,8 +133,27 @@ SYSTEM_PROMPT = dedent("""
     - Transitions are written as `StateA -->|EVENT| StateB`
     - Each state must include all possible transitions, including ERROR and TIMEOUT if applicable
 
-    ### Example FSMs:
+    ### Example FSMs (CORRECT FORMATTING):
     {mermaid_diagram_examples}
+
+    ### Incorrect FSM Examples (NEVER DO THIS):
+    ```mermaid
+    graph TD
+        A[InitializationRound] -->|DONE| B[AgentSetupRound]  # ❌ INCORRECT BRACKETS
+        B -->|DONE| C[StakingContractIntegrationRound]
+    ```
+
+    ```mermaid
+    graph TD
+        InitializationRound -->|DONE|> AgentSetupRound  # ❌ INCORRECT ">|" NOTATION
+        AgentSetupRound -->|DONE|> StakingContractIntegrationRound
+    ```
+
+    ```mermaid
+    graph TD
+        A -->|DONE| B  # ❌ INCORRECT: STATES MUST HAVE FULL DESCRIPTIVE NAMES
+        B -->|ERROR| C
+    ```
 
     ### Bounty Instructions:
     This FSM is being designed as part of a **Web3 hackathon**. The hackathon focuses on decentralized technologies, smart contracts, blockchain automation, and autonomous agents.
