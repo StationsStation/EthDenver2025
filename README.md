@@ -1,4 +1,4 @@
-# **Agent Asylum: Your Digital Twin Just Got a Job**
+<img src="agent_asylum_logo.png" width="1000">
 
 You’re drowning in tasks, distractions, and ideas you don’t have time to build. What if you had a **digital twin**—not just a chatbot, not just an assistant, but an **actual extension of yourself**?
 
