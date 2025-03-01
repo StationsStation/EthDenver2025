@@ -1,32 +1,3 @@
-coinbase:
-  devs:
-    - ericbrown99
-    - wbnns
-    - neodaoist
-  repos:
-    - https://github.com/coinbase/agentkit
-hedera:
-  devs:
-    - lbaird
-    - tinker-michaelj
-    - shemnon
-    - rbair23
-  repos:
-  - https://github.com/hiero-ledger/hiero-consensus-node
-  - https://github.com/hiero-ledger/hiero-block-node
-  - https://github.com/hiero-ledger/hiero-sdk-python
-  - https://github.com/tinker-michaelj/hedera-sdk-js
-  - https://github.com/hashgraph/hedera-smart-contracts
-optimism:
-  devs:
-  - karlfloersch
-  - opsuperchain
-  repos:
-  - https://github.com/opsuperchain/futuristic-superchain-starter
-  - https://github.com/opsuperchain/superchain
-  - https://github.com/karlfloersch/infinity-pets
-  - https://github.com/ethereum-optimism/optimism
-
 flow:
   devs:
   - jribbink
@@ -35,25 +6,6 @@ flow:
   repos:
   - https://github.com/onflow/fcl-js
   - https://github.com/onflow/flow-cli
-
-icp:
-  devs:
-  - kristoferlund
-  - ericswanson-dfinity
-  repos:
-  - https://github.com/kristoferlund/send_file_to_eth_demo
-  - https://github.com/kristoferlund/ic-eliza-eth-wallet-agent
-  - https://github.com/dfinity/dfxvm
-  - https://github.com/dfinity/sdk
-
-
-ccp:
-  devs:
-  - ProfMoo
-  repos:
-  - https://github.com/ProfMoo/home
-  - https://github.com/ProfMoo/sp1-fibonaci
-
 
 taraxa:
   devs:
@@ -66,6 +18,61 @@ taraxa:
   - https://github.com/Taraxa-project/taraxa-indexer
   - https://github.com/lara-staking/liquid-staking
   - https://github.com/Taraxa-project/bridge
+story:
+  devs:
+  - LeoHChen
+  - Spabob
+  - kingster-will
+  repos:
+  - https://github.com/piplabs/story
+  - https://github.com/storyprotocol/protocol-core-v1
+hedera:
+  devs:
+    - lbaird
+    - tinker-michaelj
+    - shemnon
+    - rbair23
+  repos:
+  - https://github.com/hiero-ledger/hiero-consensus-node
+  - https://github.com/hiero-ledger/hiero-block-node
+  - https://github.com/hiero-ledger/hiero-sdk-python
+  - https://github.com/tinker-michaelj/hedera-sdk-js
+  - https://github.com/hashgraph/hedera-smart-contracts
+
+icp:
+  devs:
+  - kristoferlund
+  - ericswanson-dfinity
+  repos:
+  - https://github.com/kristoferlund/send_file_to_eth_demo
+  - https://github.com/kristoferlund/ic-eliza-eth-wallet-agent
+  - https://github.com/dfinity/dfxvm
+  - https://github.com/dfinity/sdk
+optimism:
+  devs:
+  - karlfloersch
+  - opsuperchain
+  repos:
+  - https://github.com/opsuperchain/futuristic-superchain-starter
+  - https://github.com/opsuperchain/superchain
+  - https://github.com/karlfloersch/infinity-pets
+  - https://github.com/ethereum-optimism/optimism
+
+
+coinbase:
+  devs:
+    - ericbrown99
+    - wbnns
+    - neodaoist
+  repos:
+    - https://github.com/coinbase/agentkit
+
+ccp:
+  devs:
+  - ProfMoo
+  repos:
+  - https://github.com/ProfMoo/home
+  - https://github.com/ProfMoo/sp1-fibonaci
 
 okto:
   devs:
@@ -75,11 +82,3 @@ okto:
   - https://github.com/okto-hq/
   - https://github.com/zaje1/okto-sdk-docs
 
-story:
-  devs:
-  - LeoHChen
-  - Spabob
-  - kingster-will
-  repos:
-  - https://github.com/piplabs/story
-  - https://github.com/storyprotocol/protocol-core-v1
