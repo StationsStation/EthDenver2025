@@ -29,8 +29,11 @@ from pathlib import Path
 from datetime import UTC, datetime
 from textwrap import dedent
 from itertools import islice
+from contextlib import chdir
 
+from git import Repo
 from aea.skills.behaviours import State, FSMBehaviour
+from auto_dev.commands.repo import scaffold_new_repo, create_github_repo
 from auto_dev.workflow_manager import Workflow, WorkflowManager
 
 from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
@@ -490,17 +493,58 @@ class CheckLocalStorageRound(BaseState):
             self._is_done = True
             self._event = AsylumAbciAppEvents.DONE
 
-    def act_from_config(self):
-        """Do the act."""
-        self.context.logger.info(f"In state: {self._state}")
-        user_data = Path(self.strategy.data_dir)
+        # non-optimal implmentation as atm only 8baller has write access.
+        if self.agent_persona.github_username != "8ball030":
+            return
 
-        if not user_data.exists() or not self.strategy.user_persona:
-            self._is_done = True
-            self._event = AsylumAbciAppEvents.UPDATE_NEEDED
-        else:
-            self._is_done = True
-            self._event = AsylumAbciAppEvents.DONE
+        # we check if the repo is there if not, we execute the workflow for it.
+        bounty = str(self.agent_persona.bounty)
+        repo_name = "bounty_" + bounty
+        sponsor_name = self.agent_persona.sponsor.lower().replace(" ", "_")
+        expected_path = Path(self.strategy.output_dir) / sponsor_name / repo_name
+        if not expected_path.exists():
+            # we need to execute the workflow for the user.
+            if not Path(self.strategy.output_dir / sponsor_name).exists():
+                Path(self.strategy.output_dir / sponsor_name).mkdir(parents=True)
+
+            with chdir(self.strategy.output_dir / sponsor_name):
+                self.context.logger.info(f"Creating new repo: {repo_name}")
+                scaffold_new_repo(
+                    logger=self.context.logger,
+                    name=repo_name,
+                    type_of_repo="autonomy",
+                    force=True,
+                    auto_approve=True,
+                    install=False,
+                    initial_commit=True,
+                    verbose=False,
+                )
+
+                self.context.logger.info(f"Creating new repo: {repo_name} on GitHub")
+
+                self.context.logger.info(f"Repo {repo_name} created successfully! 🎉🎉🎉")
+                response = create_github_repo(
+                    repo_name=f"{sponsor_name}_{repo_name}",
+                    token=self.agent_persona.github_pat,
+                    user="agent-asylum",
+                    private=False,
+                    is_org=True,
+                )
+                self.context.logger.info(f"Response: {response}")
+
+                repo = Repo(repo_name)
+                token = self.agent_persona.github_pat
+                remote_url = f"https://{token}@github.com/agent-asylum/{sponsor_name}_bounty_{bounty}.git"
+                repo.create_remote("origin", remote_url)
+                repo.git.branch("-M", "main")
+                repo.git.push("--set-upstream", "origin", "main")
+
+                if response.get("status") == 201:
+                    msg = f"""
+                    Repo {repo_name} created successfully! 🎉🎉🎉
+                    You can find it at: {response.get("html_url")}
+                    """
+                    self.strategy.llm_responses.append(msg)
 
 
 class ExecuteProposedWorkflowRound(BaseState):
