@@ -1,4 +1,4 @@
-# **Agent Asylum: Your Digital Twin Just Got a Job**
+<img src="agent_asylum_logo.png" width="1000">
 
 You’re drowning in tasks, distractions, and ideas you don’t have time to build. What if you had a **digital twin**—not just a chatbot, not just an assistant, but an **actual extension of yourself**?
 
@@ -71,15 +71,53 @@ And with agents by our side, **human autonomy is more potent than ever**.
 
 ## **Getting Started**
 
+### Dependencies
+
+- [git version 2.48.1](https://git-scm.com/downloads)
+- [GNU Make 4.4.1](https://www.gnu.org/software/make/)
+- [Poetry 2.1.1](https://python-poetry.org/)
+- [Docker 27.5.1](https://www.docker.com/)
+
 ### Installation and Setup for Development
 
 If you're looking to contribute or develop with `agent_asylum`, get the source code and set up the environment:
 
 ```shell
-git clone https://github.com/eightballer/agent_asylum --recurse-submodules
-cd agent_asylum
+git clone https://github.com/StationsStation/EthDenver2025 --recurse-submodules
+cd EthDenver2025
 make install
 ```
+
+Activate the virtual environment
+
+```shell
+poetry shell
+```
+
+Copy the `.env.template`
+
+```shell
+cp .env.template .env
+```
+
+And make sure the correct environmental variables are set:
+- `AKASH_API_KEY`: obtainable via [Akash](https://akash.network/)
+- `SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_PAT`: Your github token
+- `SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_USERNAME`: Your github username
+- `CONNECTION_TELEGRAM_WRAPPER_CONFIG_TOKEN`: Telegram bot token (via [@Botfather](https://core.telegram.org/bots/features#botfather))
+
+Then, you should be all ready to fire up
+
+```shell
+adev run dev zarathustra/asylum_abci_app:0.1.0 --force
+```
+
+When running a single agent, Tendermint can be disabled:
+
+```shell
+adev run dev zarathustra/asylum_abci_app:0.1.0 --force --no-use-tendermint
+```
+
 
 ## Commands
 
@@ -118,4 +156,3 @@ make all
 ## License
 
 This project is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-
