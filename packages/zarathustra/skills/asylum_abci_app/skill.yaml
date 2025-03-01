@@ -8,13 +8,13 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeiarezohbq3skvjb6k5djqpyr2cssmconp3jbhsoisrnmw2pqly47q
-  behaviours.py: bafybeidwrn3vtzsxrdot56jvkwzskb7rv6w3o3dhs6bfrz3r2wp35crdqe
+  behaviours.py: bafybeigyzhx36akouw5agzi2wlyleot35pvh6adokdo2jcyiktoxgevz2e
   dialogues.py: bafybeihumikopwajayxsmbyz4dqhzzchief6qkgcjfjtdtni62wazii6ea
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeif6ocihxqno6kd4dio3mmzofruwgeivcdslii5ktnpf5ekdliua7u
+  handlers.py: bafybeihjie62bsz7zlkbt7cm7d7pbsq3waudrrjwimkbijekdvmdsupqf4
   mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
   scraper.py: bafybeia7m3ilj5puq7iycx4x62vndee72qakxsa5zv34rq2v5jscniz4nu
-  strategy.py: bafybeiaup3bucjvecmlup5vkwghcid4z6znjotknxle3vmkp3w7epjavay
+  strategy.py: bafybeickw6x3vydvdbmtuy2c5ynfgq5c4ezfvu42keaoyie4w4kht2m4h4
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
   tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
   tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
