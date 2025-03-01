@@ -73,6 +73,10 @@ Decentralization isn’t about removing people from the equation. **It’s about
 
 And with agents by our side, **human autonomy is more potent than ever**.
 
+### Generated Projects
+
+Explore the projects built by our digital doppelgängers during ETHDenver 2025 #BUIDLathon [here](output).
+
 ---
 
 ## **Getting Started**
