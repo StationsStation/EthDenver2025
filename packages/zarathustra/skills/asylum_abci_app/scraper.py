@@ -17,16 +17,15 @@ logger = logging.getLogger(__name__)
 class GitHubScraper:
     """A class to scrape GitHub issues and comments."""
 
-    def __init__(self, gh_pat: str | None = None, data_dir: str | None = None):
+    def __init__(self, gh_pat: str, data_dir: str):
         """Initialize the scraper with GitHub PAT and settings."""
         self.gh_pat = gh_pat
         if not self.gh_pat:
             msg = "GitHub PAT not found. Make sure GITHUB_PAT is set in environment or .env file"
             raise ValueError(msg)
 
-        self.base_data_dir = Path(data_dir) if data_dir else None
-        if self.base_data_dir:
-            self.base_data_dir.mkdir(parents=True, exist_ok=True)
+        self.base_data_dir = Path(data_dir)
+        self.base_data_dir.mkdir(parents=True, exist_ok=True)
 
         self.headers = {
             "Authorization": f"Bearer {self.gh_pat}",
@@ -34,15 +33,13 @@ class GitHubScraper:
         }
         self.timeout = 30  # seconds
 
-    def get_user_data_dir(self, username: str) -> Path | None:
+    def get_user_data_dir(self, username: str) -> Path:
         """Get the data directory for a specific user."""
-        if not self.base_data_dir:
-            return None
         user_dir = self.base_data_dir / username
         user_dir.mkdir(parents=True, exist_ok=True)
         return user_dir
 
-    def save_user_data(self, username: str, issues: dict) -> str | None:
+    def save_user_data(self, username: str, issues: dict) -> str:
         """Save issues data to a JSON file in user's directory."""
         user_dir = self.get_user_data_dir(username)
 
@@ -88,7 +85,6 @@ class GitHubScraper:
     def scrape_user_interactions(self, usernames: list[str], repos: list[str], save: bool = True) -> dict:
         """Fetch all issues where specific users have interacted."""
         all_user_data = {username: {} for username in usernames}
-
         for repo in repos:
             # Extract owner and repo name from URL
             _, _, _, owner, repo_name = repo.rstrip("/").split("/")
