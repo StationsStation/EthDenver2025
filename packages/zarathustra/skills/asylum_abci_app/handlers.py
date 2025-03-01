@@ -19,7 +19,9 @@
 
 """This module contains the handler for the 'metrics' skill."""
 
+import re
 import json
+import random
 from typing import cast
 
 from aea.skills.base import Handler
@@ -44,6 +46,10 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
     LlmChatCompletionDialogues,
 )
+from auto_dev.fsm.fsm import FsmSpec
+
+
+MERMAID_PATTERN = re.compile(r'```mermaid\s+([\s\S]+?)\s+```')
 
 
 class TelegramHandler(Handler):
@@ -116,6 +122,28 @@ class LlmChatCompletionHandler(Handler):
         text = llm_chat_completion.choices[0].message.content
         if not self.context.asylum_strategy.user_persona:
             self.context.asylum_strategy.user_persona = text
+
+        if (mermaid_match := MERMAID_PATTERN.search(text)):
+            try:
+                fsm_spec = FsmSpec.from_mermaid(mermaid_match.group(1))
+                mermaid: str = fsm_spec.to_mermaid().strip()
+                fsm_spec: str = fsm_spec.to_string().strip()
+                out_path = (
+                    self.context.asylum_strategy.data_dir
+                    / self.context.agent_persona.sponsor.replace(" ", "_").lower()
+                    / f"bounty_{self.context.agent_persona.bounty}"
+                )
+                out_path.mkdir(exist_ok=True, parents=True)
+                fsm_out_path = out_path / "fsm_specification.yaml"
+                mermaid_out_path = out_path / "diagram.mmd"
+                fsm_out_path.write_text(fsm_spec)
+                mermaid_out_path.write_text(mermaid)
+                emoji = random.choice("😎😁😍🫡🦾")
+                text += f"\n\nI verified the Mermaid diagram, and it constitutes a valid FSM! {emoji}"
+            except Exception as e:
+                emoji = random.choice("😅😓😕🙈😇😞😒😤😱😨😩🙏🦾")
+                text += f"\n\nSadly, the FSM spec verification failed 😞\nError: {e}\nLet's iterate until it is valid! {emoji}"
+
         self.strategy.llm_responses.append((LLMActions.REPLY, text))
 
     @property
