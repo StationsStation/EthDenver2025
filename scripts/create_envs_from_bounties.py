@@ -31,16 +31,17 @@ DEV_REPOS_2={dev_repos_2}
 DEV_REPOS_3={dev_repos_3}
 
 SPONSOR="{sponsor}"
-BOUNTY="{bounty_id}"
+BOUNTY={bounty_id}
 
 
 # for a single agent to run locally
 
-SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_PAT="{github_pat}"
-SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_USERNAME="{dev_name_local}"
-SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_SPONSOR="{sponsor_local}"
-SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_BOUNTY="{bounty_local}"
-CONNECTION_TELEGRAM_WRAPPER_CONFIG_TOKEN="{telegram_token_0}"
+SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_PAT={github_pat}
+SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_USERNAME={dev_name_local}
+SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_GITHUB_REPOSITORIES={dev_repos_0}
+SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_SPONSOR={sponsor_local}
+SKILL_ASYLUM_ABCI_APP_MODELS_AGENT_PERSONA_ARGS_BOUNTY={bounty_local}
+CONNECTION_TELEGRAM_WRAPPER_CONFIG_TOKEN={telegram_token_0}
 
 """
 
@@ -80,7 +81,7 @@ def lookup_devs_for_project(project_name: str , data):
     if len(selected_devs) < 4:
         selected_devs += DEFAULT_DEVS[1:4]
     
-    return selected_devs[:4], [json.dumps(repos)] * 4
+    return selected_devs[:4], [json.dumps(repos).replace(" ", "")] * 4
 
 
 @click.command()
