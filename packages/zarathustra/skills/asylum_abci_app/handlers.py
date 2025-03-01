@@ -42,12 +42,12 @@ from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     DefaultDialogues,
 )
 from packages.zarathustra.connections.openai_api.connection import reconstitute
+from packages.zarathustra.skills.asylum_abci_app.behaviours import TELEGRAM_MSG_CHAR_LIMIT
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
     LlmChatCompletionDialogues,
 )
-from packages.zarathustra.skills.asylum_abci_app.behaviours import TELEGRAM_MSG_CHAR_LIMIT
 
 
 MERMAID_PATTERN = re.compile(r"```mermaid\s*([\s\S]+?)\s*```")
