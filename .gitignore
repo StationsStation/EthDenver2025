@@ -13,9 +13,11 @@
 keys.json
 
 /data/*
+!/data/sponsor_config.yaml
+!/data/bounties/
+!/data/specs/
 /agent/
 /service/
-!/data/sponsor_config.yaml
 /asylum_abci_app/
 
 packages/eightballer/protocols/default

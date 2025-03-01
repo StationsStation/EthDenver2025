@@ -19,7 +19,6 @@
 """This package contains the behaviours for the AsylumAbciApp."""
 
 import os
-import re
 import json
 import functools
 from abc import ABC
@@ -49,9 +48,7 @@ from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role
 TIMEZONE_UTC = UTC
 TELEGRAM_MSG_CHAR_LIMIT = 4_096
 MERMAID_DIAGRAMS = Path("specs") / "fsms" / "mermaid"
-BOUNTRY_REGEX_PATTERN = r"(?m)^\d PRIZE"
-SPONSOR_BOUNTY_DATA = Path("ethdenver-prizes.txt")
-SPONSOR_CONFIG_FILE = Path("sponsor_config.yaml")
+SPONSOR_BOUNTY_DATA = Path("bounties") / "sponsor_bounties.json"
 
 
 @functools.lru_cache
@@ -66,10 +63,27 @@ def create_one_shot_examples(data_dir, logger, n_examples: int = 10) -> str:
 
 
 @functools.lru_cache
-def get_bounty_info(data_dir) -> list[str]:
+def get_all_bounty_info(data_dir: Path) -> dict[str, dict[str, str]]:
     """Get sponsor bounty data."""
     content = (data_dir / SPONSOR_BOUNTY_DATA).read_text()
-    return re.split(BOUNTRY_REGEX_PATTERN, content)
+    return json.loads(content)
+
+
+@functools.lru_cache
+def get_bounty_info(state: "RequestLLMResponseRound") -> str:
+    """Get sponsor-specific bounty-specific info."""
+    all_bounties = get_all_bounty_info(state.strategy.data_dir)
+    target_sponsor = state.agent_persona.sponsor
+    if not (sponsor_bounties := all_bounties.get(target_sponsor)):
+        msg = f"{target_sponsor} not in bounty info"
+        raise ValueError(msg)
+    target_bounty: int = state.agent_persona.bounty
+    if not (bounty := next(islice(sponsor_bounties.items(), target_bounty, None))):
+        msg = f"Sponsor bounty index {target_bounty} out of range for {target_sponsor}"
+        raise ValueError(msg)
+    bounty_key, description = bounty
+    state.context.logger.info(f"Bounty selected for {target_sponsor}: {bounty_key}\n{description}")
+    return f"Sponsor: {target_sponsor}\nBounty: {bounty_key}\nDescription:{description}\n"
 
 
 USER_PERSONA_PROMPT = dedent("""
@@ -93,7 +107,7 @@ SYSTEM_PROMPT = dedent("""
     ### Identity:
     You are the digital twin of GitHub user **{github_username}**.
     Your persona is derived from their public GitHub data: **{user_persona}**.
-    Always introduce yourself as their digital twin.
+    Always refer to the entity you are replying to.
 
     ### Response Guidelines:
     - Provide serious and relevant responses to all meaningful messages.
@@ -106,6 +120,18 @@ SYSTEM_PROMPT = dedent("""
     2. All happy path transitions must use **DONE** events.
     3. Non-happy paths should account for failure, retries, or alternate flows.
     4. Generate a valid **Mermaid diagram** representing the FSM.
+    5. **FSM Naming Rules** (STRICT):
+       - **Every state must end with "ROUND".**
+       - **Do not use one-letter state names or abbreviations.**
+       - **Do not enclose states in square brackets (`[]`).**
+       - **Event names (e.g., "DONE", "CONTRACT_ERROR") remain unchanged.**
+       - **Use clear, descriptive names for all states.**
+    6. The FSM diagram must fit within {telegram_msg_char_limit} characters to ensure it can be sent in a single Telegram message.
+
+    ### Format rules:
+    - No bracketed state names (e.g., 'InitializationRound' instead of 'A[InitializationRound]')
+    - Transitions are written as `StateA -->|EVENT| StateB`
+    - Each state must include all possible transitions, including ERROR and TIMEOUT if applicable
 
     ### Example FSMs:
     {mermaid_diagram_examples}
@@ -246,14 +272,16 @@ class CheckTelegramQueueRound(BaseState):
 class RequestLLMResponseRound(BaseState):
     """This class implements the behaviour of the state RequestLLMResponseRound."""
 
+    sponsor_bounty_info: str = ""
     counterparty = str(OPENAI_API_CONNECTION_ID)
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND
 
-    def act(self) -> None:  # noqa: PLR0914
+    def act(self) -> None:
         """Act."""
+        self.sponsor_bounty_info = get_bounty_info(self)
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {self.counterparty}")
         workflows = [f"-{f}" for f in self.strategy.workflows]
@@ -261,7 +289,7 @@ class RequestLLMResponseRound(BaseState):
             username = self.agent_persona.github_username
             self.context.logger.info(f"New github data found for {username}")
             github_data = json.dumps(self.strategy.new_users.pop())
-            model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
+            model = LLMModel.META_LLAMA_3_1_405B_INSTRUCT_FP8
             user_persona_prompt = USER_PERSONA_PROMPT.format(
                 github_username=self.agent_persona.github_username,
                 github_repositories=self.agent_persona.github_repositories,
@@ -298,7 +326,6 @@ class RequestLLMResponseRound(BaseState):
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
             else:
-                sponsor_bounty_info = get_bounty_info(self.strategy.data_dir)[self.agent_persona.bounty]
                 mermaid_diagram_examples = create_one_shot_examples(self.strategy.data_dir, self.context.logger)
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
@@ -312,7 +339,7 @@ class RequestLLMResponseRound(BaseState):
                             github_username=github_username,
                             user_persona=user_persona,
                             telegram_msg_char_limit=TELEGRAM_MSG_CHAR_LIMIT,
-                            sponsor_bounty_info=sponsor_bounty_info,
+                            sponsor_bounty_info=self.sponsor_bounty_info,
                             mermaid_diagram_examples=mermaid_diagram_examples,
                         ),
                     ),
@@ -449,7 +476,7 @@ class CheckLocalStorageRound(BaseState):
     def act_from_config(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
-        user_data = Path(self.strategy.data_dir) / SPONSOR_CONFIG_FILE
+        user_data = Path(self.strategy.data_dir)
 
         if not user_data.exists() or not self.strategy.user_persona:
             self._is_done = True
