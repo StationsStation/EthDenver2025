@@ -124,14 +124,17 @@ class LlmChatCompletionHandler(Handler):
             self.context.asylum_strategy.user_persona = text
 
         if mermaid_match := MERMAID_PATTERN.search(text):
+            sponsor = self.context.agent_persona.sponsor
+            bounty = self.context.agent_persona.bounty
             try:
                 fsm_spec = FsmSpec.from_mermaid(mermaid_match.group(1))
+                fsm_spec.label = f"{sponsor.replace(' ', '')}{bounty}AbciApp"
                 mermaid: str = fsm_spec.to_mermaid().strip()
                 fsm_spec: str = fsm_spec.to_string().strip()
                 out_path = (
                     self.context.asylum_strategy.data_dir
-                    / self.context.agent_persona.sponsor.replace(" ", "_").lower()
-                    / f"bounty_{self.context.agent_persona.bounty}"
+                    / sponsor.replace(" ", "_").lower()
+                    / f"bounty_{bounty}"
                 )
                 out_path.mkdir(exist_ok=True, parents=True)
                 fsm_out_path = out_path / "fsm_specification.yaml"
