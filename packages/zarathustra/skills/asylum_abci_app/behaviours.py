@@ -604,6 +604,17 @@ class CheckLocalStorageRound(BaseState):
                 )
                 self.context.logger.info(f"Response: {response}")
 
+                task = Task(
+                    command=f"git config --global --add safe.directory /output/{sponsor_name}/{repo_name}",
+                ).work()
+                if task.is_failed:
+                    error_msg = f"Failed to set safe.directory for {sponsor_name}/{repo_name}"
+                    self.context.logger.error(error_msg)
+                    self.strategy.llm_responses.append((LLMActions.REPLY, error_msg))
+                else:
+                    success_msg = f"safe.directory set successfully for {sponsor_name}/{repo_name}. "
+                    self.context.logger.info(success_msg)
+                    self.strategy.llm_responses.append((LLMActions.REPLY, success_msg))
                 repo = Repo(repo_name)
                 token = self.agent_persona.github_pat
                 remote_url = f"https://{token}@github.com/agent-asylum/{sponsor_name}_bounty_{bounty}.git"

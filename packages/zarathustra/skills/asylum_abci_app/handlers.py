@@ -169,7 +169,9 @@ class LlmChatCompletionHandler(Handler):
                 mermaid: str = fsm_spec.to_mermaid().strip()
                 fsm_spec_str: str = fsm_spec.to_string().strip()
                 out_path = data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
-                out_path.mkdir(exist_ok=True, parents=True)
+                if not out_path.exists():
+                    self.context.logger.error(f"Output path {out_path} does not exist! Not saving FSM spec.")
+                    return
                 fsm_out_path = out_path / "fsm_specification.yaml"
                 mermaid_out_path = out_path / "diagram.mmd"
                 create_readme(self.context, mermaid, fsm_spec, out_path)

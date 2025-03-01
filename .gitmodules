@@ -1,0 +1,48 @@
+
+        [submodule "output/flow/bounty_0"]
+	    path = output/flow/bounty_0
+	    url = https://github.com/agent-asylum/flow_bounty_0.git
+
+        [submodule "output/hedera/bounty_0"]
+	    path = output/hedera/bounty_0
+	    url = https://github.com/agent-asylum/hedera_bounty_0.git
+
+        [submodule "output/internet_computer/bounty_0"]
+	    path = output/internet_computer/bounty_0
+	    url = https://github.com/agent-asylum/internet_computer_bounty_0.git
+
+        [submodule "output/taraxa/bounty_0"]
+	    path = output/taraxa/bounty_0
+	    url = https://github.com/agent-asylum/taraxa_bounty_0.git
+
+        [submodule "output/story/bounty_0"]
+	    path = output/story/bounty_0
+	    url = https://github.com/agent-asylum/story_bounty_0.git
+
+        [submodule "output/optimism/bounty_0"]
+	    path = output/optimism/bounty_0
+	    url = https://github.com/agent-asylum/optimism_bounty_0.git
+
+[submodule "output/flow/bounty_0"]
+path = output/flow/bounty_0
+url = https://github.com/agent-asylum/flow_bounty_0.git
+
+[submodule "output/hedera/bounty_0"]
+path = output/hedera/bounty_0
+url = https://github.com/agent-asylum/hedera_bounty_0.git
+
+[submodule "output/internet_computer/bounty_0"]
+path = output/internet_computer/bounty_0
+url = https://github.com/agent-asylum/internet_computer_bounty_0.git
+
+[submodule "output/taraxa/bounty_0"]
+path = output/taraxa/bounty_0
+url = https://github.com/agent-asylum/taraxa_bounty_0.git
+
+[submodule "output/story/bounty_0"]
+path = output/story/bounty_0
+url = https://github.com/agent-asylum/story_bounty_0.git
+
+[submodule "output/optimism/bounty_0"]
+path = output/optimism/bounty_0
+url = https://github.com/agent-asylum/optimism_bounty_0.git
