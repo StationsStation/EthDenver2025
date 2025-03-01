@@ -36,7 +36,7 @@ poetry_dependencies:
   plugins: *id002
   extras: null
 - name: autonomy-dev
-  version: 0.2.140
+  version: 0.2.141
   location: remote
   url: https://api.github.com/repos/8ball030/auto_dev
   plugins: null
