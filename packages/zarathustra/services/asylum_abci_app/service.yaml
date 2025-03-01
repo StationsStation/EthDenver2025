@@ -10,7 +10,7 @@ fingerprint:
   tests/__init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeicwky3fsti3njqiyw7dxucana2qfmppm5pof2yeqxb6kegs4czr3m
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeiefn5zeahzvwg2bv4tafbburpofs4smddu5ihryk2h3ecab6cswci
 number_of_agents: 4
 deployment:
   agent:
@@ -34,6 +34,7 @@ type: skill
     asylum_strategy:
       args:
         data_dir: /data
+        output_dir: /output
 1:
   models:
     agent_persona:
@@ -61,6 +62,7 @@ type: skill
     asylum_strategy:
       args:
         data_dir: /data
+        output_dir: /output
 3:
   models:
     agent_persona:
@@ -74,6 +76,7 @@ type: skill
     asylum_strategy:
       args:
         data_dir: /data
+        output_dir: /output
 ---
 public_id: eightballer/telegram_wrapper:0.1.0:bafybeic2hcolhlbswi5xsvkmjtqovo2fecxzz2xg3fc7tmyuo2pr3imxnm
 type: connection

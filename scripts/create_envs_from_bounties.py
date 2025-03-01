@@ -2,6 +2,7 @@
 This script is used to create environments from the bounties in the datastore.
 """
 
+from textwrap import dedent
 import yaml
 from packages.zarathustra.skills.asylum_abci_app.behaviours import SPONSOR_BOUNTY_DATA
 import json
@@ -100,6 +101,13 @@ def create_envs_from_bounties(bounty_id: int, sponsor_id: str, dev_index: int):
 
     devs = {}
 
+    
+    gitmodules = Path(".gitmodules")
+
+    if not gitmodules.exists():
+        gitmodules.write_text("")
+
+    commands = []
     for sponsor, dev_data in data.items():
         selected_devs, repos = lookup_devs_for_project(sponsor, data)
         print(f"Sponsor: {sponsor}")
@@ -136,7 +144,25 @@ def create_envs_from_bounties(bounty_id: int, sponsor_id: str, dev_index: int):
         with open(env_file, "w") as f:
             f.write(env_vars)
         print(f"Created environment file: {env_file}")
+
     
+        path_ = Path("output") / sponsor / f"bounty_{bounty_id}"
+        if not path_.exists():
+            continue
+
+        url = f"https://github.com/agent-asylum/{sponsor}_bounty_{bounty_id}.git"
+        commmand = f"git submodule add {url} output/flow/bounty_0"
+        result = dedent(f"""
+        [submodule "output/{sponsor}/bounty_{bounty_id}"]
+        path = output/{sponsor}/bounty_{bounty_id}
+        url = https://github.com/agent-asylum/{sponsor}_bounty_{bounty_id}.git
+        """)
+        if gitmodules.read_text().find(result) == -1:
+            gitmodules.write_text(gitmodules.read_text() + result)
+            print("Added submodule to .gitmodules")
+        else:
+            print("Submodule already exists in .gitmodules")
+
 
 if __name__ == "__main__":
     create_envs_from_bounties()
