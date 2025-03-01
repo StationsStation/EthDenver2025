@@ -77,6 +77,11 @@ def get_all_bounty_info(data_dir: Path) -> dict[str, dict[str, str]]:
 def get_bounty_info(context) -> str:
     """Get sponsor-specific bounty-specific info."""
     all_bounties = get_all_bounty_info(context.asylum_strategy.data_dir)
+
+    def clean_str(s: str) -> str:
+        return s.replace("_", " ").lower()
+
+    all_bounties = {clean_str(k): v for k, v in all_bounties.items()}
     target_sponsor = context.agent_persona.sponsor
     if not (sponsor_bounties := all_bounties.get(target_sponsor)):
         msg = f"{target_sponsor} not in bounty info"
