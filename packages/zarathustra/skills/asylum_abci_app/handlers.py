@@ -1,7 +1,6 @@
 # ------------------------------------------------------------------------------
 #
-#   Copyright 2022 Valory AG
-#   Copyright 2018-2021 Fetch.AI Limited
+#   Copyright 2025 zarathustra
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,7 +16,7 @@
 #
 # ------------------------------------------------------------------------------
 
-"""This module contains the handler for the 'metrics' skill."""
+"""This module contains the handler for the 'asylum_abci_app' skill."""
 
 import re
 import json
@@ -43,7 +42,7 @@ from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     DefaultDialogues,
 )
 from packages.zarathustra.connections.openai_api.connection import reconstitute
-from packages.zarathustra.skills.asylum_abci_app.behaviours import TELEGRAM_MSG_CHAR_LIMIT
+from packages.zarathustra.skills.asylum_abci_app.behaviours import TELEGRAM_MSG_CHAR_LIMIT, get_bounty_info
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
@@ -60,11 +59,12 @@ def chunk_text(text: str, max_chars: int = TELEGRAM_MSG_CHAR_LIMIT):
     return (text[i : i + max_chars] for i in range(0, len(text), max_chars))
 
 
-def create_readme(context, mermaid: str, out_path: Path):
+def create_readme(context, mermaid: str, fsm_spec, out_path: Path):
     data_dir = context.asylum_strategy.data_dir
     template_file = data_dir / "README.md.template"
     content = template_file.read_text()
-    # TODO: get_bounty_info
+    bounty_info: str = get_bounty_info(context)
+    sponsor_bounty = bounty_info.split("\nDescription:")[0]
     authors = set()
     messages = []
     for text in context.asylum_strategy.chat_history:
@@ -76,8 +76,9 @@ def create_readme(context, mermaid: str, out_path: Path):
             messages.append(f"Human agent says:\n{text}")
     agent_conversation = "\n\n".join(f"{i}. {msg}" for i, msg in enumerate(messages))
     formatted_readme = content.format(
-        project_name="TODO",
+        project_name=fsm_spec.label,
         authors=", ".join(authors),
+        sponsor_bounty=sponsor_bounty,
         mermaid_diagram=mermaid,
         agent_conversation=agent_conversation,
     )
@@ -165,13 +166,13 @@ class LlmChatCompletionHandler(Handler):
                 fsm_spec.validate()
                 fsm_spec.label = f"{sponsor.replace(' ', '')}{bounty}AbciApp"
                 mermaid: str = fsm_spec.to_mermaid().strip()
-                fsm_spec: str = fsm_spec.to_string().strip()
+                fsm_spec_str: str = fsm_spec.to_string().strip()
                 out_path = data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
                 out_path.mkdir(exist_ok=True, parents=True)
                 fsm_out_path = out_path / "fsm_specification.yaml"
                 mermaid_out_path = out_path / "diagram.mmd"
-                create_readme(self.context, mermaid, out_path)
-                fsm_out_path.write_text(fsm_spec)
+                create_readme(self.context, mermaid, fsm_spec, out_path)
+                fsm_out_path.write_text(fsm_spec_str)
                 mermaid_out_path.write_text(mermaid)
                 emoji = secrets.choice("😎😁😍🫡🦾")
                 text += f"\n\nI verified the Mermaid diagram, and it constitutes a valid FSM! {emoji}"
