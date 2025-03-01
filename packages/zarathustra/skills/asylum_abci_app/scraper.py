@@ -45,8 +45,6 @@ class GitHubScraper:
     def save_user_data(self, username: str, issues: dict) -> str | None:
         """Save issues data to a JSON file in user's directory."""
         user_dir = self.get_user_data_dir(username)
-        if not user_dir:
-            return None
 
         filename = "repos.json"
         filepath = user_dir / filename

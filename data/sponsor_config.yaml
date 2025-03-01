@@ -66,3 +66,20 @@ taraxa:
   - https://github.com/Taraxa-project/taraxa-indexer
   - https://github.com/lara-staking/liquid-staking
   - https://github.com/Taraxa-project/bridge
+
+okto:
+  devs:
+  - akathecoder
+  - zaje1
+  repos:
+  - https://github.com/okto-hq/
+  - https://github.com/zaje1/okto-sdk-docs
+
+story:
+  devs:
+  - LeoHChen
+  - Spabob
+  - kingster-will
+  repos:
+  - https://github.com/piplabs/story
+  - https://github.com/storyprotocol/protocol-core-v1
