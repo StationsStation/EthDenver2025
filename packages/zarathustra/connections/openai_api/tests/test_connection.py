@@ -130,7 +130,7 @@ class TestOpenaiApiConnection:
         """Test the handleling of an inbound create performative."""
         await self.openai_api_connection.connect()
 
-        model = Model.META_LLAMA_3_3_70B_INSTRUCT
+        model = Model.META_LLAMA_3_1_405B_INSTRUCT_FP8  
         messages = MESSAGES
         number_of_responses = 2
 
