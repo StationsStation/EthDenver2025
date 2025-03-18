@@ -1,18 +1,6 @@
-[submodule "output/flow/bounty_0"]
-path = output/flow/bounty_0
-url = https://github.com/agent-asylum/flow_bounty_0.git
-
 [submodule "output/hedera/bounty_0"]
 path = output/hedera/bounty_0
 url = https://github.com/agent-asylum/hedera_bounty_0.git
-
-[submodule "output/internet_computer/bounty_0"]
-path = output/internet_computer/bounty_0
-url = https://github.com/agent-asylum/internet_computer_bounty_0.git
-
-[submodule "output/icp/bounty_0"]
-path = output/icp/bounty_0
-url = https://github.com/agent-asylum/internet_computer_bounty_0.git
 
 [submodule "output/taraxa/bounty_0"]
 path = output/taraxa/bounty_0
