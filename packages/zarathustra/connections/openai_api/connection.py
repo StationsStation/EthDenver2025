@@ -289,15 +289,7 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
                     ),
                     timeout=LLM_RESPONSE_TIMEOUT,
                 )
-                data = chat_completion.to_json()
-                model_class = chat_completion.__class__.__name__
-                module_name = chat_completion.__module__
-                return dialogue.reply(
-                    performative=LlmChatCompletionMessage.Performative.RESPONSE,
-                    data=data,
-                    model_class=model_class,
-                    model_module=module_name,
-                )
+                break
             except TimeoutError as e:
                 self.logger.exception(f"Model {model} did not respond timely: {e}")
                 retries -= 1
@@ -316,7 +308,16 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
                     error_code=message.ErrorCode.OTHER_EXCEPTION,
                     error_msg=f"{e}",
                 )
-        return None
+
+        data = chat_completion.to_json()
+        model_class = chat_completion.__class__.__name__
+        module_name = chat_completion.__module__
+        return dialogue.reply(
+            performative=LlmChatCompletionMessage.Performative.RESPONSE,
+            data=data,
+            model_class=model_class,
+            model_module=module_name,
+        )
 
     async def retrieve(
         self, message: LlmChatCompletionMessage, dialogue: LlmChatCompletionDialogue
