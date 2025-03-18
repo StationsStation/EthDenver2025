@@ -6,8 +6,8 @@
         "connection/zarathustra/openai_api/0.1.0": "bafybeicgrjgthj6vva3spg4apy43ptubw47ycfk3phhpfncblf2qnz7qju",
         "skill/zarathustra/asylum_abci_app/0.1.0": "bafybeihxbfv3c3e5i3j4zqh4hcfcxkud2zsfdmjbndpu46aunsw4uobsoa",
         "agent/eightballer/telegram_bot/0.1.0": "bafybeigu7wayn52ozz5t4bjym2hcoz3lq6dgn7fkob4k3wxbcv5eigqesq",
-        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeia5zve2x2l4xgk7d27bapegrh5seoytcw6hvwpdqfghq35z73o3gm",
-        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeiaihpjemxctugyqtlcqqaa242nhtwuppdfuxrelf6qvr3y2kk6vwy"
+        "agent/zarathustra/asylum_abci_app/0.1.0": "bafybeig7z2osr3lnyvjqhopf6r36aqv44k2s5n7akcokfggthetcdyg4oq",
+        "service/zarathustra/asylum_abci_app/0.1.0": "bafybeig22jlt64eg4wblgj6zcvr4zvtlgcwkrapvnoj2ljnadv2yd6gzuy"
     },
     "third_party": {
         "protocol/eightballer/default/0.1.0": "bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy",

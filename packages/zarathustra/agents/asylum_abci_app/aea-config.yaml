@@ -7,7 +7,7 @@ aea_version: '>=1.55.0, <2.0.0'
 fingerprint:
   current_spec.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
   install.sh: bafybeigpdywvbxo4lr77zff4i7px2j6gjaqhyci4d4dzrrjj3ld5sxr7b4
-  tests/test_agent.py: bafybeib5bc55nvmuemamyb6ikkq6j4dl6yqq7bwtrtkgig2za3glxyekaq
+  tests/test_agent.py: bafybeigy55zztanqk75ihj5duklg2gmtv3cs6c4a7jpbpysnycy6jxcwiy
 fingerprint_ignore_patterns: []
 connections:
 - eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
