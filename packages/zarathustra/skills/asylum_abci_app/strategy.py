@@ -55,7 +55,6 @@ class AgentPersona(Model):
     """AgentPersona."""
 
     github_username: str
-    role: str
     github_repositories: list[str]
     github_pat: str
     sponsor: str

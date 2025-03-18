@@ -8,30 +8,28 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeiarezohbq3skvjb6k5djqpyr2cssmconp3jbhsoisrnmw2pqly47q
-  behaviours.py: bafybeid4w76zrq5xw4gukyflesg3uknduwht4nzot4vlwag3q635xaelee
+  behaviours.py: bafybeidrriknbvetgcwdpairagisdzksalf7xnodia47esxamk5h35zxhq
   dialogues.py: bafybeihumikopwajayxsmbyz4dqhzzchief6qkgcjfjtdtni62wazii6ea
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeigrdnhgizxb3uxbmnwyr2o56makdfeaosjxzpund3xiuhc5e33bti
+  handlers.py: bafybeidgqgczyezmlxlpwwninfp3ezulzxsnzmdhwchsaqu7scxxopvwhe
   mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
   scraper.py: bafybeia7m3ilj5puq7iycx4x62vndee72qakxsa5zv34rq2v5jscniz4nu
-  strategy.py: bafybeickw6x3vydvdbmtuy2c5ynfgq5c4ezfvu42keaoyie4w4kht2m4h4
+  strategy.py: bafybeiehuaizlg4ddwgnngp5re4xiafwogzh5dajrnvqq77qiilbikeoae
   tests/__init__.py: bafybeigb2ji4vkcap3hokcedggjwsrah7te2nxjhkorwf3ibwgyaa2glma
-  tests/test_github_scraper.py: bafybeiat5pp3qnu3loc2ckh3fm6vrci47i7s2yautjg5j3dvgcqvciwvai
-  tests/test_metrics.py: bafybeifwz4pylzite3rjvbzz6oicjvo5uhgnxusz7bn4s3vrhhshdkx724
-  tests/test_metrics_dialogues.py: bafybeidnq2lfivl36i3r4qudfpdnlqo5moifwifykogb3hc7oyh6xuu6ai
+  tests/test_github_scraper.py: bafybeicn4gihrs65togtderphgfnkmto2ejompyeygenuwxtd6l7pcr7fe
   workflows/create_from_fsm.yaml: bafybeigsdx6ap2dgtkuyexfm2ejyozdbnacyanceu7qtdowyagkla3jodq
   workflows/create_new_repo.yaml: bafybeiepswiusslvve7zfts5b5ka5xfps6rew6uajp7lzxbrisiqbpnks4
   workflows/create_pr.yaml: bafybeic4ka22fiy3gv452av5n3533w7wqixd2mnui57e3ov6byqj6z3c5i
   workflows/lint_repo.yaml: bafybeia6wjum3mo475l5msz2qieicpgdysx2dnom3itdfvrd5bk5pmccqa
 fingerprint_ignore_patterns: []
 connections:
-- zarathustra/openai_api:0.1.0:bafybeihfzkq5mxzf54kgtbrlgrbwd5l2osixnur7e6iszumla3vbgoucue
-- eightballer/telegram_wrapper:0.1.0:bafybeib2sm5p4wtnerutf3y4wzzkk2hhzbl5tf3z5crk3xxyangxngsqjm
+- zarathustra/openai_api:0.1.0:bafybeicgrjgthj6vva3spg4apy43ptubw47ycfk3phhpfncblf2qnz7qju
+- eightballer/telegram_wrapper:0.1.0:bafybeicnzu2fsjejj4loqcc2bbixgovrbdxpt3qnad6kjrptu7rghgh74e
 contracts: []
 protocols:
 - eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
 - eightballer/http:0.1.0:bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme
-- eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
+- eightballer/chatroom:0.1.0:bafybeib36ua2o3lea5vkp6erhf23wb4egm6us5xj2z2xd7sq2tjarlzt4i
 - zarathustra/llm_chat_completion:1.0.0:bafybeifdp2rwfar5vbs33p56dlin76v62p5fdvspwnpasraunp2wa7gxo4
 skills: []
 behaviours:
@@ -69,7 +67,6 @@ models:
     class_name: AsylumStrategy
   agent_persona:
     args:
-      role: null
       github_username: 8ball030
       github_repositories: []
       github_pat: null

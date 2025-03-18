@@ -1,7 +1,8 @@
 """Tests for the GitHub scraper functionality."""
 
-import os
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 import pytest
 from dotenv import load_dotenv
@@ -16,22 +17,46 @@ load_dotenv()
 TEST_DATA_DIR = Path(__file__).parent / "data"
 
 
-def test_scrape_user_interactions():
+@pytest.fixture
+def data_dir() -> Path:
+    """Create a temporary directory for test data."""
+    with TemporaryDirectory() as tmp_dir:
+        return Path(tmp_dir)
+
+
+def test_scrape_user_interactions(data_dir: Path):
     """Test the GitHub scraper with real data."""
     # Verify GitHub token is available
-    assert os.getenv("GITHUB_PAT"), "GITHUB_PAT environment variable is not set"
 
+    gh_pat = "gh_pat"
     # Ensure test directory exists
-    TEST_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
     # Initialize scraper
-    scraper = GitHubScraper(data_dir=str(TEST_DATA_DIR))
+
+    scraper = GitHubScraper(data_dir=str(data_dir), gh_pat=gh_pat)
 
     # Test data
     usernames = ["8ball030"]
-    repos = ["https://github.com/valory-xyz/open-autonomy"]
+    repos = ["https://github.com/StationsStation/EthDenver2025"]
 
-    all_user_data = scraper.scrape_user_interactions(usernames, repos, save=True)
+    with (
+        patch(
+            "packages.zarathustra.skills.asylum_abci_app.scraper.GitHubScraper._fetch_repo_issues"
+        ) as mock_get_issues,
+        patch("packages.zarathustra.skills.asylum_abci_app.scraper.GitHubScraper._fetch_comments") as mock_get_comments,
+    ):
+
+        def mock_comments(*args, **kwargs):
+            del args, kwargs
+            return [{"author": "test", "body": "test comment"}]
+
+        def mock_issues(*args, **kwargs):
+            del args, kwargs
+            return [{"title": "test", "body": "test issue", "state": "open", "created_at": "2021-01-01T00:00:00Z"}]
+
+        mock_get_issues.side_effect = mock_issues
+        mock_get_comments.side_effect = mock_comments
+
+        all_user_data = scraper.scrape_user_interactions(usernames, repos, save=True)
 
     assert isinstance(all_user_data, dict)
     assert all(username in all_user_data for username in usernames)
@@ -41,7 +66,7 @@ def test_scrape_user_interactions():
         assert isinstance(user_issues, dict)
 
         # Verify data was saved correctly
-        user_dir = TEST_DATA_DIR / username
+        user_dir = data_dir / username
         assert user_dir.exists()
         assert any(str(file).endswith(".json") for file in user_dir.iterdir())
 

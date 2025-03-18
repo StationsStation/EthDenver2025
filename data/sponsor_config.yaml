@@ -81,3 +81,10 @@ okto:
   - https://github.com/okto-hq/
   - https://github.com/zaje1/okto-sdk-docs
 
+stations_station:
+  devs:
+  - 8ball030
+  - zarathustra
+  repos:
+  - https://github.com/8ball030/auto_dev
+

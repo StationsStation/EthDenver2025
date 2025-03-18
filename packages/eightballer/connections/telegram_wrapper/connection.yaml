@@ -16,7 +16,7 @@ fingerprint:
 fingerprint_ignore_patterns: []
 connections: []
 protocols:
-- eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
+- eightballer/chatroom:0.1.0:bafybeib36ua2o3lea5vkp6erhf23wb4egm6us5xj2z2xd7sq2tjarlzt4i
 class_name: TelegramWrapperConnection
 config:
   target_skill_id: eightballer/asylum_abci_app:0.1.0

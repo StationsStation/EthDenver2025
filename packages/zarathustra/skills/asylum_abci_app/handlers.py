@@ -174,6 +174,12 @@ class LlmChatCompletionHandler(Handler):
                     return
                 fsm_out_path = out_path / "fsm_specification.yaml"
                 mermaid_out_path = out_path / "diagram.mmd"
+                if fsm_out_path.exists():
+                    # We change the name of the FSM spec file to avoid overwriting
+                    spec_id = secrets.token_hex(4)
+                    fsm_out_path = out_path / f"fsm_specification_{spec_id}.yaml"
+                    mermaid_out_path = out_path / f"diagram_{spec_id}.mmd"
+
                 create_readme(self.context, mermaid, fsm_spec, out_path)
                 fsm_out_path.write_text(fsm_spec_str)
                 mermaid_out_path.write_text(mermaid)

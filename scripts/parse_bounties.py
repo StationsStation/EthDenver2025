@@ -3,6 +3,7 @@
 import re
 from pathlib import Path
 
+
 PRICE_REGEX_PATTERN = r"(?m)(?=^\$\d{1,3}(?:,\d{3})*)"
 RAW_SPONSOR_BOUNTY_DATA_FILE = "ethdenver-prizes.txt"
 

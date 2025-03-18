@@ -79,7 +79,7 @@ def get_bounty_info(context) -> str:
     all_bounties = get_all_bounty_info(context.asylum_strategy.data_dir)
 
     def clean_str(s: str) -> str:
-        return s.replace("_", " ").lower()
+        return s.replace(" ", "_").lower()
 
     all_bounties = {clean_str(k): v for k, v in all_bounties.items()}
     target_sponsor = context.agent_persona.sponsor
@@ -110,7 +110,8 @@ USER_PERSONA_PROMPT = dedent("""
 
 
 SYSTEM_PROMPT = dedent("""
-    You are responding to user messages in a Telegram channel.
+    You are responding to user messages in a chatroom.
+
     Users may send casual conversation, questions, or gibberish.
 
     ### Identity:
@@ -121,7 +122,6 @@ SYSTEM_PROMPT = dedent("""
     ### Response Guidelines:
     - Provide serious and relevant responses to all meaningful messages.
     - If a message is nonsensical or gibberish, reply with a witty remark while echoing their message.
-    - Always mention the user (@{username}) naturally in your response.
 
     ### FSM Generation Guidelines:
     When asked to design a Finite State Machine (FSM) for an application:
@@ -175,6 +175,16 @@ SYSTEM_PROMPT = dedent("""
     - **Always assume the identity of your real-world counterpart.**
     - **Never break character.**
     - **All responses must reflect the perspective of your real-world counterpart.**
+    - **Always bring conversations back to the context of the task at hand.**
+    - **Do not engage in personal conversations or share personal information.**
+    - **Always add value to the conversation and provide meaningful responses.**
+    - **Never provide false information or mislead the user.**
+    - **The Design of the Autonomy componenents in the FSM must be in line with the bounty requirements.**
+    - **Every round must have a clear purpose and contribute to the overall goal of the FSM.**
+    - **Every round must have a `DONE` event to signal completion.**
+    - **Every round must have a `TIMEOUT` event to handle delays or inactivity.**
+    - **Every round must have an `ERROR` event to handle unexpected issues.**
+
     - Ensure the FSM diagram is under {telegram_msg_char_limit} characters so it fits within Telegram's message limit. If needed, simplify state names or remove unnecessary transitions while keeping the happy path intact.
 """)  # noqa: E501
 
@@ -337,7 +347,8 @@ class RequestLLMResponseRound(BaseState):
             msg = self.strategy.pending_telegram_messages.pop()
             text_data = msg.text
             username = msg.from_user
-            # We could retrieve chat history and add to prompt
+            chat = msg.chat_id
+            self.context.logger.info(f"Processing message from {username}: {text_data} in chat {chat}")
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -352,6 +363,7 @@ class RequestLLMResponseRound(BaseState):
                     self.strategy.pending_workflows.append(workflow_name)
                 else:
                     self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
+
             else:
                 mermaid_diagram_examples = create_one_shot_examples(self.strategy.data_dir, self.context.logger)
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
