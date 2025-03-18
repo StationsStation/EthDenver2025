@@ -14,18 +14,18 @@ connections:
 - eightballer/http_client:0.1.0:bafybeiaz5auftwxpt4czrmeeesggqlkc2kosmetq6adrebeu6g7bkhqc2u
 - eightballer/http_server:0.1.0:bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq
 - eightballer/prometheus:0.1.1:bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi
-- eightballer/telegram_wrapper:0.1.0:bafybeib2sm5p4wtnerutf3y4wzzkk2hhzbl5tf3z5crk3xxyangxngsqjm
+- eightballer/telegram_wrapper:0.1.0:bafybeicnzu2fsjejj4loqcc2bbixgovrbdxpt3qnad6kjrptu7rghgh74e
 - zarathustra/openai_api:0.1.0:bafybeihfzkq5mxzf54kgtbrlgrbwd5l2osixnur7e6iszumla3vbgoucue
 contracts: []
 protocols:
-- eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
+- eightballer/chatroom:0.1.0:bafybeib36ua2o3lea5vkp6erhf23wb4egm6us5xj2z2xd7sq2tjarlzt4i
 - eightballer/default:0.1.0:bafybeicsdb3bue2xoopc6lue7njtyt22nehrnkevmkuk2i6ac65w722vwy
 - eightballer/http:0.1.0:bafybeid75xhq7hfdt7sgj7yrn44yj57xrgxscaw34ir46tndfzvodioxme
 - eightballer/prometheus:1.0.0:bafybeidxo32tu43ru3xlk3kd5b6xlwf6vaytxvvhtjbh7ag52kexos4ke4
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- zarathustra/asylum_abci_app:0.1.0:bafybeibrxsojugb57vcgxqcdnl6h56tl5c5mwfsk42tsyupcfzpz2xne2i
+- zarathustra/asylum_abci_app:0.1.0:bafybeid2xshgra2xcoici3alpi4ymtnozb6ms4yrnge26w7ttltbir2aha
 customs: []
 default_ledger: ethereum
 required_ledgers:
@@ -85,7 +85,6 @@ type: skill
 models:
   agent_persona:
     args:
-      role: developer
       github_username: ${str:YOU_GITHUB_USERNAME}
       github_repositories: ${list:["https://github.com/valory-xyz/open-autonomy"]}
       github_pat: ${str:ghp_1z2z3z4z5z6z7z8z9z0z}

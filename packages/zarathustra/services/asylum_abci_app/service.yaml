@@ -5,12 +5,12 @@ description: A new service, scaffolded by the Adev cli from zarathustra/asylum_a
 aea_version: '>=1.0.0, <2.0.0'
 license: apache-2.0
 fingerprint:
-  .env.example: bafybeigmgmwown66u7j5pqancojrc5ry2pwzmnlvqnwg2rfcjfi6irgplu
+  .env.example: bafybeigynkyw3kpkncyuiglrf4y5sutdl7ilvf3mil7t2wysshz2oiqtzi
   __init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
   tests/__init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
   tests/test_service.py: bafybeicslmnjnf43pbzmwlqr7p7xw2iktcrnuq6l7klkrc5r4yberg66u4
 fingerprint_ignore_patterns: []
-agent: zarathustra/asylum_abci_app:0.1.0:bafybeiefn5zeahzvwg2bv4tafbburpofs4smddu5ihryk2h3ecab6cswci
+agent: zarathustra/asylum_abci_app:0.1.0:bafybeiamancvuzfqhr44jwtn6ldnuxejngfxnyutsyo3ngzcn5t3xud4t4
 number_of_agents: 4
 deployment:
   agent:
@@ -68,8 +68,8 @@ type: skill
     agent_persona:
       args:
         role: developer
-        github_username: ${DEV_NAME_2:str:8ball030}
-        github_repositories: ${DEV_REPOS_2:list:["https://github.com/valory-xyz/open-autonomy"]}
+        github_username: ${DEV_NAME_3:str:8ball030}
+        github_repositories: ${DEV_REPOS_3:list:["https://github.com/valory-xyz/open-autonomy"]}
         github_pat: ${GITHUB_PAT:str:ghp_1z2z3z4z5z6z7z8z9z0z}
         sponsor: ${SPONSOR:str:flow}
         bounty: ${BOUNTY:int:0}
