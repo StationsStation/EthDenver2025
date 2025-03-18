@@ -21,11 +21,11 @@
 
 # pylint: disable=too-many-statements,too-many-locals,no-member,too-few-public-methods,too-many-branches,not-an-iterable,unidiomatic-typecheck,unsubscriptable-object
 import logging
-from typing import Any, Dict, Optional, Set, Tuple, cast
+from typing import Any, Set, Dict, Tuple, Optional, cast
 
-from aea.configurations.base import PublicId
 from aea.exceptions import AEAEnforceError, enforce
 from aea.protocols.base import Message  # type: ignore
+from aea.configurations.base import PublicId
 
 from packages.eightballer.protocols.chatroom.custom_types import (
     ErrorCode as CustomErrorCode,

@@ -22,17 +22,21 @@
 # pylint: disable=too-many-statements,too-many-locals,no-member,too-few-public-methods,redefined-builtin
 from typing import Any, Dict, cast
 
-from aea.mail.base_pb2 import DialogueMessage  # type: ignore
-from aea.mail.base_pb2 import Message as ProtobufMessage  # type: ignore
-from aea.protocols.base import Message  # type: ignore
-from aea.protocols.base import Serializer  # type: ignore
+from aea.mail.base_pb2 import (
+    Message as ProtobufMessage,  # type: ignore
+    DialogueMessage,  # type: ignore
+)
+from aea.protocols.base import (
+    Message,  # type: ignore
+    Serializer,  # type: ignore
+)
 
 from packages.eightballer.protocols.chatroom import chatroom_pb2  # type: ignore
-from packages.eightballer.protocols.chatroom.custom_types import (  # type: ignore
-    ErrorCode,
-)
 from packages.eightballer.protocols.chatroom.message import (  # type: ignore
     ChatroomMessage,
+)
+from packages.eightballer.protocols.chatroom.custom_types import (  # type: ignore
+    ErrorCode,
 )
 
 

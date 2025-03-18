@@ -4,6 +4,7 @@ import re
 import json
 from pathlib import Path
 
+
 SPONDER_HEADER = "## "
 BOUNTY_HEADER = "### "
 RAW_SPONSOR_BOUNTY_DATA_FILE = "README.md"

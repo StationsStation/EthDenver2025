@@ -2,14 +2,16 @@
 This script is used to create environments from the bounties in the datastore.
 """
 
-from textwrap import dedent
-import yaml
-from packages.zarathustra.skills.asylum_abci_app.behaviours import SPONSOR_BOUNTY_DATA
+import os
 import json
 from pathlib import Path
+from textwrap import dedent
+
+import yaml
 import rich_click as click
 from rich import print
-import os
+
+from packages.zarathustra.skills.asylum_abci_app.behaviours import SPONSOR_BOUNTY_DATA
 
 
 ENV_TEMPLATE = """
