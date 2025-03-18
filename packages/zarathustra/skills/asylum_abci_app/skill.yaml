@@ -25,7 +25,7 @@ fingerprint:
   workflows/lint_repo.yaml: bafybeia6wjum3mo475l5msz2qieicpgdysx2dnom3itdfvrd5bk5pmccqa
 fingerprint_ignore_patterns: []
 connections:
-- zarathustra/openai_api:0.1.0:bafybeihfzkq5mxzf54kgtbrlgrbwd5l2osixnur7e6iszumla3vbgoucue
+- zarathustra/openai_api:0.1.0:bafybeifdebl6qu4xpnon34zevtwubsu5wwykekbkiu7q34o2yueymmzjlu
 - eightballer/telegram_wrapper:0.1.0:bafybeib2sm5p4wtnerutf3y4wzzkk2hhzbl5tf3z5crk3xxyangxngsqjm
 contracts: []
 protocols:
