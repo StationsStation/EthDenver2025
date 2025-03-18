@@ -20,6 +20,7 @@ keys.json
 /agent/
 /service/
 /asylum_abci_app/
+/asylum_abci_agent/
 
 packages/eightballer/protocols/default
 packages/eightballer/protocols/http
