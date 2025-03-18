@@ -8,10 +8,10 @@ aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   README.md: bafybeiesl5jlvvu4enydib32bpyfqphlkdulxy3oqid3t32cjxya5qykci
   __init__.py: bafybeiarezohbq3skvjb6k5djqpyr2cssmconp3jbhsoisrnmw2pqly47q
-  behaviours.py: bafybeid4w76zrq5xw4gukyflesg3uknduwht4nzot4vlwag3q635xaelee
+  behaviours.py: bafybeihclqw6na7trx7t6em2lp56665tnw3tktjmurp56sokssbyakxnzq
   dialogues.py: bafybeihumikopwajayxsmbyz4dqhzzchief6qkgcjfjtdtni62wazii6ea
   fsm_specification.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
-  handlers.py: bafybeigrdnhgizxb3uxbmnwyr2o56makdfeaosjxzpund3xiuhc5e33bti
+  handlers.py: bafybeib5fzcoxjs6pp5hrc4oaa64jpnkt6qnwbddkq4bsa7vpogt5l5zle
   mermaid_diagrams/asylum_abci_app.mmd: bafybeigyh7kf7gjnmsyfnpmf4pc5bq4zvzgzi5ehws3y3abbbxikzg55fm
   scraper.py: bafybeia7m3ilj5puq7iycx4x62vndee72qakxsa5zv34rq2v5jscniz4nu
   strategy.py: bafybeickw6x3vydvdbmtuy2c5ynfgq5c4ezfvu42keaoyie4w4kht2m4h4

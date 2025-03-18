@@ -42,7 +42,11 @@ from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     DefaultDialogues,
 )
 from packages.zarathustra.connections.openai_api.connection import reconstitute
-from packages.zarathustra.skills.asylum_abci_app.behaviours import TELEGRAM_MSG_CHAR_LIMIT, get_bounty_info
+from packages.zarathustra.skills.asylum_abci_app.behaviours import (
+    TELEGRAM_MSG_CHAR_LIMIT,
+    get_bounty_info,
+    get_chat_history,
+)
 from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
@@ -50,7 +54,6 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
 )
 
 
-BOT_PATTERN = re.compile(r"(🤖.*?🤖)")
 MERMAID_PATTERN = re.compile(r"```mermaid\s*([\s\S]+?)\s*```")
 
 
@@ -66,16 +69,7 @@ def create_readme(context, mermaid: str, fsm_spec, out_path: Path):
     content = template_file.read_text()
     bounty_info: str = get_bounty_info(context)
     sponsor_bounty = bounty_info.split("\nDescription:")[0]
-    authors = set()
-    messages = []
-    for text in context.asylum_strategy.chat_history:
-        if bot_match := BOT_PATTERN.search(text):
-            authors.add(bot_match.group(1))
-            messages.append(text)
-        else:
-            authors.add("Human")
-            messages.append(f"Human agent says:\n{text}")
-    agent_conversation = "\n\n".join(f"{i}. {msg}" for i, msg in enumerate(messages))
+    agent_conversation, authors = get_chat_history(context)
     formatted_readme = content.format(
         project_name=fsm_spec.label,
         authors=", ".join(authors),

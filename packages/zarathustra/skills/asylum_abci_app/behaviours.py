@@ -19,6 +19,7 @@
 """This package contains the behaviours for the AsylumAbciApp."""
 
 import os
+import re
 import json
 import functools
 from abc import ABC
@@ -53,6 +54,7 @@ TIMEZONE_UTC = UTC
 TELEGRAM_MSG_CHAR_LIMIT = 4_000
 MERMAID_DIAGRAMS = Path("specs") / "fsms" / "mermaid"
 SPONSOR_BOUNTY_DATA = Path("bounties") / "sponsor_bounties.json"
+BOT_PATTERN = re.compile(r"(🤖.*?🤖)")
 
 
 @functools.lru_cache
@@ -93,6 +95,21 @@ def get_bounty_info(context) -> str:
     bounty_key, description = bounty
     context.logger.info(f"Bounty selected for {target_sponsor}: {bounty_key}\n{description}")
     return f"Sponsor: {target_sponsor}\nBounty: {bounty_key}\nDescription:{description}\n"
+
+
+def get_chat_history(context) -> tuple[str, set[str]]:
+    """Get most recent telegram chat history."""
+    authors = set()
+    messages = []
+    for text in reversed(context.asylum_strategy.chat_history):
+        if bot_match := BOT_PATTERN.search(text):
+            authors.add(bot_match.group(1))
+            messages.append(text)
+        else:
+            authors.add("Human")
+            messages.append(f"Human agent says:\n{text}")
+    agent_conversation = "\n\n".join(f"{i}. {msg}" for i, msg in enumerate(messages))
+    return agent_conversation, authors
 
 
 USER_PERSONA_PROMPT = dedent("""
@@ -176,6 +193,9 @@ SYSTEM_PROMPT = dedent("""
     - **Never break character.**
     - **All responses must reflect the perspective of your real-world counterpart.**
     - Ensure the FSM diagram is under {telegram_msg_char_limit} characters so it fits within Telegram's message limit. If needed, simplify state names or remove unnecessary transitions while keeping the happy path intact.
+
+    ### Most recent message exchange leading up to this point (latest messages appear at the top):
+    {chat_history}
 """)  # noqa: E501
 
 
@@ -307,7 +327,7 @@ class RequestLLMResponseRound(BaseState):
         super().__init__(**kwargs)
         self._state = AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND
 
-    def act(self) -> None:
+    def act(self) -> None:  # noqa: PLR0914
         """Act."""
         self.sponsor_bounty_info = get_bounty_info(self.context)
         self.context.logger.info(f"In state: {self._state}")
@@ -357,6 +377,7 @@ class RequestLLMResponseRound(BaseState):
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
                 user_persona = self.context.asylum_strategy.user_persona
+                chat_history, _ = get_chat_history(self.context)
                 self.context.logger.info(f"I AM: {user_persona}")
                 content = [
                     Message(
@@ -368,6 +389,7 @@ class RequestLLMResponseRound(BaseState):
                             telegram_msg_char_limit=TELEGRAM_MSG_CHAR_LIMIT,
                             sponsor_bounty_info=self.sponsor_bounty_info,
                             mermaid_diagram_examples=mermaid_diagram_examples,
+                            chat_history=chat_history,
                         ),
                     ),
                     Message(role=Role.USER, content=text_data, name=username),
