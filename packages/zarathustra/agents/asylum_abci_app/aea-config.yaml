@@ -7,7 +7,6 @@ aea_version: '>=1.55.0, <2.0.0'
 fingerprint:
   current_spec.yaml: bafybeigzazuujebi3vxw4lxghqgss6fsmetm5iixjxkpqafs3ztfc3rxcy
   install.sh: bafybeigpdywvbxo4lr77zff4i7px2j6gjaqhyci4d4dzrrjj3ld5sxr7b4
-  tests/__init__.py: bafybeibkiew5ph62jf7mvavzjtwqozwivuniwpov6oi2hne4xvwa23pmau
   tests/test_agent.py: bafybeib5bc55nvmuemamyb6ikkq6j4dl6yqq7bwtrtkgig2za3glxyekaq
 fingerprint_ignore_patterns: []
 connections:
