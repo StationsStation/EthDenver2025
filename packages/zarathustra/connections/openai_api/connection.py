@@ -280,6 +280,7 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
 
         retries = MAX_RETRIES
         while retries:
+            retries -= 1
             try:
                 chat_completion = await asyncio.wait_for(
                     self._connection.chat.completions.create(
@@ -290,9 +291,8 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
                     timeout=LLM_RESPONSE_TIMEOUT,
                 )
                 break
-            except TimeoutError as e:
+            except (TimeoutError, asyncio.exceptions.CancelledError) as e:
                 self.logger.exception(f"Model {model} did not respond timely: {e}")
-                retries -= 1
                 if retries:
                     self.logger.warning(f"Retrying... {retries} attempts remaining.")
                 else:
@@ -303,11 +303,14 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
                     )
             except Exception as e:
                 self.logger.exception(f"Caught another exception: {e}")
-                return dialogue.reply(
-                    performative=LlmChatCompletionMessage.Performative.ERROR,
-                    error_code=message.ErrorCode.OTHER_EXCEPTION,
-                    error_msg=f"{e}",
-                )
+                if retries:
+                    self.logger.warning(f"Retrying... {retries} attempts remaining.")
+                else:
+                    return dialogue.reply(
+                        performative=LlmChatCompletionMessage.Performative.ERROR,
+                        error_code=message.ErrorCode.OTHER_EXCEPTION,
+                        error_msg=f"{e}",
+                    )
 
         data = chat_completion.to_json()
         model_class = chat_completion.__class__.__name__
