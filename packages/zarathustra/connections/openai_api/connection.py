@@ -49,6 +49,7 @@ from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
 CONNECTION_ID = PublicId.from_str("zarathustra/openai_api:0.1.0")
 _default_logger = logging.getLogger("aea.packages.zarathustra.connections.openai_api")
 
+MAX_RETRIES = 3
 LLM_RESPONSE_TIMEOUT = 30
 
 
@@ -277,34 +278,43 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
         messages = message.messages
         kwargs = message.kwargs
 
-        try:
-            chat_completion = await asyncio.wait_for(
-                self._connection.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    **kwargs,
-                ),
-                timeout=LLM_RESPONSE_TIMEOUT,
-            )
-        except (TimeoutError, asyncio.exceptions.CancelledError) as e:
-            self.logger.exception(f"Model {model} did not respond timely: {e}")
-            return dialogue.reply(
-                performative=LlmChatCompletionMessage.Performative.ERROR,
-                error_code=message.ErrorCode.OPENAI_ERROR,
-                error_msg=f"Model {model} did not respond timely: {e}",
-            )
-        except Exception as e:
-            self.logger.exception(f"Caught another exception: {e}")
-            return dialogue.reply(
-                performative=LlmChatCompletionMessage.Performative.ERROR,
-                error_code=message.ErrorCode.OTHER_EXCEPTION,
-                error_msg=f"{e}",
-            )
+        retries = MAX_RETRIES
+        while retries:
+            retries -= 1
+            try:
+                chat_completion = await asyncio.wait_for(
+                    self._connection.chat.completions.create(
+                        model=model,
+                        messages=messages,
+                        **kwargs,
+                    ),
+                    timeout=LLM_RESPONSE_TIMEOUT,
+                )
+                break
+            except (TimeoutError, asyncio.exceptions.CancelledError) as e:
+                self.logger.exception(f"Model {model} did not respond timely: {e}")
+                if retries:
+                    self.logger.warning(f"Retrying... {retries} attempts remaining.")
+                else:
+                    return dialogue.reply(
+                        performative=LlmChatCompletionMessage.Performative.ERROR,
+                        error_code=message.ErrorCode.OPENAI_ERROR,
+                        error_msg=f"Model {model} did not respond timely: {e}",
+                    )
+            except Exception as e:
+                self.logger.exception(f"Caught another exception: {e}")
+                if retries:
+                    self.logger.warning(f"Retrying... {retries} attempts remaining.")
+                else:
+                    return dialogue.reply(
+                        performative=LlmChatCompletionMessage.Performative.ERROR,
+                        error_code=message.ErrorCode.OTHER_EXCEPTION,
+                        error_msg=f"{e}",
+                    )
 
         data = chat_completion.to_json()
         model_class = chat_completion.__class__.__name__
         module_name = chat_completion.__module__
-
         return dialogue.reply(
             performative=LlmChatCompletionMessage.Performative.RESPONSE,
             data=data,

@@ -15,7 +15,7 @@ connections:
 - eightballer/http_server:0.1.0:bafybeidrvllrr23mc6bvjxn6v3hny6oiwhfgi72n2b7w6ck5luousjfbbq
 - eightballer/prometheus:0.1.1:bafybeicy4ck2wvauo2vh6ji64xrzlgezh27powi6ztokr4yujtf3cft6wi
 - eightballer/telegram_wrapper:0.1.0:bafybeib2sm5p4wtnerutf3y4wzzkk2hhzbl5tf3z5crk3xxyangxngsqjm
-- zarathustra/openai_api:0.1.0:bafybeihfzkq5mxzf54kgtbrlgrbwd5l2osixnur7e6iszumla3vbgoucue
+- zarathustra/openai_api:0.1.0:bafybeicg4j3aegxxrxoluckp3tzn26lzgs7wwmarg6pbymgdgw3vtunmju
 contracts: []
 protocols:
 - eightballer/chatroom:0.1.0:bafybeieue3u2ygfrvo567poypqoo3vk4xbxry62tclrbnbhkwcwhb5bjqy
@@ -25,7 +25,7 @@ protocols:
 - open_aea/signing:1.0.0:bafybeig2d36zxy65vd7fwhs7scotuktydcarm74aprmrb5nioiymr3yixm
 skills:
 - eightballer/prometheus:0.1.0:bafybeicl5i7e467aowfarke4bbyixo2dggar276njmvyuwbsby5pxshhtu
-- zarathustra/asylum_abci_app:0.1.0:bafybeie44mlapcbl766xd6fc26qgrsemxbhzdy4hs3ric5p5w2dcf75wku
+- zarathustra/asylum_abci_app:0.1.0:bafybeih6c3lzgk6x6ptlp34euwcwfmkauah25hgbegaf5xo7d73ggepa3y
 customs: []
 default_ledger: ethereum
 required_ledgers:
