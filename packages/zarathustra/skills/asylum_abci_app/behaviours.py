@@ -37,16 +37,31 @@ from auto_dev.commands.repo import scaffold_new_repo, create_github_repo
 from aea.configurations.base import PublicId
 from auto_dev.workflow_manager import Task, Workflow, WorkflowManager
 
-from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
+from packages.eightballer.protocols.chatroom.message import (
+    ChatroomMessage as TelegramMessage,
+)
 from packages.zarathustra.skills.asylum_abci_app.scraper import GitHubScraper
-from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AgentPersona, AsylumStrategy
+from packages.zarathustra.skills.asylum_abci_app.strategy import (
+    LLMActions,
+    AgentPersona,
+    AsylumStrategy,
+)
 from packages.zarathustra.connections.openai_api.connection import (
     CONNECTION_ID as OPENAI_API_CONNECTION_ID,
     Model as LLMModel,
 )
-from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
-from packages.eightballer.connections.telegram_wrapper.connection import CONNECTION_ID as TELEGRAM_CONNECTION_ID
-from packages.zarathustra.protocols.llm_chat_completion.custom_types import Role, Kwargs, Message, Messages
+from packages.zarathustra.protocols.llm_chat_completion.message import (
+    LlmChatCompletionMessage,
+)
+from packages.eightballer.connections.telegram_wrapper.connection import (
+    CONNECTION_ID as TELEGRAM_CONNECTION_ID,
+)
+from packages.zarathustra.protocols.llm_chat_completion.custom_types import (
+    Role,
+    Kwargs,
+    Message,
+    Messages,
+)
 
 
 TIMEZONE_UTC = UTC
@@ -54,12 +69,132 @@ TELEGRAM_MSG_CHAR_LIMIT = 4_000
 MERMAID_DIAGRAMS = Path("specs") / "fsms" / "mermaid"
 SPONSOR_BOUNTY_DATA = Path("bounties") / "sponsor_bounties.json"
 
+AGENT_ASYLUM_DIAGRAM = """
+You are an AI system architect. Your task is to design a finite‐state machine (FSM) in Mermaid syntax that models the workflow of a DAO governance council run by AI agents. The goal is to produce a clear, concise diagram that represents how agents adopt personas, vet incoming proposals, and either publish or block proposals for community voting. The system uses LayerZero for cross‐chain governance aggregation and Telegram for inter‐agent communication.  
+
+**Example: your own mermaid diagam - agent asylum
+
+```mermaid
+graph TD
+  CheckLocalStorageRound -->|DONE| CheckTelegramQueueRound
+  CheckLocalStorageRound -->|UPDATE_NEEDED| ScrapeGithubRound
+  ScrapeGithubRound -->|DONE| RequestLLMResponseRound
+  RequestLLMResponseRound -->|DONE| ProcessLLMResponseRound
+  RequestLLMResponseRound -->|ERROR| WaitBeforeRetryRound
+
+  CheckTelegramQueueRound -->|NEW_MESSAGES| RequestLLMResponseRound
+  CheckTelegramQueueRound  -->|TIMEOUT| RequestLLMResponseRound
+
+  ProcessLLMResponseRound -->|REPLY| SendTelegramMessageRound
+  ProcessLLMResponseRound -->|WORK| ExecuteProposedWorkflowRound
+  
+  SendTelegramMessageRound -->|DONE| CheckLocalStorageRound
+  ExecuteProposedWorkflowRound -->|DONE| CheckLocalStorageRound
+  WaitBeforeRetryRound -->|DONE| CheckLocalStorageRound
+```
+
+**Context & Roles**
+
+1. **Council Agents**  
+   - A single group of AI agents holding cross‐chain assets to perform weighted voting.  
+   - They adopt personalities from DAO members or famous Web3/DAO‐aligned people (persona construction happens once at startup, then cached).  
+   - They vet every incoming proposal before it becomes visible to the broader DAO.  
+   - If they approve, a proposal is packaged and sent to human DAO members; if they reject, the proposal is blocked and a rejection notification is sent.  
+   - Their on‐chain voting weight is computed using quadratic voting logic over multiple chains (via LayerZero message passing).
+
+2. **Proposer Agents**  
+   - Individual agents (modeling DAO members) that submit new proposals (some may be malicious, but that is not an explicit state in the FSM).  
+   - Their proposals end up in a Telegram‐driven queue that the council agents poll.
+
+3. **Human DAO Members**  
+   - Do not appear as explicit FSM states.  
+   - They only vote *after* the council agents have approved and published a proposal.  
+   - They receive notifications via Telegram when a proposal passes pre‐approval or is rejected.  
+
+**Key Constraints & Simplifications**
+
+- Persona construction (from Web3 data sources) happens once during startup if no local cache exists. No persona updates mid‐run.  
+- There is only one “catchall” error state (`WaitBeforeRetryRound`) that returns to the initial state on any failure.  
+- No human‐in‐loop state is modeled in the FSM; humans only enter after the council has approved a proposal.  
+- Malicious proposals are simply part of the incoming queue; no separate “MaliciousProposalRound” is needed.  
+
+**Required FSM States & Transitions**
+
+Your Mermaid FSM diagram must include at least these states and transitions. You may rename or reorganize as long as functionality is equivalent:
+
+1. **CheckPersonaCache**  
+   - → (if cache missing) → **ConstructPersonaRound**  
+   - → (if cache exists)  → **CheckTelegramQueue**
+
+2. **ConstructPersonaRound**  
+   - Fetch and assemble each agent’s persona from public Web3 data (e.g., on‐chain histories, notable tweets, published analyses).  
+   - → **SavePersonaToCache** (implicit; store cache locally)  
+   - → **CheckTelegramQueue**
+
+3. **CheckTelegramQueue**  
+   - Poll Telegram for any incoming proposal messages.  
+   - → (if new proposal in queue) → **PreProposalRound**  
+   - → (if no new proposals or timeout) → loop back to **CheckTelegramQueue**  
+
+4. **PreProposalRound**  
+   - Council agents discuss and vote (via Telegram polls) on whether to APPROVE or REJECT the proposal.  
+   - → (if vote == APPROVE) → **ComputeCrossChainWeights**  
+   - → (if vote == REJECT)  → **NotifyUsersProposalRejected**
+
+5. **ComputeCrossChainWeights**  
+   - Use LayerZero to fetch each council agent’s token balances across multiple chains.  
+   - Run a map‐reduce to calculate each agent’s quadratic voting power.  
+   - → **CreateOnChainProposal**
+
+6. **CreateOnChainProposal**  
+   - Package and send the proposal to each supported chain’s governance contract via LayerZero.  
+   - → **NotifyUsersProposalCreated**
+
+7. **NotifyUsersProposalCreated**  
+   - Send a Telegram notification to all human DAO members: “Council approved your proposal—now vote on‐chain.”  
+   - → back to **CheckTelegramQueue**
+
+8. **NotifyUsersProposalRejected**  
+   - Send a Telegram notification to the proposer and the DAO: “Council rejected your proposal,” including rationale.  
+   - → back to **CheckTelegramQueue**
+
+9. **WaitBeforeRetryRound** (Error State)  
+   - Any failure in any of the above states (e.g., API call, LayerZero failure, Telegram messaging error) transitions to this state.  
+   - → after a short delay → **CheckPersonaCache**
+
+**Error Handling**  
+- From **any** state, if there is an error, transition to **WaitBeforeRetryRound** with label “error.”  
+
+**Diagram Requirements**  
+- Use `graph TD` in Mermaid.  
+- Clearly label each state.  
+- Annotate each transition with the condition (e.g., “cache missing,” “vote == REJECT,” “timeout,” “error,” etc.).  
+- Use directional arrows (`-->`) for flow.  
+- Group persona‐related logic in comments or subgraphs if helpful.  
+
+**Deliverable**  
+Produce a Mermaid FSM diagram that exactly captures the above states and transitions. Ensure the diagram is syntactically valid Mermaid so it can be rendered directly.  
+"""
+
+BOUNTY_INFO = """
+## 1inch: 
+Build applications with the power of 1inch! Supercharge your applications' swaps with our classic and intent-based trading engine, and streamline your onchain data access with our simple REST APIs.Prizes\ud83c\udf7e Extensions for 1inch Cross-chain Swap (Fusion+) \u2e3a $12,000Split evenly between all qualifying projectsBuild an extension for 1inch Cross-chain Swap (Fusion+) that enable swaps between Ethereum and a non-EVM chain. 1inch Cross-chain Swap (Fusion+) is our novel implementation of cross-chain swaps using escrows. Any chain that supports escrow functionality is a candidate for a 1inch Cross-chain Swap (Fusion+) integration.Qualification RequirementsRequirements:  - Integration of one new chain into the 1inch Cross-chain Swap (Fusion+) ecosystem (command line script for the implementation is perfectly fine, no UI needed)  - Fully functional 1inch Cross-chain Swap (Fusion+) swap between Ethereum and a non-EVM chain  - Demonstrates handling of execution guarantees and refund logic  - Proper Git commit history (no single-commit entries on the final day)Judging criteria:  - UX simplicity and abstraction  - Security and reliability of the flow  - Code quality/completeness  - Documentation qualityLinks and Resources1inch Hackathon Guidehttps://hackathon.1inch.community\u2197\ud83d\udcc8 Extend Limit Order Protocol \u2e3a $6,500\ud83e\udd471st place. Build advanced strategies and hooks for the 1inch Limit Order Protocol.Project ideas:  - Develop an options hook  - Integrate concentrated liquidity  - TWAP swap  - Other creative projects are welcomeExisting examples built on top of Limit Order Protocol include ranged sells and dutch auctions (links in hackathon documentation)Qualification RequirementsRequirements:  - New functionality built on top of Limit Order Protocol (command line script for the implementation is perfectly fine, no UI needed)  - Proper Git commit history (no single-commit entries on the final day)Judging criteria:  - Innovation and originality  - Code quality/completeness  - Documentation qualityLinks and Resources1inch Hackathon Guidehttps://hackathon.1inch.community\u2197\ud83d\udd17 Utilize 1inch APIs \u2e3a $1,500Up to 5 teams will receive $300Utilize 1inch's infrastructure to help build your application  - Build with our swap protocols (1inch Cross-chain Swap (Fusion+), Intent-based Swap (Fusion), Classic Swap, limit order protocol)   - Build with any of our data APIs (price feeds API, wallet balances API, token metadata API, and many more)  - Use our Web3 API to interact with the blockchainQualification RequirementsRequirements:  - Your project uses at least one 1inch API to provide meaningful functionality for your users  - Proper Git commit history (no single-commit entries on the final day)Judging Criteria:  - Practicality and usefulness  - Code quality/completenessLinks and Resources1inch Hackathon Guidehttps://hackathon.1inch.community\u2197Resources1inch Hackathon Guidehttps://hackathon.1inch.community\u2197GuidesJobs"
+
+## LayerZero
+LayerZero is an omnichain interoperability protocol that enables seamless communication between different blockchains. It allows developers to build omnichain applications (OApps) that can interact across multiple chains as if they were on a single chain. Why build with LayerZero at a hackathon \u2014 Reach More Users: Deploy your dApp once and interact with users and assets across all supported chains.\u2014 Unify Liquidity: Avoid fragmented liquidity; build DEXes, lending platforms, etc., that leverage a shared cross-chain pool.\u2014 Simplify Development: Build complex cross-chain logic using familiar tools (Hardhat, Foundry, etc.) and LayerZero's contract standards (OApp, OFT, ONFT). Get started quickly with the create-lz-oapp CLI.\u2014 Enhance Security: Benefit from a configurable, decentralized security model using Decentralized Verifier Networks (DVNs).\u2014 Improve User Experience: Abstract away cross-chain complexities, offering seamless interactions without users needing multiple wallets or bridging steps.\u2014 Innovate: Explore novel use cases like cross-chain governance, gaming, data queries (lzRead), and complex multi-step workflows (Composability).Prizes\ud83d\udcd6 lzRead Track \u2e3a $4,000\ud83e\udd471st place. Build an innovative application that showcases LayerZero's horizontal composability features. Your project should break down a complex cross-chain workflow into discrete, sequential steps managed through LayerZero messages. Demonstrate how you can trigger follow-up actions (composed messages) on a destination chain after an initial LayerZero message is delivered, potentially involving interactions with multiple contracts or protocols across different chains. Focus on creating advanced, multi-step workflows that wouldn't be easily possible with traditional bridging or single atomic cross-chain transactions. Show how this approach improves user experience, reliability, or enables new use cases by decoupling operations and leveraging LayerZero's message-passing framework.Links and ResourcesOmnichain Composabilityhttps://docs.layerzero.network/v2/developers/evm/composer/overview\u2197\ud83c\udf96\ufe0f General Prize Track \u2e3a $2,000Up to 2 teams will receive $1,000For outstanding projects utilizing any LayerZero feature (OApp, OFT, ONFT, lzRead, Composability) to build a compelling omnichain application. This track rewards creative and well-executed projects that demonstrate the power and potential of LayerZero, even if they don't fit perfectly into the specific lzRead or Composability tracks. Show us your best omnichain ideas!Qualification Requirements1. Omnichain Messaging:Implement omnichain messaging solution via LayerZero integration, ensuring the application is built on Endpoint V2 for seamless cross-chain communication.2. Working Demo:We encourage you to build a well-rounded and polished project. If your implementation is complex, please at least demonstrate a complete implementation.ResourcesLayerZero Docshttps://docs.layerzero.network/\u2197Workshop\ud83d\udee0\ufe0f LayerZero WorkshopHands on guide to building on LayerzeroThis workshop is happening in-person05:00 PM CEST \u2014 Friday, May 30, 2025 in Workshop Room B1Guides"
+    
+## Hedera
+Committed to powering a digital economy underpinned by trust, Hedera stands apart as the leading enterprise-grade public blockchain on the market. The platform\u2019s unique hashgraph technology ensures lightning fast performance combined with the highest levels of security and efficiency.  With an open-source ecosystem and fixed, low fees, Hedera equips DeFi and enterprise developers with the predictability, tools, and services they need to build the next breakthrough application. The Hedera network is governed by a diverse council of the world\u2019s leading institutions to ensure transparent and fair decision-making.  By empowering the development of applications that address real-world challenges across DeFi, tokenization, AI, digital identity, and more, Hedera is building a new foundation for decentralized trust. For more information, visit www.hedera.com, or follow us on Twitter at @hedera, Telegram at t.me/hederahashgraph, or Discord at www.hedera.com/discord. The Hedera whitepaper can be found at www.hedera.com/papers.Prizes\ud83e\udd16 AI, Agents & Hedera Services \u2e3a $3,500\ud83e\udd471st place. Build and deploy innovative EVM\u2011based applications on Hedera, leveraging the Hedera Smart Contracts Service alongside key ecosystem tooling such as Chainlink, Chainlink CCIP, Pyth, LayerZero, HashPort, or HTS system contracts. Extra credit is given for incorporating additional Hedera native services.Qualification RequirementsA submission must:Hedera Deployment \u2013 Deploy smart contracts on Hedera Mainnet, Testnet, or Previewnet using the Hedera Smart Contracts Service (EVM).Integration \u2013 Integrate at least one of the following:Oracles (Chainlink, Pyth, Supra, etc.)Bridges (LayerZero, HashPort, Chainlink CCIP)HTS System Contracts for token creation/managementHedera\u2011native wallet flow (HashPack, Kabila, Blade, MetaMask Snap)Open Source \u2013 Provide source code in public GitHub repo(s) with contracts verified on Hashscan.Demo Video \u2013 Include a \u2264\u202f5\u2011minute demo video showing functionality and setup.Optional enhancements that boost your score:Use multiple Hedera services (HTS, HCS, Scheduled Txns, Mirror Node, etc.).Employ open\u2011source tooling that improves the Hedera EVM developer experience.Judging CriteriaInnovation \u2013 novelty of solutionFeasibility \u2013 real\u2011world viabilityExecution \u2013 code quality & completenessIntegration Depth \u2013 sophistication of Hedera usageValidation \u2013 user/business potentialImpact \u2013 contribution to Hedera KPIs (accounts, TPS, TVL, etc.)Pitch \u2013 clarity and persuasiveness of demoLinks and ResourcesGetting Started (EVM)https://docs.hedera.com/hedera/getting-started/evm-developers\u2197Smart Contract Tutorialshttps://docs.hedera.com/hedera/tutorials/smart-contracts\u2197Hedera Hackathon Cheat Sheethttps://github.com/hedera-dev/hedera-cheatsheets/blob/master/hedera-hackathon-starter-cheat-sheet-v1.pdf\u2197Hedera Smart Contracts Workshophttps://docs.hedera.com/hedera/tutorials/smart-contracts/hscs-workshop\u2197HTS System Contracts Guidehttps://docs.hedera.com/hedera/smart-contracts/hts-system-contracts\u2197Chainlink Docshttps://docs.chain.link/hedera\u2197Chainlink CCIPhttps://docs.chain.link/ccip\u2197LayerZero Docshttps://layerzero.network/developers\u2197Pyth Network Docshttps://pyth.network/developers\u2197Hedera Code Snippetshttps://github.com/hedera-dev/hedera-code-snippets\u2197Hedera Discord Communityhttps://hedera.com/discord\u2197Contract Verification on Hashscanhttps://docs.hedera.com/hedera/tutorials/smart-contracts/how-to-verify-a-smart-contract-on-hashscan\u2197\ud83d\udd25 Hedera Overall Prize: AI & Agents or EVM Builder \u2e3a $3,000Overall winner is the best project out of both AI and EVM tracks.AI Track Extras: Hedera Agent Kit \u00b7 HCS\u201110 (OpenConvAI) \u00b7 HIP\u2011991 \u00b7 Eliza plugin examples.EVM Track Extras: HTS System Contracts Guide \u00b7 Chainlink + CCIP \u00b7 LayerZero \u00b7 Pyth Network \u00b7 Contract verification guide.See more resources for specific tracks on their respective bounty pagesQualification Requirements1. AI & Agents TrackGoal: Build applications, agents, tooling, or infrastructure that combine AI/ML (LLMs, multi\u2011agent systems, etc.) with Hedera services.Core RequirementsHedera Deployment: Use \u2265\u202f1 Hedera service (EVM, HTS, HCS, Scheduled Txns, Mirror Node).Material AI Integration.Open\u2011source code & Hashscan\u2011verified contracts.\u2264\u202f5\u2011minute demo video.2. EVM Builder TrackGoal: Build and deploy innovative EVM dApps on Hedera Smart Contracts, integrating key tooling (Chainlink, CCIP, Pyth, LayerZero, HashPort, HTS system contracts).Core RequirementsHedera Smart Contracts (EVM) deployment.Integrate \u2265\u202f1 of: oracles \u2022 bridges \u2022 HTS system contracts \u2022 Hedera\u2011native wallet flow.Open\u2011source code & Hashscan\u2011verified contracts.\u2264\u202f5\u2011minute demo video.Optional for both tracks \u2192 extra points: use multiple Hedera services, contribute new open\u2011source tooling.Judging Criteria (applies to both tracks)InnovationFeasibilityExecution & Code QualityIntegration Depth (Hedera usage)Validation / Market PotentialImpact on Hedera KPIs (accounts, TPS, TVL)Pitch QualityLinks and ResourcesGetting Startedhttps://docs.hedera.com/hedera/getting-started\u2197Hedera Developer Playgroundhttps://portal.hedera.com/playground\u2197Hedera Hackathon Cheat Sheethttps://github.com/hedera-dev/hedera-cheatsheets/blob/master/hedera-hackathon-starter-cheat-sheet-v1.pdf\u2197Hedera Code Snippetshttps://github.com/hedera-dev/hedera-code-snippets\u2197Hedera Discordhttps://hedera.com/discord\u2197Workshop\ud83d\udee0\ufe0f Vibe-coding: Rapidly Building Interactive...Join us for an exciting 20-minute live coding session where we'll collaboratively build a Hedera dApp in real-time!...This workshop is happening in-person03:30 PM CEST \u2014 Friday, May 30, 2025 in Workshop Room B1Guides"
+"""
+
 
 @functools.lru_cache
 def create_one_shot_examples(data_dir, logger, n_examples: int = 10) -> str:
     """Create one shot training examples of Mermaid diagrams for FSMs."""
     example_data = []
-    for i, file in enumerate(islice(Path(data_dir / MERMAID_DIAGRAMS).glob("*"), n_examples)):
+    for i, file in enumerate(
+        islice(Path(data_dir / MERMAID_DIAGRAMS).glob("*"), n_examples)
+    ):
         example_data.append(f"{i}. {file.stem}\n{file.read_text()}")
     example_data = "\n\n".join(example_data)
     logger.info(f"FSM Example Data: {example_data}")
@@ -91,8 +226,12 @@ def get_bounty_info(context) -> str:
         msg = f"Sponsor bounty index {target_bounty} out of range for {target_sponsor}"
         raise ValueError(msg)
     bounty_key, description = bounty
-    context.logger.info(f"Bounty selected for {target_sponsor}: {bounty_key}\n{description}")
-    return f"Sponsor: {target_sponsor}\nBounty: {bounty_key}\nDescription:{description}\n"
+    context.logger.info(
+        f"Bounty selected for {target_sponsor}: {bounty_key}\n{description}"
+    )
+    return (
+        f"Sponsor: {target_sponsor}\nBounty: {bounty_key}\nDescription:{description}\n"
+    )
 
 
 USER_PERSONA_PROMPT = dedent("""
@@ -294,13 +433,18 @@ class CheckTelegramQueueRound(BaseState):
         if self.processing_since is None:
             self.processing_since = datetime.now(tz=TIMEZONE_UTC).timestamp()
             return
-        if datetime.now(tz=TIMEZONE_UTC).timestamp() - self.processing_since > self.timeout:
+        if (
+            datetime.now(tz=TIMEZONE_UTC).timestamp() - self.processing_since
+            > self.timeout
+        ):
             self._event = AsylumAbciAppEvents.TIMEOUT
             self._is_done = True
             self.processing_since = None
             return
         if self.strategy.pending_telegram_messages:
-            self.context.logger.info(f"New messages found: {len(self.strategy.pending_telegram_messages)}")
+            self.context.logger.info(
+                f"New messages found: {len(self.strategy.pending_telegram_messages)}"
+            )
             self._event = AsylumAbciAppEvents.NEW_MESSAGES
             self._is_done = True
             self.processing_since = None
@@ -319,7 +463,8 @@ class RequestLLMResponseRound(BaseState):
 
     def act(self) -> None:
         """Act."""
-        self.sponsor_bounty_info = get_bounty_info(self.context)
+        # self.sponsor_bounty_info = get_bounty_info(self.context)
+        self.sponsor_bounty_info = BOUNTY_INFO
         self.context.logger.info(f"In state: {self._state}")
         self.context.logger.info(f"Sending to: {self.counterparty}")
         workflows = [f"-{f}" for f in self.strategy.workflows]
@@ -348,7 +493,9 @@ class RequestLLMResponseRound(BaseState):
             text_data = msg.text
             username = msg.from_user
             chat = msg.chat_id
-            self.context.logger.info(f"Processing message from {username}: {text_data} in chat {chat}")
+            self.context.logger.info(
+                f"Processing message from {username}: {text_data} in chat {chat}"
+            )
             if text_data.startswith("/help"):
                 # we dummy an llm response for the work tol here.
                 response = dedent(f"""
@@ -362,10 +509,15 @@ class RequestLLMResponseRound(BaseState):
                 if workflow_name in self.strategy.workflows:
                     self.strategy.pending_workflows.append(workflow_name)
                 else:
-                    self.strategy.telegram_responses.append(f"Workflow {workflow_name} not found.")
+                    self.strategy.telegram_responses.append(
+                        f"Workflow {workflow_name} not found."
+                    )
 
             else:
-                mermaid_diagram_examples = create_one_shot_examples(self.strategy.data_dir, self.context.logger)
+                mermaid_diagram_examples = create_one_shot_examples(
+                    self.strategy.data_dir, self.context.logger
+                )
+                mermaid_diagram_examples += "\n\n {AGENT_ASYLUM_DIAGRAM}"
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
                 user_persona = self.context.asylum_strategy.user_persona
@@ -458,14 +610,22 @@ class ScrapeGithubRound(BaseState):
         data_dir = Path(self.strategy.data_dir)
         if not data_dir.exists():
             data_dir.mkdir(parents=True)
-        github_scraper = GitHubScraper(gh_pat=self.agent_persona.github_pat, data_dir=self.strategy.data_dir)
-        user_data = Path(self.strategy.data_dir) / self.agent_persona.github_username / "repos.json"
+        github_scraper = GitHubScraper(
+            gh_pat=self.agent_persona.github_pat, data_dir=self.strategy.data_dir
+        )
+        user_data = (
+            Path(self.strategy.data_dir)
+            / self.agent_persona.github_username
+            / "repos.json"
+        )
 
         try:
             if not user_data.exists():
                 usernames = [self.agent_persona.github_username]
                 repos = self.agent_persona.github_repositories
-                self.context.logger.info(f"Fetching data for users: {', '.join(usernames)}")
+                self.context.logger.info(
+                    f"Fetching data for users: {', '.join(usernames)}"
+                )
                 all_user_data = github_scraper.scrape_user_interactions(
                     usernames=usernames,
                     repos=repos,
@@ -502,12 +662,22 @@ class CheckLocalStorageRound(BaseState):
 
         sponsor = self.agent_persona.sponsor.lower().replace(" ", "_")
         bounty = str(self.agent_persona.bounty)
-        out_path = self.context.asylum_strategy.output_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
+        out_path = (
+            self.context.asylum_strategy.output_dir
+            / sponsor.replace(" ", "_").lower()
+            / f"bounty_{bounty}"
+        )
         fsm_out_path = out_path / "fsm_specification.yaml"
         agent_dir = out_path / "packages" / "agent_asylum"
 
-        if fsm_out_path.exists() and not agent_dir.exists() and self.agent_persona.github_username == "8ball030":
-            self.context.logger.info(f"FSM specification exists for {sponsor} bounty {bounty}!")
+        if (
+            fsm_out_path.exists()
+            and not agent_dir.exists()
+            and self.agent_persona.github_username == "8ball030"
+        ):
+            self.context.logger.info(
+                f"FSM specification exists for {sponsor} bounty {bounty}!"
+            )
             self._run_scaffold_workflow(out_path, sponsor, bounty)
             self._is_done = True
             self._event = AsylumAbciAppEvents.DONE
@@ -519,7 +689,11 @@ class CheckLocalStorageRound(BaseState):
         with chdir(str(out_path)):
             self.context.logger.info(f"Running scaffold workflow for {out_path}")
             workflow_name = "create_from_fsm"
-            workflow_path = Path(__file__).parent / "workflows" / self.strategy.workflows[workflow_name]
+            workflow_path = (
+                Path(__file__).parent
+                / "workflows"
+                / self.strategy.workflows[workflow_name]
+            )
             wf = Workflow.from_file(workflow_path)
             new_public_id = PublicId.from_str(f"agent_asylum/{sponsor}_{bounty}")
             kwargs = {
@@ -562,13 +736,19 @@ class CheckLocalStorageRound(BaseState):
                 self.strategy.llm_responses.append((LLMActions.REPLY, error_msg))
             else:
                 success_msg = f"PR created successfully for {sponsor} bounty {bounty}. "
-                self.context.logger.info(f"PR created successfully for {sponsor} bounty {bounty}")
+                self.context.logger.info(
+                    f"PR created successfully for {sponsor} bounty {bounty}"
+                )
                 self.strategy.llm_responses.append((LLMActions.REPLY, success_msg))
 
     def act_from_persona(self):
         """Do the act."""
         self.context.logger.info(f"In state: {self._state}")
-        user_data = Path(self.strategy.data_dir) / self.agent_persona.github_username / "repos.json"
+        user_data = (
+            Path(self.strategy.data_dir)
+            / self.agent_persona.github_username
+            / "repos.json"
+        )
 
         if not user_data.exists() or not self.strategy.user_persona:
             self._is_done = True
@@ -606,7 +786,9 @@ class CheckLocalStorageRound(BaseState):
 
                 self.context.logger.info(f"Creating new repo: {repo_name} on GitHub")
 
-                self.context.logger.info(f"Repo {repo_name} created successfully! 🎉🎉🎉")
+                self.context.logger.info(
+                    f"Repo {repo_name} created successfully! 🎉🎉🎉"
+                )
                 response = create_github_repo(
                     repo_name=f"{sponsor_name}_{repo_name}",
                     token=self.agent_persona.github_pat,
@@ -620,7 +802,9 @@ class CheckLocalStorageRound(BaseState):
                     command=f"git config --global --add safe.directory /output/{sponsor_name}/{repo_name}",
                 ).work()
                 if task.is_failed:
-                    error_msg = f"Failed to set safe.directory for {sponsor_name}/{repo_name}"
+                    error_msg = (
+                        f"Failed to set safe.directory for {sponsor_name}/{repo_name}"
+                    )
                     self.context.logger.error(error_msg)
                     self.strategy.llm_responses.append((LLMActions.REPLY, error_msg))
                 else:
@@ -656,13 +840,21 @@ class ExecuteProposedWorkflowRound(BaseState):
 
         while self.strategy.pending_workflows:
             workflow_name = self.strategy.pending_workflows.pop()
-            workflow_path = Path(__file__).parent / "workflows" / self.strategy.workflows[workflow_name]
+            workflow_path = (
+                Path(__file__).parent
+                / "workflows"
+                / self.strategy.workflows[workflow_name]
+            )
             try:
                 os.environ["GITHUB_PAT"] = self.agent_persona.github_pat
                 workflow = Workflow.from_file(workflow_path)
                 self.wf_manager.add_workflow(workflow)
-                self.wf_manager.run_workflow(workflow.id, display_process=False, exit_on_failure=False)
-                self.context.logger.info(f"There are {len(self.strategy.llm_responses)} responses.")
+                self.wf_manager.run_workflow(
+                    workflow.id, display_process=False, exit_on_failure=False
+                )
+                self.context.logger.info(
+                    f"There are {len(self.strategy.llm_responses)} responses."
+                )
 
             except Exception as e:
                 self.context.logger.exception(f"Error: {e}")
@@ -699,16 +891,38 @@ class AsylumAbciAppFsmBehaviour(FSMBehaviour):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.register_state(AsylumAbciAppStates.CHECK_LOCAL_STORAGE_ROUND.value, CheckLocalStorageRound(**kwargs), True)
-
-        self.register_state(AsylumAbciAppStates.PROCESS_LLM_RESPONSE_ROUND.value, ProcessLLMResponseRound(**kwargs))
-        self.register_state(AsylumAbciAppStates.CHECK_TELEGRAM_QUEUE_ROUND.value, CheckTelegramQueueRound(**kwargs))
-        self.register_state(AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND.value, RequestLLMResponseRound(**kwargs))
-        self.register_state(AsylumAbciAppStates.SEND_TELEGRAM_MESSAGE_ROUND.value, SendTelegramMessageRound(**kwargs))
-        self.register_state(AsylumAbciAppStates.SCRAPE_GITHUB_ROUND.value, ScrapeGithubRound(**kwargs))
-        self.register_state(AsylumAbciAppStates.WAIT_BEFORE_RETRY_ROUND.value, WaitBeforeRetryRound(**kwargs))
         self.register_state(
-            AsylumAbciAppStates.EXECUTE_PROPOSED_WORKFLOW_ROUND.value, ExecuteProposedWorkflowRound(**kwargs)
+            AsylumAbciAppStates.CHECK_LOCAL_STORAGE_ROUND.value,
+            CheckLocalStorageRound(**kwargs),
+            True,
+        )
+
+        self.register_state(
+            AsylumAbciAppStates.PROCESS_LLM_RESPONSE_ROUND.value,
+            ProcessLLMResponseRound(**kwargs),
+        )
+        self.register_state(
+            AsylumAbciAppStates.CHECK_TELEGRAM_QUEUE_ROUND.value,
+            CheckTelegramQueueRound(**kwargs),
+        )
+        self.register_state(
+            AsylumAbciAppStates.REQUEST_LLM_RESPONSE_ROUND.value,
+            RequestLLMResponseRound(**kwargs),
+        )
+        self.register_state(
+            AsylumAbciAppStates.SEND_TELEGRAM_MESSAGE_ROUND.value,
+            SendTelegramMessageRound(**kwargs),
+        )
+        self.register_state(
+            AsylumAbciAppStates.SCRAPE_GITHUB_ROUND.value, ScrapeGithubRound(**kwargs)
+        )
+        self.register_state(
+            AsylumAbciAppStates.WAIT_BEFORE_RETRY_ROUND.value,
+            WaitBeforeRetryRound(**kwargs),
+        )
+        self.register_state(
+            AsylumAbciAppStates.EXECUTE_PROPOSED_WORKFLOW_ROUND.value,
+            ExecuteProposedWorkflowRound(**kwargs),
         )
 
         self.register_transition(
