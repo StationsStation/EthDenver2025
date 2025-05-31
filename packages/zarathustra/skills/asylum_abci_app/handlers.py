@@ -23,6 +23,7 @@ import json
 import secrets
 from typing import cast
 from pathlib import Path
+import itertools
 
 from aea.skills.base import Handler
 from auto_dev.fsm.fsm import FsmSpec
@@ -30,25 +31,37 @@ from aea.protocols.base import Message
 
 from packages.eightballer.protocols.default import DefaultMessage
 from packages.eightballer.protocols.http.message import HttpMessage
-from packages.eightballer.protocols.chatroom.message import ChatroomMessage as TelegramMessage
+from packages.eightballer.protocols.chatroom.message import (
+    ChatroomMessage as TelegramMessage,
+)
 from packages.eightballer.protocols.chatroom.dialogues import (
     ChatroomDialogue as TelegramDialogue,
     ChatroomDialogues as TelegramDialogues,
 )
-from packages.zarathustra.skills.asylum_abci_app.strategy import LLMActions, AsylumStrategy
+from packages.zarathustra.skills.asylum_abci_app.strategy import (
+    LLMActions,
+    AsylumStrategy,
+)
 from packages.zarathustra.skills.asylum_abci_app.dialogues import (
     HttpDialogue,
     HttpDialogues,
     DefaultDialogues,
 )
 from packages.zarathustra.connections.openai_api.connection import reconstitute
-from packages.zarathustra.skills.asylum_abci_app.behaviours import TELEGRAM_MSG_CHAR_LIMIT, get_bounty_info
-from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
+from packages.zarathustra.skills.asylum_abci_app.behaviours import (
+    TELEGRAM_MSG_CHAR_LIMIT,
+    get_bounty_info,
+)
+from packages.zarathustra.protocols.llm_chat_completion.message import (
+    LlmChatCompletionMessage,
+)
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
     LlmChatCompletionDialogues,
 )
 
+
+counter = itertools.count()
 
 BOT_PATTERN = re.compile(r"(🤖.*?🤖)")
 MERMAID_PATTERN = re.compile(r"```mermaid\s*([\s\S]+?)\s*```")
@@ -59,7 +72,7 @@ def chunk_text(text: str, max_chars: int = TELEGRAM_MSG_CHAR_LIMIT):
     return (text[i : i + max_chars] for i in range(0, len(text), max_chars))
 
 
-def create_readme(context, mermaid: str, fsm_spec, out_path: Path):
+def create_readme(context, mermaid: str, fsm_spec, out_path: Path, count: int):
     """Create README.md for newly created project repository."""
     data_dir = context.asylum_strategy.data_dir
     template_file = data_dir / "README.md.template"
@@ -83,7 +96,7 @@ def create_readme(context, mermaid: str, fsm_spec, out_path: Path):
         mermaid_diagram=mermaid,
         agent_conversation=agent_conversation,
     )
-    out_file = out_path / template_file.stem
+    out_file = out_path / f"{template_file.stem}_{count}"
     out_file.write_text(formatted_readme)
 
 
@@ -105,12 +118,18 @@ class TelegramHandler(Handler):
             return
 
         telegram_dialogues = cast(TelegramDialogues, self.context.telegram_dialogues)
-        telegram_dialogue = cast(TelegramDialogue, telegram_dialogues.update(telegram_msg))
+        telegram_dialogue = cast(
+            TelegramDialogue, telegram_dialogues.update(telegram_msg)
+        )
 
         if not telegram_dialogue:
-            self.context.logger.debug(f"received invalid telegram message={telegram_msg}, unidentified dialogue.")
+            self.context.logger.debug(
+                f"received invalid telegram message={telegram_msg}, unidentified dialogue."
+            )
 
-        self.context.logger.info(f"received telegram message={telegram_msg.from_user}, content={telegram_msg.text}")
+        self.context.logger.info(
+            f"received telegram message={telegram_msg.from_user}, content={telegram_msg.text}"
+        )
         self.strategy.pending_telegram_messages.append(telegram_msg)
         self.strategy.chat_history.append(telegram_msg.text)
 
@@ -135,16 +154,27 @@ class LlmChatCompletionHandler(Handler):
         """Implement the reaction to an envelope."""
 
         llm_chat_completion_msg = cast(LlmChatCompletionMessage, message)
-        if llm_chat_completion_msg.performative == LlmChatCompletionMessage.Performative.ERROR:
+        if (
+            llm_chat_completion_msg.performative
+            == LlmChatCompletionMessage.Performative.ERROR
+        ):
             self.context.logger.error(f"Received error={llm_chat_completion_msg}")
             return
 
-        if llm_chat_completion_msg.performative == LlmChatCompletionMessage.Performative.RESPONSE:
-            self.context.logger.debug(f"received LLM chat completion message={llm_chat_completion_msg}")
+        if (
+            llm_chat_completion_msg.performative
+            == LlmChatCompletionMessage.Performative.RESPONSE
+        ):
+            self.context.logger.debug(
+                f"received LLM chat completion message={llm_chat_completion_msg}"
+            )
 
-        llm_chat_completion_dialogues = cast(LlmChatCompletionDialogues, self.context.llm_chat_completion_dialogues)
+        llm_chat_completion_dialogues = cast(
+            LlmChatCompletionDialogues, self.context.llm_chat_completion_dialogues
+        )
         llm_chat_completion_dialogue = cast(
-            LlmChatCompletionDialogue, llm_chat_completion_dialogues.update(llm_chat_completion_msg)
+            LlmChatCompletionDialogue,
+            llm_chat_completion_dialogues.update(llm_chat_completion_msg),
         )
 
         if not llm_chat_completion_dialogue:
@@ -168,24 +198,31 @@ class LlmChatCompletionHandler(Handler):
                 fsm_spec.label = f"{sponsor.replace(' ', '')}{bounty}AbciApp"
                 mermaid: str = fsm_spec.to_mermaid().strip()
                 fsm_spec_str: str = fsm_spec.to_string().strip()
-                out_path = data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
+                out_path = (
+                    data_dir / sponsor.replace(" ", "_").lower() / f"bounty_{bounty}"
+                )
                 if not out_path.exists():
-                    self.context.logger.error(f"Output path {out_path} does not exist! Not saving FSM spec.")
+                    self.context.logger.error(
+                        f"Output path {out_path} does not exist! Not saving FSM spec."
+                    )
                     return
-                fsm_out_path = out_path / "fsm_specification.yaml"
-                mermaid_out_path = out_path / "diagram.mmd"
-                if fsm_out_path.exists():
-                    # We change the name of the FSM spec file to avoid overwriting
-                    spec_id = secrets.token_hex(4)
-                    fsm_out_path = out_path / f"fsm_specification_{spec_id}.yaml"
-                    mermaid_out_path = out_path / f"diagram_{spec_id}.mmd"
 
-                create_readme(self.context, mermaid, fsm_spec, out_path)
+                spec_id = next(counter)
+                # fsm_out_path = out_path / "fsm_specification.yaml"
+                # mermaid_out_path = out_path / "diagram.mmd"
+                # if fsm_out_path.exists():
+                # We change the name of the FSM spec file to avoid overwriting
+                # spec_id = secrets.token_hex(4)
+                fsm_out_path = out_path / f"fsm_specification_{spec_id}.yaml"
+                mermaid_out_path = out_path / f"diagram_{spec_id}.mmd"
+                create_readme(self.context, mermaid, fsm_spec, out_path, spec_id)
                 fsm_out_path.write_text(fsm_spec_str)
                 mermaid_out_path.write_text(mermaid)
                 emoji = secrets.choice("😎😁😍🫡🦾")
                 text += f"\n\nI verified the Mermaid diagram, and it constitutes a valid FSM! {emoji}"
-                self.context.logger.info(f"FSM spec saved to {fsm_out_path} and diagram to {mermaid_out_path}")
+                self.context.logger.info(
+                    f"FSM spec saved to {fsm_out_path} and diagram to {mermaid_out_path}"
+                )
             except Exception as e:  # noqa: BLE001
                 emoji = secrets.choice("😅😓😕🙈😇😞😒😤😱😨😩🙏🦾")
                 text += (
@@ -237,7 +274,9 @@ class HttpHandler(Handler):
 
     def _handle_unidentified_dialogue(self, http_msg: HttpMessage) -> None:
         """Handle an unidentified dialogue."""
-        self.context.logger.info(f"received invalid http message={http_msg}, unidentified dialogue.")
+        self.context.logger.info(
+            f"received invalid http message={http_msg}, unidentified dialogue."
+        )
         default_dialogues = cast(DefaultDialogues, self.context.default_dialogues)
         default_msg, _ = default_dialogues.create(
             counterparty=http_msg.sender,
@@ -248,7 +287,9 @@ class HttpHandler(Handler):
         )
         self.context.outbox.put_message(message=default_msg)
 
-    def _handle_request(self, http_msg: HttpMessage, http_dialogue: HttpDialogue) -> None:
+    def _handle_request(
+        self, http_msg: HttpMessage, http_dialogue: HttpDialogue
+    ) -> None:
         """Handle a Http request."""
         self.context.logger.info(
             f"received http request with method={http_msg.method}, url={http_msg.url} and body={http_msg.body}"
@@ -294,7 +335,9 @@ class HttpHandler(Handler):
         self.context.logger.info(f"responding with: {http_response}")
         self.context.outbox.put_message(message=http_response)
 
-    def _handle_invalid(self, http_msg: HttpMessage, http_dialogue: HttpDialogue) -> None:
+    def _handle_invalid(
+        self, http_msg: HttpMessage, http_dialogue: HttpDialogue
+    ) -> None:
         """Handle an invalid http message."""
         self.context.logger.warning(
             f"""
