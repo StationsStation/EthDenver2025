@@ -472,7 +472,8 @@ class RequestLLMResponseRound(BaseState):
             username = self.agent_persona.github_username
             self.context.logger.info(f"New github data found for {username}")
             github_data = json.dumps(self.strategy.new_users.pop())
-            model = LLMModel.META_LLAMA_3_1_405B_INSTRUCT_FP8
+            # model = LLMModel.META_LLAMA_3_1_405B_INSTRUCT_FP8
+            model = LLMModel.DEEPSEEK_R1_DISTILL_QWEN_32B
             user_persona_prompt = USER_PERSONA_PROMPT.format(
                 github_username=self.agent_persona.github_username,
                 github_repositories=self.agent_persona.github_repositories,
