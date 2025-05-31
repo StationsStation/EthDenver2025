@@ -177,6 +177,9 @@ Produce a Mermaid FSM diagram that exactly captures the above states and transit
 """
 
 BOUNTY_INFO = """
+
+**NOTE**:  We are applying and integrateing ALL 3(!) of these bounties into a singular project. We use LayerZero from cross-chain governance / vote integration. We use Hedera targetting AI agents bounty. We use 1inch for ensuring that proposals to the council are able to effectively purchase the tokens based on the output (i.e. whether or not to include proposed token in their treasury)
+
 ## 1inch: 
 Build applications with the power of 1inch! Supercharge your applications' swaps with our classic and intent-based trading engine, and streamline your onchain data access with our simple REST APIs.Prizes\ud83c\udf7e Extensions for 1inch Cross-chain Swap (Fusion+) \u2e3a $12,000Split evenly between all qualifying projectsBuild an extension for 1inch Cross-chain Swap (Fusion+) that enable swaps between Ethereum and a non-EVM chain. 1inch Cross-chain Swap (Fusion+) is our novel implementation of cross-chain swaps using escrows. Any chain that supports escrow functionality is a candidate for a 1inch Cross-chain Swap (Fusion+) integration.Qualification RequirementsRequirements:  - Integration of one new chain into the 1inch Cross-chain Swap (Fusion+) ecosystem (command line script for the implementation is perfectly fine, no UI needed)  - Fully functional 1inch Cross-chain Swap (Fusion+) swap between Ethereum and a non-EVM chain  - Demonstrates handling of execution guarantees and refund logic  - Proper Git commit history (no single-commit entries on the final day)Judging criteria:  - UX simplicity and abstraction  - Security and reliability of the flow  - Code quality/completeness  - Documentation qualityLinks and Resources1inch Hackathon Guidehttps://hackathon.1inch.community\u2197\ud83d\udcc8 Extend Limit Order Protocol \u2e3a $6,500\ud83e\udd471st place. Build advanced strategies and hooks for the 1inch Limit Order Protocol.Project ideas:  - Develop an options hook  - Integrate concentrated liquidity  - TWAP swap  - Other creative projects are welcomeExisting examples built on top of Limit Order Protocol include ranged sells and dutch auctions (links in hackathon documentation)Qualification RequirementsRequirements:  - New functionality built on top of Limit Order Protocol (command line script for the implementation is perfectly fine, no UI needed)  - Proper Git commit history (no single-commit entries on the final day)Judging criteria:  - Innovation and originality  - Code quality/completeness  - Documentation qualityLinks and Resources1inch Hackathon Guidehttps://hackathon.1inch.community\u2197\ud83d\udd17 Utilize 1inch APIs \u2e3a $1,500Up to 5 teams will receive $300Utilize 1inch's infrastructure to help build your application  - Build with our swap protocols (1inch Cross-chain Swap (Fusion+), Intent-based Swap (Fusion), Classic Swap, limit order protocol)   - Build with any of our data APIs (price feeds API, wallet balances API, token metadata API, and many more)  - Use our Web3 API to interact with the blockchainQualification RequirementsRequirements:  - Your project uses at least one 1inch API to provide meaningful functionality for your users  - Proper Git commit history (no single-commit entries on the final day)Judging Criteria:  - Practicality and usefulness  - Code quality/completenessLinks and Resources1inch Hackathon Guidehttps://hackathon.1inch.community\u2197Resources1inch Hackathon Guidehttps://hackathon.1inch.community\u2197GuidesJobs"
 
@@ -515,10 +518,10 @@ class RequestLLMResponseRound(BaseState):
                     )
 
             else:
-                mermaid_diagram_examples = create_one_shot_examples(
-                    self.strategy.data_dir, self.context.logger
-                )
-                mermaid_diagram_examples += "\n\n {AGENT_ASYLUM_DIAGRAM}"
+                # mermaid_diagram_examples = create_one_shot_examples(
+                #     self.strategy.data_dir, self.context.logger
+                # )
+                mermaid_diagram_examples = "\n\n {AGENT_ASYLUM_DIAGRAM}"
                 model = LLMModel.META_LLAMA_3_3_70B_INSTRUCT
                 github_username = self.agent_persona.github_username
                 user_persona = self.context.asylum_strategy.user_persona
