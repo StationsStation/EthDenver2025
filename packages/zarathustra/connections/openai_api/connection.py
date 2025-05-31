@@ -39,7 +39,9 @@ from aea.connections.base import Connection, ConnectionStates
 from aea.configurations.base import PublicId
 from aea.protocols.dialogue.base import Dialogue
 
-from packages.zarathustra.protocols.llm_chat_completion.message import LlmChatCompletionMessage
+from packages.zarathustra.protocols.llm_chat_completion.message import (
+    LlmChatCompletionMessage,
+)
 from packages.zarathustra.protocols.llm_chat_completion.dialogues import (
     LlmChatCompletionDialogue,
     BaseLlmChatCompletionDialogues,
@@ -72,8 +74,11 @@ class Model(StrEnum):
     META_LLAMA_3_1_8B_INSTRUCT_FP8 = "Meta-Llama-3-1-8B-Instruct-FP8"
     META_LLAMA_3_1_405B_INSTRUCT_FP8 = "Meta-Llama-3-1-405B-Instruct-FP8"
     META_LLAMA_3_2_3B_INSTRUCT = "Meta-Llama-3-2-3B-Instruct"
-    NVIDIA_LLAMA_3_1_NEMOTRON_70B_INSTRUCT_HF = "nvidia-Llama-3-1-Nemotron-70B-Instruct-HF"
+    NVIDIA_LLAMA_3_1_NEMOTRON_70B_INSTRUCT_HF = (
+        "nvidia-Llama-3-1-Nemotron-70B-Instruct-HF"
+    )
     META_LLAMA_3_3_70B_INSTRUCT = "Meta-Llama-3-3-70B-Instruct"
+    Qwen3_235B_A22B_FP8 = "Qwen3-235B-A22B-FP8"
 
 
 def reconstitute(message: LlmChatCompletionMessage) -> BaseModel:
@@ -127,7 +132,9 @@ class BaseAsyncChannel:
 
     @property
     @abstractmethod
-    def performative_handlers(self) -> dict[Message.Performative, Callable[[Message, Dialogue], Message]]:
+    def performative_handlers(
+        self,
+    ) -> dict[Message.Performative, Callable[[Message, Dialogue], Message]]:
         """Performative to message handler mapping."""
 
     @abstractmethod
@@ -214,13 +221,17 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
     ):
         """Initialize the Openai Api channel."""
 
-        super().__init__(agent_address, connection_id, message_type=LlmChatCompletionMessage)
+        super().__init__(
+            agent_address, connection_id, message_type=LlmChatCompletionMessage
+        )
 
         # TODO: assign attributes from custom connection configuration explicitly
         self.api_key = api_key
         self.base_url = base_url
 
-        self._dialogues = LlmChatCompletionDialogues(str(OpenaiApiConnection.connection_id))
+        self._dialogues = LlmChatCompletionDialogues(
+            str(OpenaiApiConnection.connection_id)
+        )
         self.logger.debug("Initialised the Openai Api channel")
 
     async def connect(self, loop: AbstractEventLoop) -> None:
@@ -257,7 +268,10 @@ class OpenaiApiAsyncChannel(BaseAsyncChannel):  # pylint: disable=too-many-insta
         self,
     ) -> dict[
         LlmChatCompletionMessage.Performative,
-        Callable[[LlmChatCompletionMessage, LlmChatCompletionDialogue], LlmChatCompletionMessage],
+        Callable[
+            [LlmChatCompletionMessage, LlmChatCompletionDialogue],
+            LlmChatCompletionMessage,
+        ],
     ]:
         """Return a mapping for performative to handler."""
         return {
